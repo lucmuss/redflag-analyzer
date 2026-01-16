@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:latest
+    container_name: redflag-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: redflag_analyzer
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - redflag-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: redflag-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017/redflag_analyzer
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - ENVIRONMENT=development
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - redflag-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  redflag-network:
+    driver: bridge

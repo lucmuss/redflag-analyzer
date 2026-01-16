@@ -1,0 +1,32 @@
+# Render.com deployment configuration
+services:
+  # Backend API
+  - type: web
+    name: redflag-analyzer-api
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: starter
+    region: frankfurt
+    branch: main
+    healthCheckPath: /health
+    envVars:
+      - key: MONGODB_URL
+        sync: false  # Set manually in Render dashboard
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENVIRONMENT
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: https://redflag-analyzer.vercel.app,https://redflag-analyzer.com
+    
+  # MongoDB Database (optional - use MongoDB Atlas instead for production)
+  # - type: pserv
+  #   name: redflag-analyzer-mongodb
+  #   env: docker
+  #   dockerCommand: mongod --bind_ip_all
+  #   plan: starter
+  #   disk:
+  #     name: mongodb-data
+  #     mountPath: /data/db
+  #     sizeGB: 10

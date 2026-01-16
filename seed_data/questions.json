@@ -1,0 +1,457 @@
+[
+  {
+    "key": "father_absence",
+    "category": "DYNAMICS",
+    "text_en": "She grew up mostly without her biological father.",
+    "text_de": "Sie ist zum größten Teil in ihrem Leben ohne biologischen Vater aufgewachsen.",
+    "initial_weight": 5
+  },
+  {
+    "key": "bad_father_relationship",
+    "category": "DYNAMICS",
+    "text_en": "She has a bad relationship with her father.",
+    "text_de": "Sie hat eine schlechte Beziehung zu ihrem Vater.",
+    "initial_weight": 4
+  },
+  {
+    "key": "dominant_mother",
+    "category": "DYNAMICS",
+    "text_en": "Her mother was dominant in the parental relationship.",
+    "text_de": "Ihre Mutter hatte in der Eltern Beziehung das Sagen und war eher dominant.",
+    "initial_weight": 4
+  },
+  {
+    "key": "feminist_blames_men",
+    "category": "VALUES",
+    "text_en": "She is a feminist and blames men for the oppression of women.",
+    "text_de": "Sie ist eine Feministin und gibt Männer die Schuld an der Unterdrückung der Frauen.",
+    "initial_weight": 5
+  },
+  {
+    "key": "single_mother_separated",
+    "category": "DYNAMICS",
+    "text_en": "She is a single mother who voluntarily separated from her husband.",
+    "text_de": "Sie ist eine Single Mutter die sich freiwillig von ihrem Mann getrennt hat.",
+    "initial_weight": 5
+  },
+  {
+    "key": "significantly_older",
+    "category": "DYNAMICS",
+    "text_en": "She is significantly older than you, at least 5 years or more.",
+    "text_de": "Sie ist deutlich älter als du mindestens.5 Jahre oder mehr.",
+    "initial_weight": 5
+  },
+  {
+    "key": "divorced_woman",
+    "category": "DYNAMICS",
+    "text_en": "She is a once or multiple times divorced woman.",
+    "text_de": "Sie ist eine einfach oder mehrfach geschiedene Frau.",
+    "initial_weight": 5
+  },
+  {
+    "key": "high_bodycount",
+    "category": "BEHAVIOR",
+    "text_en": "She has a high body count (number of people she has had sex with). Calculate normal body count: (Age - 18) x 1.3 = Body Count.",
+    "text_de": "Sie hat einen hohen Bodycount (Anzahl der Personen mit denen Sie Sex hatte). So kannst du einen normalen BodyCount berechnen: (Alter - 18) x 1.3 = BodyCount",
+    "initial_weight": 5
+  },
+  {
+    "key": "early_sexual_experience",
+    "category": "BEHAVIOR",
+    "text_en": "She had her first sexual experience very young (between 12-16 years).",
+    "text_de": "Sie war sehr jung (zwischen 12-16 Jahre) als Sie ihr erstes mal Sex hatte.",
+    "initial_weight": 4
+  },
+  {
+    "key": "party_girl_friends",
+    "category": "BEHAVIOR",
+    "text_en": "Most and best of her friends are party girls.",
+    "text_de": "Die meisten und besten Ihrer Freundinnen sind Party Girls.",
+    "initial_weight": 5
+  },
+  {
+    "key": "social_media_active",
+    "category": "BEHAVIOR",
+    "text_en": "She is very active on social media and seeks validation there. She has over 800 followers on one platform.",
+    "text_de": "Sie ist auf Social Media sehr aktiv und sucht dort Bestätigung. Sie hat auf einer Plattform über 800 Follower.",
+    "initial_weight": 5
+  },
+  {
+    "key": "frequent_smartphone_use",
+    "category": "BEHAVIOR",
+    "text_en": "She frequently has her smartphone in hand during meetings or places it directly in front of her on the table.",
+    "text_de": "Sie hat sehr häufig ihr Smartphone bei euren Treffen in der Hand beziehungsweise legt das Handy direkt vor sich auf den Tisch.",
+    "initial_weight": 4
+  },
+  {
+    "key": "cannot_relax",
+    "category": "BEHAVIOR",
+    "text_en": "She cannot relax or do nothing and must always be active.",
+    "text_de": "Sie kann sich nicht entspannen oder einfach mal nichts tun und muss ständig aktiv sein.",
+    "initial_weight": 5
+  },
+  {
+    "key": "bad_friend_circle",
+    "category": "VALUES",
+    "text_en": "She has a morally bad friend circle.",
+    "text_de": "Sie hat einen moralisch gesehen einen schlechten Freundeskreis.",
+    "initial_weight": 5
+  },
+  {
+    "key": "surrounded_by_men",
+    "category": "TRUST",
+    "text_en": "She is frequently surrounded by many men privately and meets with them.",
+    "text_de": "Sie ist häufig mit vielen Männer privat umgeben und trifft sich mit diesen.",
+    "initial_weight": 5
+  },
+  {
+    "key": "contact_with_ex",
+    "category": "TRUST",
+    "text_en": "She has regular contact with one of her ex-boyfriends, e.g., emotional contact.",
+    "text_de": "Sie hat regelmäßig Kontakt zu einem Ihrer Exfreunde z.B emotionalen Kontakt.",
+    "initial_weight": 4
+  },
+  {
+    "key": "toxic_ex",
+    "category": "DYNAMICS",
+    "text_en": "One of her ex-boyfriends was particularly toxic or a classic bad boy in her view.",
+    "text_de": "Einer ihrer Exfreunde war aus Ihrer Sicht besonders toxisch oder ein klassischer Badboy.",
+    "initial_weight": 5
+  },
+  {
+    "key": "career_priority",
+    "category": "VALUES",
+    "text_en": "She prioritizes her career equal to or above you.",
+    "text_de": "Sie stellt Ihre Karriere mit dir gleich oder über dich.",
+    "initial_weight": 5
+  },
+  {
+    "key": "masculine_energy",
+    "category": "BEHAVIOR",
+    "text_en": "She has an excess of physically masculine energy and is rather dominant.",
+    "text_de": "Sie hat einen Überschuss an körperlich maskuliner Energie und ist eher dominant.",
+    "initial_weight": 4
+  },
+  {
+    "key": "strong_jealousy",
+    "category": "BEHAVIOR",
+    "text_en": "She feels strong jealousy.",
+    "text_de": "Sie empfindet eine starke Eifersucht.",
+    "initial_weight": 5
+  },
+  {
+    "key": "exaggerates_trivialities",
+    "category": "BEHAVIOR",
+    "text_en": "She exaggerates trivialities to frequently be the center of attention.",
+    "text_de": "Sie stellt Kleinigkeiten viel bedeutungsvoller dar als sie sind um häufig damit im Zentrum der Aufmerksamkeit zu stehen.",
+    "initial_weight": 5
+  },
+  {
+    "key": "frequent_nagging",
+    "category": "BEHAVIOR",
+    "text_en": "She nags frequently and is never satisfied.",
+    "text_de": "Sie nörgelt häufig rum und gibt sich mit nichts zufrieden.",
+    "initial_weight": 5
+  },
+  {
+    "key": "heavily_tattooed",
+    "category": "VALUES",
+    "text_en": "She is heavily tattooed or pierced (more than 4 tattoos).",
+    "text_de": "Sie ist stark tätoviert oder gepierct. (mehr als 4 Tatoos)",
+    "initial_weight": 5
+  },
+  {
+    "key": "cosmetic_surgery",
+    "category": "VALUES",
+    "text_en": "She has undergone superficial cosmetic surgeries, especially in the face.",
+    "text_de": "Sie hat eher oberflächliche Schönheits Operationen über sich ergehen lassen besonders im Gesicht.",
+    "initial_weight": 5
+  },
+  {
+    "key": "excessive_makeup",
+    "category": "BEHAVIOR",
+    "text_en": "She uses excessive and strong makeup or creams.",
+    "text_de": "Sie benutzt übermäßg häufig und starke MakeUps oder Cremes.",
+    "initial_weight": 5
+  },
+  {
+    "key": "short_hair",
+    "category": "VALUES",
+    "text_en": "She has short hair shorter than 10cm.",
+    "text_de": "Sie hat kurze Haare kürzer als 10cm.",
+    "initial_weight": 4
+  },
+  {
+    "key": "overweight",
+    "category": "VALUES",
+    "text_en": "She is self-inflicted severely overweight.",
+    "text_de": "Sie ist selbst verschuldet stark übergewichtig.",
+    "initial_weight": 5
+  },
+  {
+    "key": "self_harm",
+    "category": "BEHAVIOR",
+    "text_en": "She harms herself physically.",
+    "text_de": "Sie verletzt sich körperlich selbst.",
+    "initial_weight": 5
+  },
+  {
+    "key": "talks_about_ex",
+    "category": "TRUST",
+    "text_en": "She talks about her ex-boyfriend without reason during meetings.",
+    "text_de": "Sie redet ohne Grund von selbst bei den Treffen häufig über Ihren Exfreund.",
+    "initial_weight": 5
+  },
+  {
+    "key": "drug_dependent",
+    "category": "BEHAVIOR",
+    "text_en": "She is dependent on drugs or medications, e.g., drinks alcohol frequently, sleeping pills, antidepressants, etc.",
+    "text_de": "Sie ist Drogen oder Medikamenten Abhängig z.B. trinkt sehr häufig Alkohol Schlaftabletten Antidepressiva etc.",
+    "initial_weight": 5
+  },
+  {
+    "key": "bad_with_money",
+    "category": "VALUES",
+    "text_en": "She is bad with money.",
+    "text_de": "Sie kann schlecht mit Geld umgehen.",
+    "initial_weight": 5
+  },
+  {
+    "key": "spoiled_princess",
+    "category": "BEHAVIOR",
+    "text_en": "She is generally very spoiled and often wants to be treated like a princess.",
+    "text_de": "Sie ist im allgemeinen sehr verwöhnt und möchte häufig wie eine Prinzessin gehandelt werden.",
+    "initial_weight": 5
+  },
+  {
+    "key": "early_baby_wish",
+    "category": "VALUES",
+    "text_en": "She has a premature baby wish for her age.",
+    "text_de": "Sie hat einen verfrühten Babywunsch für Ihr Alter.",
+    "initial_weight": 5
+  },
+  {
+    "key": "lies_frequently",
+    "category": "TRUST",
+    "text_en": "She lies frequently and does not apologize for it.",
+    "text_de": "Sie lügt häufig und entschuldigt sich dafür nicht.",
+    "initial_weight": 5
+  },
+  {
+    "key": "creates_insecurities",
+    "category": "DYNAMICS",
+    "text_en": "She occasionally creates insecurities in you.",
+    "text_de": "Sie ruft ab und zu Unsicherheiten in dir hervor.",
+    "initial_weight": 5
+  },
+  {
+    "key": "she_is_the_prize",
+    "category": "DYNAMICS",
+    "text_en": "She conveys that she is the prize/valuable - but you are not.",
+    "text_de": "Sie vermittelt dir den Glauben - Sie ist der Preis / wertvoll - du aber eher nicht.",
+    "initial_weight": 5
+  },
+  {
+    "key": "intimacy_as_reward",
+    "category": "DYNAMICS",
+    "text_en": "She uses intimacy as a reward.",
+    "text_de": "Sie nutzt Intimität als Belohnung aus.",
+    "initial_weight": 5
+  },
+  {
+    "key": "public_humiliation",
+    "category": "TRUST",
+    "text_en": "She humiliates you in front of others if she doesn't play on your team. She doesn't stand by you in social situations.",
+    "text_de": "Sie stellt dich vor anderen Bloß wenn sie nicht in deinem Team mitspielt. Sie hält nicht zu dir in sozialen Situationen.",
+    "initial_weight": 5
+  },
+  {
+    "key": "silent_treatment",
+    "category": "BEHAVIOR",
+    "text_en": "She punishes you with silence without communicating beforehand that she needs peace.",
+    "text_de": "Sie bestraft dich mit Stille ohne es dir vorher zu kommunizieren dass Sie Ruhe braucht.",
+    "initial_weight": 5
+  },
+  {
+    "key": "no_responsibility",
+    "category": "VALUES",
+    "text_en": "She takes no responsibility for her actions and often twists reality.",
+    "text_de": "Sie trägt keine Verantwortung für Ihr Handeln und verdreht häufig die Realität.",
+    "initial_weight": 5
+  },
+  {
+    "key": "trans_gender_fluid",
+    "category": "VALUES",
+    "text_en": "She is trans or gender fluid and does not know her identity.",
+    "text_de": "Sie ist Trans oder Gender Fluid und kennt Ihre Identität nicht.",
+    "initial_weight": 5
+  },
+  {
+    "key": "uses_gender_pronouns",
+    "category": "VALUES",
+    "text_en": "She uses gender pronouns in speech or on dating platforms.",
+    "text_de": "Sie benutzt Gender-Pronomen beim Sprechen oder auf Dating Plattformen.",
+    "initial_weight": 5
+  },
+  {
+    "key": "dyed_hair",
+    "category": "VALUES",
+    "text_en": "She has unnaturally looking and dyed hair like pink, green, red...",
+    "text_de": "Sie hat nicht natürlich ausschauende und gefärbte Haare wie z.B. Pink Grün Rot ...",
+    "initial_weight": 4
+  },
+  {
+    "key": "ghosting_in_conflicts",
+    "category": "BEHAVIOR",
+    "text_en": "She does not respond in disagreements or conflicts and makes herself scarce.",
+    "text_de": "Sie antwortet dir nicht bei einer Meinungsverschiedenheit oder einem Konflikt und macht sich rar.",
+    "initial_weight": 5
+  },
+  {
+    "key": "low_sex_drive",
+    "category": "DYNAMICS",
+    "text_en": "She has a low sex drive with you and is not passionate.",
+    "text_de": "Sie hat einen niedrigen Sexdrive mit dir und nicht so leidenschaftlich.",
+    "initial_weight": 5
+  },
+  {
+    "key": "travels_alone",
+    "category": "DYNAMICS",
+    "text_en": "She travels a lot and prefers to be alone in the relationship.",
+    "text_de": "Sie reist viel und bevorzugt alleine in der Beziehung.",
+    "initial_weight": 5
+  },
+  {
+    "key": "long_dating_app_use",
+    "category": "BEHAVIOR",
+    "text_en": "She has been on dating apps like Tinder and Bumble for a long time in the past.",
+    "text_de": "Sie war in der Vergangenheit lange auf Dating Apps wie z.B. Tinder und Bumble unterwegs.",
+    "initial_weight": 5
+  },
+  {
+    "key": "thirst_traps",
+    "category": "BEHAVIOR",
+    "text_en": "She posts so-called thirst traps on social media (photos to attract male attention).",
+    "text_de": "Sie postet in Social Media sogenannte Thirst traps (Fotos die dazu dienen die männliche Aufmerksamkeit zu erregen).",
+    "initial_weight": 5
+  },
+  {
+    "key": "long_term_single",
+    "category": "DYNAMICS",
+    "text_en": "She is a long-term single (4+ years).",
+    "text_de": "Sie ist ein langzeit Single (4+ Jahre).",
+    "initial_weight": 5
+  },
+  {
+    "key": "fresh_single",
+    "category": "DYNAMICS",
+    "text_en": "She is a fresh single (0-4 months).",
+    "text_de": "Sie ist ein frischer Single (0-4 Monate).",
+    "initial_weight": 4
+  },
+  {
+    "key": "many_short_relationships",
+    "category": "DYNAMICS",
+    "text_en": "She has had many short relationships in the past (each between 3-8 months).",
+    "text_de": "Sie hatte in der Vergangenheit viele kurze Beziehungen (jeweils zwischen 3-8 Monate)",
+    "initial_weight": 5
+  },
+  {
+    "key": "overreacts_to_problems",
+    "category": "BEHAVIOR",
+    "text_en": "She often overreacts and escalates problems frequently.",
+    "text_de": "Sie regiert häufig über und steigert sich häufig in Probleme.",
+    "initial_weight": 5
+  },
+  {
+    "key": "lacks_empathy",
+    "category": "VALUES",
+    "text_en": "She shows little empathy for your feelings.",
+    "text_de": "Sie zeigt nicht viel Empathie für deine Gefühle.",
+    "initial_weight": 5
+  },
+  {
+    "key": "irritated_by_differing_opinions",
+    "category": "BEHAVIOR",
+    "text_en": "She is often irritated and dismissive of differing viewpoints that don't please her.",
+    "text_de": "Sie ist oft irritiert und abweisend von unterschiedlichen Standpunkten zu Meinungen die ihr nicht gefallen.",
+    "initial_weight": 5
+  },
+  {
+    "key": "one_sided_confidant",
+    "category": "TRUST",
+    "text_en": "She uses you as a confidant but is not one for you.",
+    "text_de": "Sie benutzt dich als Vertrauter ist aber kein Vertrauter für dich.",
+    "initial_weight": 5
+  },
+  {
+    "key": "inconsistent_behavior",
+    "category": "TRUST",
+    "text_en": "She shows inconsistent behavior. Her statements do not match how she behaves towards you.",
+    "text_de": "Sie zeigt inkonsistenes Verhalten. Ihre Aussagen entsprechen nicht wie sich selbst gegenüber dir verhält.",
+    "initial_weight": 5
+  },
+  {
+    "key": "cannot_handle_negative_emotions",
+    "category": "BEHAVIOR",
+    "text_en": "She cannot handle negative emotions from others and takes them on directly.",
+    "text_de": "Sie kann nicht mit negativen Gefühlen von anderen Menschen umgehen und nimmt diese direkt auf.",
+    "initial_weight": 5
+  },
+  {
+    "key": "ignores_facts_logic",
+    "category": "VALUES",
+    "text_en": "Facts and logic play little role in forming her opinions.",
+    "text_de": "Fakten und Logik spielen für sie kaum eine Rolle in der Bildung Ihrer Meinung.",
+    "initial_weight": 5
+  },
+  {
+    "key": "in_therapy",
+    "category": "BEHAVIOR",
+    "text_en": "She is currently in psychological therapy.",
+    "text_de": "Sie befindet sich gerade in psychologischer Therapie.",
+    "initial_weight": 4
+  },
+  {
+    "key": "no_time_for_you",
+    "category": "DYNAMICS",
+    "text_en": "She often has no time for you.",
+    "text_de": "Sie hat häufig keine Zeit für dich.",
+    "initial_weight": 5
+  },
+  {
+    "key": "gossips_about_others",
+    "category": "BEHAVIOR",
+    "text_en": "She gossips strongly and frequently about other people.",
+    "text_de": "Sie lästert stark und häufig über andere Menschen.",
+    "initial_weight": 5
+  },
+  {
+    "key": "unreliable",
+    "category": "TRUST",
+    "text_en": "She is frequently unreliable.",
+    "text_de": "Sie ist häufig unzuverlässig.",
+    "initial_weight": 5
+  },
+  {
+    "key": "low_self_confidence",
+    "category": "VALUES",
+    "text_en": "She has no self-confidence.",
+    "text_de": "Sie hat kein Selbstbewusstsein.",
+    "initial_weight": 4
+  },
+  {
+    "key": "low_intelligence_education",
+    "category": "VALUES",
+    "text_en": "She has low intelligence or education.",
+    "text_de": "Sie hat eine mangelnde Intelligenz oder Bildung.",
+    "initial_weight": 5
+  },
+  {
+    "key": "poor_communication",
+    "category": "DYNAMICS",
+    "text_en": "She cannot communicate clearly.",
+    "text_de": "Sie kann nicht klar kommunizieren.",
+    "initial_weight": 5
+  }
+]
