@@ -14,6 +14,51 @@ logger = get_logger(__name__)
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
+# OAuth2 scheme for token extraction
+from fastapi.security import OAuth2PasswordBearer
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+
+
+# Dependency for protected routes
+async def get_current_user_dependency(
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    token: str = Depends(oauth2_scheme)
+) -> User:
+    """
+    Dependency to get current authenticated user from JWT token
+    """
+    from app.utils.security import decode_access_token
+    
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
+    
+    # Decode token
+    token_data = decode_access_token(token)
+    
+    if token_data is None or token_data.email is None:
+        raise credentials_exception
+    
+    # Get user from database
+    auth_service = AuthService(db)
+    user = await auth_service.get_user_by_email(token_data.email)
+    
+    if user is None:
+        raise credentials_exception
+    
+    # Return user without password_hash
+    return User(
+        _id=str(user.id),
+        email=user.email,
+        created_at=user.created_at,
+        is_verified=user.is_verified,
+        profile=user.profile,
+        credits=user.credits
+    )
+
+
 @router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
 async def register(
     user_data: UserCreate,
@@ -93,48 +138,3 @@ async def get_current_user(
     Requires valid JWT token in Authorization header
     """
     return current_user
-
-
-# Dependency for protected routes
-async def get_current_user_dependency(
-    db: AsyncIOMotorDatabase = Depends(get_database),
-    token: str = Depends(oauth2_scheme)
-) -> User:
-    """
-    Dependency to get current authenticated user from JWT token
-    """
-    from app.utils.security import decode_access_token
-    
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"}
-    )
-    
-    # Decode token
-    token_data = decode_access_token(token)
-    
-    if token_data is None or token_data.email is None:
-        raise credentials_exception
-    
-    # Get user from database
-    auth_service = AuthService(db)
-    user = await auth_service.get_user_by_email(token_data.email)
-    
-    if user is None:
-        raise credentials_exception
-    
-    # Return user without password_hash
-    return User(
-        _id=str(user.id),
-        email=user.email,
-        created_at=user.created_at,
-        is_verified=user.is_verified,
-        profile=user.profile,
-        credits=user.credits
-    )
-
-
-# OAuth2 scheme for token extraction
-from fastapi.security import OAuth2PasswordBearer
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")

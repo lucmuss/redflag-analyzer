@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     RATE_LIMIT_PER_MINUTE: int = 100
     
     # CORS
-    BACKEND_CORS_ORIGINS: str = '["http://localhost:3000","http://localhost:8080","http://localhost:5173"]'
+    BACKEND_CORS_ORIGINS: List[str] = []
     
     # Email (Optional)
     SENDGRID_API_KEY: str = ""

@@ -59,12 +59,21 @@ flutter/.flutter-plugins
 flutter/.flutter-plugins-dependencies
 flutter/.packages
 flutter/build/
+flutter/.pub-cache/
+flutter/.pub/
 flutter/ios/Pods/
 flutter/ios/.symlinks/
 flutter/android/.gradle/
 flutter/android/app/debug/
 flutter/android/app/profile/
 flutter/android/app/release/
+
+# Flutter Web - Generated Files (aber web/ Source bleibt!)
+flutter/web/flutter_service_worker.js
+flutter/web/version.json
+
+# WICHTIG: web/ Ordner selbst NICHT ignorieren!
+# web/ enthält Source-Code (index.html, manifest.json, icons)
 
 # macOS
 .DS_Store

@@ -3,7 +3,7 @@ Analysis Models
 Pydantic models for analysis data validation
 """
 from pydantic import BaseModel, Field, validator
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from datetime import datetime
 from .question import QuestionCategory
 
@@ -113,7 +113,7 @@ class AnalysisResponse(BaseModel):
     created_at: datetime = Field(..., description="Creation timestamp")
     score_total: Optional[float] = Field(None, description="Total score (only if unlocked)")
     category_scores: Optional[CategoryScores] = Field(None, description="Category scores (only if unlocked)")
-    top_red_flags: Optional[List[Dict[str, any]]] = Field(None, description="Top 5 red flags (only if unlocked)")
+    top_red_flags: Optional[List[Dict[str, Any]]] = Field(None, description="Top 5 red flags (only if unlocked)")
     
     class Config:
         populate_by_name = True
