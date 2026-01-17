@@ -91,9 +91,18 @@ if ! command -v mongod &> /dev/null; then
                 sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
                 rm libssl1.1_1.1.1f-1ubuntu2_amd64.deb
             fi
-            wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-            echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+            
+            # Moderne GPG-Schlüssel-Verwaltung (ohne deprecated apt-key)
+            log_info "Füge MongoDB GPG-Schlüssel hinzu..."
+            curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg
+            
+            log_info "Füge MongoDB Repository hinzu..."
+            echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+            
+            log_info "Aktualisiere Paketlisten..."
             sudo apt update
+            
+            log_info "Installiere MongoDB..."
             sudo apt install -y mongodb-org
             log_success "MongoDB installiert!"
             ;;

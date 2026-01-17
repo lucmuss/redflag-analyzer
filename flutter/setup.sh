@@ -96,7 +96,68 @@ log_info "Aktiviere Flutter Web Support..."
 flutter config --enable-web
 log_success "Web Support aktiviert!"
 
-# Schritt 4: Installiere Dependencies
+# Schritt 4: Erstelle l10n Verzeichnis und Dateien (falls nicht vorhanden)
+log_info "Prüfe Lokalisierungs-Setup..."
+if [ ! -d "lib/l10n" ]; then
+    log_info "Erstelle l10n Verzeichnis..."
+    mkdir -p lib/l10n
+fi
+
+if [ ! -f "lib/l10n/app_de.arb" ]; then
+    log_info "Erstelle Standard-Lokalisierungsdatei..."
+    cat > lib/l10n/app_de.arb << 'EOF'
+{
+  "@@locale": "de",
+  "appTitle": "RedFlag Analyzer",
+  "@appTitle": {
+    "description": "Der Titel der Anwendung"
+  },
+  "welcome": "Willkommen",
+  "@welcome": {
+    "description": "Begrüßungstext"
+  },
+  "startAnalysis": "Analyse starten",
+  "@startAnalysis": {
+    "description": "Button-Text zum Starten der Analyse"
+  },
+  "questions": "Fragen",
+  "@questions": {
+    "description": "Fragen-Titel"
+  },
+  "results": "Ergebnisse",
+  "@results": {
+    "description": "Ergebnisse-Titel"
+  },
+  "yes": "Ja",
+  "@yes": {
+    "description": "Ja-Antwort"
+  },
+  "no": "Nein",
+  "@no": {
+    "description": "Nein-Antwort"
+  },
+  "next": "Weiter",
+  "@next": {
+    "description": "Weiter-Button"
+  },
+  "back": "Zurück",
+  "@back": {
+    "description": "Zurück-Button"
+  },
+  "submit": "Absenden",
+  "@submit": {
+    "description": "Absenden-Button"
+  },
+  "cancel": "Abbrechen",
+  "@cancel": {
+    "description": "Abbrechen-Button"
+  }
+}
+EOF
+    log_success "Lokalisierungsdatei erstellt!"
+fi
+
+# Schritt 5: Installiere Dependencies
 log_info "Installiere Flutter Dependencies..."
 if [ -f "pubspec.yaml" ]; then
     flutter pub get
