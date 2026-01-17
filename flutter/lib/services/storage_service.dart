@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Local Storage Service
 /// Handles persistent storage using SharedPreferences and Secure Storage
@@ -12,7 +13,12 @@ class StorageService {
 
   final Logger _logger = Logger();
   late SharedPreferences _prefs;
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    webOptions: WebOptions(
+      dbName: 'redflag_storage',
+      publicKey: 'redflag_public_key',
+    ),
+  );
 
   // Storage Keys
   static const String _keyAccessToken = 'access_token';

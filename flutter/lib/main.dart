@@ -12,9 +12,14 @@ import 'screens/home_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize storage
+  // Initialize storage with error handling
   final storageService = StorageService();
-  await storageService.init();
+  try {
+    await storageService.init();
+  } catch (e) {
+    debugPrint('Storage initialization error: $e');
+    // Continue anyway - app can work without storage
+  }
   
   runApp(RedFlagAnalyzerApp(storageService: storageService));
 }

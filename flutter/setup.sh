@@ -36,51 +36,102 @@ echo "║   RedFlag Analyzer Flutter Setup (WSL Ubuntu)            ║"
 echo "╚══════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
+# Schritt 0: Prüfe und installiere benötigte Tools
+log_info "Prüfe benötigte System-Tools..."
+
+# Prüfe unzip
+if ! command -v unzip &> /dev/null; then
+    log_warning "unzip ist nicht installiert (wird für Flutter Upgrade benötigt)"
+    read -p "Möchtest du unzip installieren? (j/n): " install_unzip
+    if [ "$install_unzip" = "j" ] || [ "$install_unzip" = "J" ]; then
+        log_info "Installiere unzip..."
+        sudo apt update
+        sudo apt install -y unzip
+        log_success "unzip installiert!"
+    else
+        log_warning "unzip nicht installiert - Flutter Upgrade wird nicht funktionieren"
+    fi
+else
+    log_success "unzip gefunden!"
+fi
+
+# Prüfe curl und wget
+if ! command -v curl &> /dev/null; then
+    log_warning "curl ist nicht installiert"
+    sudo apt install -y curl
+fi
+
+if ! command -v wget &> /dev/null; then
+    log_warning "wget ist nicht installiert"
+    sudo apt install -y wget
+fi
+
 # Schritt 1: Prüfe Flutter Installation
 log_info "Prüfe Flutter Installation..."
 if ! command -v flutter &> /dev/null; then
-    log_warning "Flutter ist nicht installiert!"
-    echo ""
-    log_info "Snap funktioniert nicht in WSL - verwende manuelle Installation"
-    read -p "Möchtest du Flutter jetzt installieren? (j/n): " install_flutter
-    
-    if [ "$install_flutter" = "j" ] || [ "$install_flutter" = "J" ]; then
-        log_info "Installiere Flutter manuell..."
-        
-        # Save current directory
-        FLUTTER_APP_DIR=$(pwd)
-        
-        # Download Flutter SDK
-        cd ~
-        log_info "Lade Flutter SDK herunter (~700MB)..."
-        wget -q --show-progress https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz
-        
-        # Extract
-        log_info "Entpacke Flutter..."
-        tar xf flutter_linux_3.16.0-stable.tar.xz
-        rm flutter_linux_3.16.0-stable.tar.xz
-        
-        # Add to PATH
+    # Flutter nicht im PATH - prüfe ob es im Home-Verzeichnis existiert
+    if [ -d "$HOME/flutter" ]; then
+        log_warning "Flutter gefunden in ~/flutter, aber nicht im PATH!"
         log_info "Füge Flutter zu PATH hinzu..."
-        if ! grep -q 'flutter/bin' ~/.bashrc; then
-            echo 'export PATH="$HOME/flutter/bin:$PATH"' >> ~/.bashrc
-        fi
+        
+        # Add to PATH for current session
         export PATH="$HOME/flutter/bin:$PATH"
         
-        # Run flutter doctor
-        log_info "Initialisiere Flutter..."
-        flutter doctor
+        # Add to .bashrc if not already there
+        if ! grep -q 'flutter/bin' ~/.bashrc; then
+            echo 'export PATH="$HOME/flutter/bin:$PATH"' >> ~/.bashrc
+            log_success "Flutter zu ~/.bashrc hinzugefügt!"
+            log_info "Führe 'source ~/.bashrc' aus oder starte das Terminal neu, damit Flutter permanent verfügbar ist."
+        fi
         
-        log_success "Flutter installiert in ~/flutter!"
-        
-        # Return to app directory
-        cd "$FLUTTER_APP_DIR"
+        FLUTTER_VERSION=$(flutter --version | head -n 1)
+        log_success "Flutter gefunden: $FLUTTER_VERSION"
     else
-        log_error "Flutter wird benötigt! Installiere es manuell:"
-        echo "  wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz"
-        echo "  tar xf flutter_linux_3.16.0-stable.tar.xz"
-        echo "  echo 'export PATH=\"\$HOME/flutter/bin:\$PATH\"' >> ~/.bashrc"
-        exit 1
+        # Flutter existiert nicht - Installation nötig
+        log_warning "Flutter ist nicht installiert!"
+        echo ""
+        log_info "Snap funktioniert nicht in WSL - verwende manuelle Installation"
+        read -p "Möchtest du Flutter jetzt installieren? (j/n): " install_flutter
+        
+        if [ "$install_flutter" = "j" ] || [ "$install_flutter" = "J" ]; then
+            log_info "Installiere Flutter manuell..."
+            
+            # Save current directory
+            FLUTTER_APP_DIR=$(pwd)
+            
+            # Download Flutter SDK
+            cd ~
+            log_info "Lade Flutter SDK herunter (~700MB)..."
+            wget -q --show-progress https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz
+            
+            # Extract
+            log_info "Entpacke Flutter..."
+            tar xf flutter_linux_3.16.0-stable.tar.xz
+            rm flutter_linux_3.16.0-stable.tar.xz
+            
+            # Add to PATH
+            log_info "Füge Flutter zu PATH hinzu..."
+            if ! grep -q 'flutter/bin' ~/.bashrc; then
+                echo 'export PATH="$HOME/flutter/bin:$PATH"' >> ~/.bashrc
+            fi
+            export PATH="$HOME/flutter/bin:$PATH"
+            
+            # Run flutter doctor
+            log_info "Initialisiere Flutter..."
+            flutter doctor
+            
+            log_success "Flutter installiert in ~/flutter!"
+            log_info "Führe 'source ~/.bashrc' aus oder starte das Terminal neu, damit Flutter permanent verfügbar ist."
+            
+            # Return to app directory
+            cd "$FLUTTER_APP_DIR"
+        else
+            log_error "Flutter wird benötigt! Installiere es manuell:"
+            echo "  wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz"
+            echo "  tar xf flutter_linux_3.16.0-stable.tar.xz"
+            echo "  echo 'export PATH=\"\$HOME/flutter/bin:\$PATH\"' >> ~/.bashrc"
+            exit 1
+        fi
     fi
 else
     FLUTTER_VERSION=$(flutter --version | head -n 1)
@@ -90,6 +141,37 @@ fi
 # Schritt 2: Flutter Doctor
 log_info "Prüfe Flutter Umgebung..."
 flutter doctor
+
+# Schritt 2.5: Optional Flutter Upgrade
+echo ""
+log_info "Möchtest du Flutter auf die neueste Version upgraden? (j/n)"
+log_warning "Hinweis: Das kann einige Minuten dauern und erfordert unzip"
+read -p "> " upgrade_flutter
+
+if [ "$upgrade_flutter" = "j" ] || [ "$upgrade_flutter" = "J" ]; then
+    # Prüfe ob unzip verfügbar ist
+    if ! command -v unzip &> /dev/null; then
+        log_error "unzip ist nicht installiert!"
+        log_info "Installiere unzip zuerst mit: sudo apt install unzip"
+        read -p "Trotzdem fortfahren mit Flutter Upgrade? (j/n): " continue_upgrade
+        if [ "$continue_upgrade" != "j" ] && [ "$continue_upgrade" != "J" ]; then
+            log_warning "Flutter Upgrade übersprungen"
+        else
+            log_info "Upgrading Flutter..."
+            flutter upgrade || log_warning "Flutter Upgrade fehlgeschlagen - fahre trotzdem fort"
+        fi
+    else
+        log_info "Upgrading Flutter..."
+        flutter upgrade
+        log_success "Flutter erfolgreich upgegraded!"
+        
+        # Flutter doctor erneut ausführen
+        log_info "Prüfe Flutter nach Upgrade..."
+        flutter doctor
+    fi
+else
+    log_info "Flutter Upgrade übersprungen"
+fi
 
 # Schritt 3: Web Support aktivieren
 log_info "Aktiviere Flutter Web Support..."
