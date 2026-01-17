@@ -44,16 +44,12 @@
 <body>
   <script>
     window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
+      // Updated to use Flutter.loader.load (new API)
+      // See https://docs.flutter.dev/platform-integration/web/initialization
+      _flutter.loader.load({
+        serviceWorkerSettings: {
           serviceWorkerVersion: serviceWorkerVersion,
         },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          });
-        }
       });
     });
   </script>

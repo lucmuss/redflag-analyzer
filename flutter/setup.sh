@@ -3,7 +3,7 @@
 # RedFlag Analyzer Flutter Setup Script für WSL Ubuntu
 # Dieses Script automatisiert das komplette Flutter-Setup
 
-set -e  # Exit on error
+# Hinweis: set -e wird NICHT verwendet, damit wir Fehler manuell behandeln können
 
 # Farben für Output
 RED='\033[0;31m'
@@ -64,6 +64,48 @@ fi
 if ! command -v wget &> /dev/null; then
     log_warning "wget ist nicht installiert"
     sudo apt install -y wget
+fi
+
+# Schritt 0.5: Installiere Linux toolchain für Flutter Desktop Support
+log_info "Prüfe Linux toolchain für Flutter Desktop Development..."
+
+MISSING_TOOLS=()
+if ! command -v clang++ &> /dev/null; then
+    MISSING_TOOLS+=("clang")
+fi
+if ! command -v cmake &> /dev/null; then
+    MISSING_TOOLS+=("cmake")
+fi
+if ! command -v ninja &> /dev/null; then
+    MISSING_TOOLS+=("ninja-build")
+fi
+if ! command -v pkg-config &> /dev/null; then
+    MISSING_TOOLS+=("pkg-config")
+fi
+
+if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
+    log_warning "Fehlende Linux development tools: ${MISSING_TOOLS[*]}"
+    read -p "Möchtest du die Linux toolchain installieren? (j/n): " install_toolchain
+    if [ "$install_toolchain" = "j" ] || [ "$install_toolchain" = "J" ]; then
+        log_info "Installiere Linux toolchain..."
+        sudo apt update
+        sudo apt install -y clang cmake ninja-build pkg-config libgtk-3-dev mesa-utils
+        log_success "Linux toolchain installiert!"
+    else
+        log_warning "Linux toolchain nicht installiert - Linux Desktop Support wird nicht funktionieren"
+    fi
+else
+    log_success "Linux toolchain vollständig installiert!"
+    # Prüfe auch GTK 3.0 und mesa-utils
+    if ! dpkg -l | grep -q libgtk-3-dev; then
+        log_warning "GTK 3.0 development libraries fehlen"
+        read -p "Möchtest du GTK 3.0 libraries installieren? (j/n): " install_gtk
+        if [ "$install_gtk" = "j" ] || [ "$install_gtk" = "J" ]; then
+            sudo apt update
+            sudo apt install -y libgtk-3-dev mesa-utils
+            log_success "GTK 3.0 libraries installiert!"
+        fi
+    fi
 fi
 
 # Schritt 1: Prüfe Flutter Installation
@@ -142,7 +184,61 @@ fi
 log_info "Prüfe Flutter Umgebung..."
 flutter doctor
 
-# Schritt 2.5: Optional Flutter Upgrade
+# Schritt 2.5: Optional Android SDK Installation
+echo ""
+log_info "Möchtest du Android SDK installieren? (Nur nötig für Android-Entwicklung, NICHT für Web)"
+log_warning "Hinweis: Wird nur für Android-Apps benötigt. Für Web-Entwicklung NICHT erforderlich."
+read -p "Android SDK installieren? (j/n): " install_android
+
+if [ "$install_android" = "j" ] || [ "$install_android" = "J" ]; then
+    log_info "Installiere Android Command Line Tools..."
+    
+    # Erstelle Android SDK Verzeichnis
+    mkdir -p "$HOME/Android/Sdk"
+    cd "$HOME/Android/Sdk"
+    
+    # Download Android Command Line Tools
+    log_info "Lade Android Command Line Tools herunter..."
+    wget -q --show-progress https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+    
+    # Extract
+    log_info "Entpacke Android Tools..."
+    unzip -q commandlinetools-linux-9477386_latest.zip
+    mkdir -p cmdline-tools/latest
+    mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
+    rm commandlinetools-linux-9477386_latest.zip
+    
+    # Setup environment variables
+    export ANDROID_HOME="$HOME/Android/Sdk"
+    export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+    
+    # Add to .bashrc if not already there
+    if ! grep -q 'ANDROID_HOME' ~/.bashrc; then
+        log_info "Füge Android SDK zu ~/.bashrc hinzu..."
+        echo '' >> ~/.bashrc
+        echo '# Android SDK' >> ~/.bashrc
+        echo 'export ANDROID_HOME="$HOME/Android/Sdk"' >> ~/.bashrc
+        echo 'export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"' >> ~/.bashrc
+    fi
+    
+    # Accept licenses and install platform-tools
+    log_info "Installiere Android SDK Platform Tools..."
+    yes | sdkmanager --licenses > /dev/null 2>&1 || true
+    sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" > /dev/null
+    
+    # Configure Flutter to use Android SDK
+    flutter config --android-sdk "$ANDROID_HOME"
+    
+    log_success "Android SDK installiert in $ANDROID_HOME"
+    log_info "Starte das Terminal neu oder führe 'source ~/.bashrc' aus"
+    
+    # Zurück zum Flutter-Verzeichnis
+    cd - > /dev/null
+else
+    log_info "Android SDK Installation übersprungen (nur für Web-Entwicklung)"
+fi
+
+# Schritt 2.6: Optional Flutter Upgrade
 echo ""
 log_info "Möchtest du Flutter auf die neueste Version upgraden? (j/n)"
 log_warning "Hinweis: Das kann einige Minuten dauern und erfordert unzip"
@@ -242,8 +338,31 @@ fi
 # Schritt 5: Installiere Dependencies
 log_info "Installiere Flutter Dependencies..."
 if [ -f "pubspec.yaml" ]; then
-    flutter pub get
-    log_success "Dependencies installiert!"
+    # Versuche flutter pub get
+    if ! flutter pub get 2>&1 | tee /tmp/flutter_pub_get.log; then
+        # Prüfe ob es ein intl oder dependency Konflikt ist
+        if grep -q "version solving failed" /tmp/flutter_pub_get.log || grep -q "intl" /tmp/flutter_pub_get.log; then
+            log_warning "Dependency-Konflikt erkannt (vermutlich intl-Version)!"
+            log_info "Versuche Major-Version-Upgrade der Dependencies..."
+            
+            if flutter pub upgrade --major-versions; then
+                log_success "Dependencies erfolgreich mit Major-Upgrade installiert!"
+            else
+                log_error "Konnte Dependencies nicht installieren!"
+                log_info "Bitte führe manuell aus: flutter pub upgrade --major-versions"
+                exit 1
+            fi
+        else
+            log_error "Fehler beim Installieren der Dependencies!"
+            cat /tmp/flutter_pub_get.log
+            exit 1
+        fi
+    else
+        log_success "Dependencies installiert!"
+    fi
+    
+    # Cleanup
+    rm -f /tmp/flutter_pub_get.log
 else
     log_error "pubspec.yaml nicht gefunden!"
     exit 1
@@ -291,8 +410,8 @@ echo -e "╚══════════════════════�
 echo ""
 log_info "Flutter App starten:"
 echo -e "  ${YELLOW}flutter run -d chrome${NC}"
-echo -e "  ${BLUE}# Oder spezifischer:${NC}"
-echo -e "  ${YELLOW}flutter run -d chrome --web-renderer html${NC}"
+echo -e "  ${BLUE}# Mit Backend URL:${NC}"
+echo -e "  ${YELLOW}flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:8000${NC}"
 echo ""
 log_info "Nützliche Befehle:"
 echo -e "  ${YELLOW}flutter devices${NC}                 # Verfügbare Geräte"
@@ -308,8 +427,6 @@ if [ "$start_app" = "j" ] || [ "$start_app" = "J" ]; then
     echo -e "${YELLOW}Drücke 'q' zum Beenden${NC}"
     echo ""
     
-    # Setze Backend URL via dart-define
-    flutter run -d chrome \
-        --web-renderer html \
-        --dart-define=API_BASE_URL=http://localhost:8000
+    # Starte Flutter Web App (--web-renderer wurde in Flutter 3.38.7 entfernt)
+    flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:8000
 fi
