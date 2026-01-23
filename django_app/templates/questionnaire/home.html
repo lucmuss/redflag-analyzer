@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}RedFlag Analyzer - Startseite{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Hero Section -->
+    <div class="text-center">
+        <h1 class="text-5xl font-bold text-gray-900 mb-4">
+            🚩 RedFlag Analyzer
+        </h1>
+        <p class="text-xl text-gray-600 mb-8">
+            Analysiere Red Flags in deiner Beziehung mit wissenschaftlich fundierter Methodik
+        </p>
+        
+        <div class="flex justify-center gap-4">
+            {% if user.is_authenticated %}
+                <a href="{% url 'questionnaire:questionnaire' %}" 
+                   class="bg-red-flag hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">
+                    Jetzt Fragebogen starten
+                </a>
+                <a href="{% url 'analyses:list' %}" 
+                   class="bg-white hover:bg-gray-100 text-gray-800 font-bold py-3 px-8 rounded-lg border border-gray-300 shadow transition">
+                    Meine Analysen
+                </a>
+            {% else %}
+                <a href="{% url 'account_signup' %}" 
+                   class="bg-red-flag hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">
+                    Kostenlos registrieren
+                </a>
+                <a href="{% url 'account_login' %}" 
+                   class="bg-white hover:bg-gray-100 text-gray-800 font-bold py-3 px-8 rounded-lg border border-gray-300 shadow transition">
+                    Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="mt-20 grid md:grid-cols-3 gap-8">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="text-4xl mb-4">📊</div>
+            <h3 class="text-xl font-bold mb-2">{{ total_questions }} Fragen</h3>
+            <p class="text-gray-600">
+                Umfassender Fragebogen in 4 Kategorien: Trust, Behavior, Values & Dynamics
+            </p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="text-4xl mb-4">🎯</div>
+            <h3 class="text-xl font-bold mb-2">Präzise Analyse</h3>
+            <p class="text-gray-600">
+                Gewichtete Score-Berechnung mit Category-Breakdown und Top Red Flags
+            </p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="text-4xl mb-4">🔒</div>
+            <h3 class="text-xl font-bold mb-2">Datenschutz</h3>
+            <p class="text-gray-600">
+                Deine Daten bleiben privat. PostgreSQL-verschlüsselt und DSGVO-konform
+            </p>
+        </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="mt-20">
+        <h2 class="text-3xl font-bold text-center mb-12">So funktioniert's</h2>
+        <div class="grid md:grid-cols-4 gap-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-flag text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">1</div>
+                <h4 class="font-bold mb-2">Registrieren</h4>
+                <p class="text-sm text-gray-600">Erstelle einen kostenlosen Account</p>
+            </div>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-flag text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">2</div>
+                <h4 class="font-bold mb-2">Fragebogen</h4>
+                <p class="text-sm text-gray-600">Beantworte die Fragen ehrlich</p>
+            </div>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-flag text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">3</div>
+                <h4 class="font-bold mb-2">Analysieren</h4>
+                <p class="text-sm text-gray-600">Wir berechnen deinen Score</p>
+            </div>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-flag text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">4</div>
+                <h4 class="font-bold mb-2">Ergebnisse</h4>
+                <p class="text-sm text-gray-600">Erhalte detaillierte Insights</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

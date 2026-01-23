@@ -1,394 +1,276 @@
-# RedFlag Analyzer
+# 🚩 RedFlag Analyzer
 
-> Cross-Platform App (iOS/Android/Web) für objektive Beziehungsanalyse
+Ein **Django-basiertes Web-Tool** zur Analyse von Red Flags in Beziehungen mit wissenschaftlich fundierter Methodik.
 
-[![Backend Tests](https://img.shields.io/badge/backend%20tests-15%2F15%20passing-brightgreen)]()
-[![Flutter Tests](https://img.shields.io/badge/flutter%20tests-7%2F7%20passing-brightgreen)]()
-[![Production Ready](https://img.shields.io/badge/status-production%20ready-success)]()
+## 🎯 Tech Stack
 
-## 📊 Projekt-Übersicht
+- **Backend:** Django 5.0 + PostgreSQL
+- **Frontend:** HTMX + Tailwind CSS (Server-Side Rendering)
+- **Deployment:** Vercel (Serverless)
+- **Plattform:** Progressive Web App (PWA)
 
-**RedFlag Analyzer** ist eine vollständig funktionsfähige Full-Stack App zur Analyse von Beziehungen basierend auf 65 wissenschaftlich fundierten Fragen.
+## 🚀 Schnellstart
 
-### Tech-Stack:
-- **Backend:** Python FastAPI + MongoDB
-- **Frontend:** Flutter (Web + Mobile)
-- **Charts:** Syncfusion Gauges + fl_chart
-- **PDF:** Professional Reports
-- **I18n:** DE/EN Support
+### Lokale Entwicklung
 
-### Status:
-✅ **100% Produktionsbereit** - Alle Features implementiert & getestet!
+Vollständige Anleitung siehe: **[SETUP_LOKAL.md](SETUP_LOKAL.md)**
 
----
-
-## 🚀 QUICK START (Neuer Computer)
-
-### Voraussetzungen:
-- Ubuntu/WSL2 (Linux)
-- Git installiert
-- Internet-Verbindung
-
-### Setup in 3 Schritten:
-
-#### 1. Repository klonen:
+**Kurzversion:**
 ```bash
-git clone https://github.com/YOUR_USERNAME/redflag-analyzer.git
-cd redflag-analyzer
+# 1. In Django-App wechseln
+cd django_app
+
+# 2. Virtuelle Umgebung erstellen & aktivieren
+python3 -m venv venv
+source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate   # Windows
+
+# 3. Dependencies installieren
+pip install -r requirements.txt
+
+# 4. PostgreSQL Datenbank erstellen
+createdb redflag_db
+
+# 5. .env konfigurieren
+cp .env.example .env
+# Bearbeite .env und setze DATABASE_URL und SECRET_KEY
+
+# 6. Datenbank initialisieren
+python manage.py migrate
+python manage.py seed_questions
+python manage.py createsuperuser
+
+# 7. Server starten
+python manage.py runserver
 ```
 
-#### 2. Backend Setup:
-```bash
-cd backend
-chmod +x setup.sh
-./setup.sh
-```
+Öffne: **http://localhost:8000**
 
-Das Script installiert automatisch:
-- Python 3.10+
-- MongoDB
-- Python Dependencies
-- Seeded die Datenbank mit 65 Fragen
-
-#### 3. Flutter Setup:
-```bash
-cd ../flutter
-chmod +x setup.sh
-./setup.sh
-```
-
-Das Script installiert automatisch:
-- Flutter SDK
-- Chrome (für Web Dev)
-- Flutter Dependencies
-- Web Support
-
-### App starten:
-
-**Terminal 1 - Backend:**
-```bash
-cd backend
-source venv/bin/activate
-uvicorn app.main:app --reload
-```
-✅ Backend läuft auf http://localhost:8000
-
-**Terminal 2 - Flutter:**
-```bash
-cd flutter
-export PATH="$HOME/flutter/bin:$PATH"
-flutter run -d chrome
-```
-✅ App öffnet in Chrome
-
----
-
-## 📖 Dokumentation
-
-### Wichtige Dateien:
-- 📄 `DEVELOPMENT_STATUS.md` - Projekt-Status & Features
-- 📄 `backend/SETUP-WSL.md` - Backend Details
-- 📄 `flutter/SETUP-WEB.md` - Flutter Details
-- 📄 `.github/workflows/flutter-ci.yml` - CI/CD Pipeline
-
-### API Dokumentation:
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
-
----
-
-## 🧪 Tests ausführen
-
-### Backend Tests:
-```bash
-cd backend
-pytest tests/ -v
-```
-✅ 15/15 Tests
-
-### Flutter Tests:
-```bash
-cd flutter
-flutter test
-```
-✅ 7/7 Tests (3 Sekunden)
-
-**Total: 22/22 Tests passing** ✅
-
----
-
-## 🎯 Features
-
-### ✅ Core Features:
-- **Authentication** - JWT-based Login/Register
-- **65 Questions** - Scientific Questionnaire
-- **Score Calculation** - Weighted Average Algorithm
-- **Credit System** - Freemium Model (1 free credit)
-- **Profile Management** - User Settings
-- **Offline Support** - Local Storage
-
-### ✅ Advanced Features:
-- **Charts** - Tachometer Gauge + Radar Chart
-- **PDF Export** - Professional Reports
-- **Multi-Language** - DE/EN Support (I18n)
-- **In-App Purchase** - IAP Service ready
-- **Push Notifications** - Service prepared
-- **CI/CD** - GitHub Actions
-
-### ✅ Quality:
-- **Tests** - 22 Unit/Widget Tests
-- **Documentation** - Comprehensive
-- **Error Handling** - Robust
-- **Type Safety** - Full
-- **Best Practices** - Clean Architecture
-
----
-
-## 📂 Projekt-Struktur
+## 📁 Projektstruktur
 
 ```
 redflag-analyzer/
-├── backend/                 # FastAPI Backend
-│   ├── app/
-│   │   ├── models/         # Pydantic Models
-│   │   ├── routes/         # API Endpoints
-│   │   ├── services/       # Business Logic
-│   │   └── utils/          # Security, Logger
-│   ├── tests/              # 15 Tests
-│   ├── scripts/            # seed_db.py
-│   ├── setup.sh            # Auto-Setup Script
-│   └── requirements.txt    # Dependencies
-│
-├── flutter/                 # Flutter App
-│   ├── lib/
-│   │   ├── config/         # AppConfig
-│   │   ├── models/         # Data Models
-│   │   ├── providers/      # State Management
-│   │   ├── screens/        # UI Screens
-│   │   ├── services/       # API, Storage, PDF, IAP
-│   │   ├── widgets/        # Reusable Widgets
-│   │   └── l10n/           # Translations (DE/EN)
-│   ├── test/               # 7 Tests
-│   ├── web/                # Web Support
-│   ├── setup.sh            # Auto-Setup Script
-│   └── pubspec.yaml        # Dependencies
-│
-├── .github/workflows/       # CI/CD
-├── .gitignore              # Git exclusions
-├── README.md               # This file
-└── DEVELOPMENT_STATUS.md   # Detailed Status
+├── django_app/              # Django-Anwendung
+│   ├── accounts/            # User Management
+│   ├── questionnaire/       # Fragebogen & Questions
+│   ├── analyses/            # Score-Berechnung & Ergebnisse
+│   ├── templates/           # HTML Templates (HTMX + Tailwind)
+│   ├── static/              # Static Files
+│   ├── redflag_project/     # Django Settings
+│   ├── manage.py
+│   ├── requirements.txt
+│   ├── vercel.json          # Vercel Deployment Config
+│   └── README.md            # Detaillierte Dokumentation
+├── seed_data/               # Seed-Daten (Questions JSON)
+├── SETUP_LOKAL.md           # 📖 Lokales Setup Tutorial
+└── README.md                # Diese Datei
 ```
 
----
+## ✨ Features
 
-## 🔑 Konfiguration
+### ✅ Implementiert
 
-### Backend (.env):
+- 🔐 **User Authentication** (Django Allauth)
+  - Email-basierte Registrierung & Login
+  - Passwort-Hashing mit Argon2
+  
+- 📊 **Fragebogen-System**
+  - 65 Fragen in 4 Kategorien (Trust, Behavior, Values, Dynamics)
+  - HTMX-basiertes interaktives Formular
+  - Mobile-First Design (Tailwind CSS)
+
+- 📈 **Score-Berechnung**
+  - Gewichtete Algorithmus (Service Layer)
+  - Gesamt-Score (0-10) + Category Scores
+  - Top 5 Red Flags basierend auf Impact
+
+- 💳 **Credit-System**
+  - User erhält 1 Credit bei Registrierung
+  - Analyse-Unlock für 1 Credit
+  - Admin kann Credits verwalten
+
+- 🎨 **Progressive Web App (PWA)**
+  - Installierbar auf Smartphones
+  - Manifest & Service Worker
+
+- 🛡️ **Security**
+  - CSRF Protection
+  - SQL Injection Prevention (Django ORM)
+  - HTTPS Redirect in Production
+  - HSTS Headers
+
+### 🔜 Geplant
+
+- 💰 Stripe Payment Integration
+- 📧 Email Verification
+- 🌐 Multi-Language Support (DE/EN)
+- 📱 Native Mobile App (optional)
+- 📊 Advanced Analytics Dashboard
+
+## 🏗️ Architektur
+
+### HTMX statt React/Flutter
+
+**Traditionell (React/Flutter):**
+```
+Client State → API Call → JSON → State Update → Component Rebuild
+```
+
+**Mit HTMX:**
+```
+User Action → Server Logic → HTML Fragment → DOM Swap
+```
+
+**Vorteile:**
+- ✅ Keine komplexe Client-Side State Management
+- ✅ Server kontrolliert UI-Logik (sicherer)
+- ✅ SEO-freundlich (Server-Side Rendering)
+- ✅ Weniger Code, weniger Bugs
+- ✅ Progressive Enhancement
+
+### Fat Models, Thin Views
+
+```python
+# Business Logic im Model
+class User(AbstractUser):
+    def consume_credit(self) -> bool:
+        if self.credits > 0:
+            self.credits -= 1
+            self.save()
+            return True
+        return False
+
+# View = nur Koordination
+class UnlockAnalysisView(View):
+    def post(self, request, pk):
+        analysis = get_object_or_404(Analysis, pk=pk, user=request.user)
+        success = analysis.unlock()  # ← Business Logic
+        return render(request, 'partial.html', {...})
+```
+
+### PostgreSQL Optimierung
+
+- **Foreign Keys** statt JSON-Referenzen
+- **Indizes** auf häufig abgefragte Felder
+- **select_related/prefetch_related** für Performance
+- **JSONField** für flexible Daten (responses)
+
+## 🗄️ Datenbank-Schema
+
+```sql
+-- Users
+users (id, email, password_hash, credits, is_verified, created_at)
+
+-- Questions
+questions (id, key, category, default_weight, text_de, text_en, is_active)
+
+-- Analyses
+analyses (id, user_id FK, is_unlocked, responses JSONB, score_total, created_at)
+
+-- Category Scores
+category_scores (id, analysis_id FK, category, score)
+```
+
+## 🚢 Deployment
+
+### Vercel (Empfohlen)
+
+1. Vercel Account erstellen
+2. PostgreSQL Datenbank (Vercel Postgres/Neon/Supabase)
+3. Umgebungsvariablen in Vercel Dashboard setzen
+4. Deploy: `vercel deploy --prod`
+
+Detaillierte Anleitung: `django_app/README.md`
+
+### Alternativen
+
+- **Railway:** https://railway.app
+- **Heroku:** https://heroku.com
+- **DigitalOcean:** App Platform
+
+## 📊 Admin-Interface
+
+Django Admin: **http://localhost:8000/admin**
+
+Features:
+- User-Management (Credits, Verification)
+- Question-Management (Gewichtung, Aktivierung)
+- Analysis-Übersicht
+
+## 📝 Management Commands
+
 ```bash
-SECRET_KEY=<auto-generated>
-MONGODB_URL=mongodb://localhost:27017
-DATABASE_NAME=redflag_analyzer
-BACKEND_CORS_ORIGINS=["http://localhost:3000"]
+# Questions seeden
+python manage.py seed_questions
+
+# Superuser erstellen
+python manage.py createsuperuser
+
+# Migrationen
+python manage.py makemigrations
+python manage.py migrate
+
+# Static Files sammeln (Production)
+python manage.py collectstatic
 ```
 
-### Flutter (lib/config/app_config.dart):
-```dart
-static const String apiBaseUrl = 'http://localhost:8000';
-```
+## 🧪 Testing
 
----
-
-## 🐛 Troubleshooting
-
-### Backend Issues:
-
-**Problem:** MongoDB startet nicht
 ```bash
-sudo systemctl start mongod
-sudo systemctl status mongod
+# Alle Tests ausführen
+python manage.py test
+
+# Mit Coverage
+pip install coverage
+coverage run --source='.' manage.py test
+coverage report
 ```
 
-**Problem:** libssl1.1 fehlt (Ubuntu 22.04+)
-```bash
-# Setup script handled dies automatisch
-# Fallback:
-wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
-sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
-```
+## 📚 Dokumentation
 
-**Problem:** Port 8000 belegt
-```bash
-lsof -ti:8000 | xargs kill -9
-```
+- **Lokales Setup:** [SETUP_LOKAL.md](SETUP_LOKAL.md) ⭐
+- **Django App Details:** [django_app/README.md](django_app/README.md)
+- **Django Docs:** https://docs.djangoproject.com/
+- **HTMX Docs:** https://htmx.org/docs/
+- **Tailwind CSS:** https://tailwindcss.com/docs
 
-### Flutter Issues:
+## 🔒 Security
 
-**Problem:** Flutter nicht gefunden
-```bash
-export PATH="$HOME/flutter/bin:$PATH"
-echo 'export PATH="$HOME/flutter/bin:$PATH"' >> ~/.bashrc
-```
-
-**Problem:** Chrome startet nicht
-```bash
-# WSL2:
-export CHROME_EXECUTABLE="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
-```
-
-**Problem:** Dependencies veraltet
-```bash
-flutter pub get
-flutter pub upgrade  # Optional
-```
-
----
-
-## 🚀 Deployment
-
-### Backend (Render.com):
-1. Fork Repository
-2. Connect to Render.com
-3. Create Web Service
-4. Build Command: `pip install -r requirements.txt`
-5. Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-
-### Flutter Web (Vercel):
-1. Build: `flutter build web --release`
-2. Deploy `flutter/build/web/` to Vercel
-3. Configure Routes in `vercel.json`
-
-### CI/CD:
-- GitHub Actions konfiguriert
-- Läuft automatisch bei Push
-- Build: Web + Android
-
----
-
-## 📊 Code-Statistik
-
-```
-Backend:        ~1,200 LOC
-Flutter Core:   ~2,870 LOC
-Advanced:       ~  700 LOC
-Tests:          ~  200 LOC
-────────────────────────────
-TOTAL:          ~4,970 LOC
-
-Dateien:        28
-Tests:          22 (All passing)
-Sprachen:       DE/EN
-```
-
----
+- Argon2 Password Hashing
+- CSRF Protection
+- SQL Injection Prevention (Django ORM)
+- XSS Protection in Templates
+- HTTPS Redirect (Production)
+- HSTS Headers
+- Session Security
 
 ## 🤝 Contributing
 
-1. Fork the project
-2. Create feature branch (`git checkout -b feature/amazing`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing`)
-5. Open Pull Request
+1. Fork das Repository
+2. Feature Branch erstellen (`git checkout -b feature/AmazingFeature`)
+3. Änderungen committen (`git commit -m 'Add some AmazingFeature'`)
+4. Branch pushen (`git push origin feature/AmazingFeature`)
+5. Pull Request öffnen
+
+## 📄 License
+
+Dieses Projekt ist privat. Alle Rechte vorbehalten.
+
+## 👨‍💻 Entwickler
+
+**Lucas Mussmann**
+- GitHub: [@lucmuss](https://github.com/lucmuss)
 
 ---
 
-## 📝 License
+## 🛠️ Development Status
 
-This project is licensed under the MIT License.
+**Status:** ✅ Production Ready (MVP)
 
----
+**Version:** 1.0.0
 
-## 👨‍💻 Development
-
-### Prerequisites auf neuem Computer:
-- Ubuntu/WSL2 (empfohlen)
-- Git
-- Internet für Downloads
-
-### Erste Schritte:
-1. Repository klonen
-2. `cd backend && ./setup.sh`
-3. `cd flutter && ./setup.sh`
-4. Backend starten (Terminal 1)
-5. Flutter starten (Terminal 2)
-6. Tests ausführen
-
-### Wichtige Commands:
-
-**Backend:**
-```bash
-# Start
-uvicorn app.main:app --reload
-
-# Tests
-pytest tests/ -v
-
-# Seed DB
-python -m scripts.seed_db
-
-# Dependencies
-pip install -r requirements.txt
-```
-
-**Flutter:**
-```bash
-# Start
-flutter run -d chrome
-
-# Tests  
-flutter test
-
-# Build Web
-flutter build web --release
-
-# Dependencies
-flutter pub get
-```
+**Letzte Aktualisierung:** Januar 2026
 
 ---
 
-## 🎯 Roadmap
-
-### ✅ Completed:
-- Backend API (FastAPI + MongoDB)
-- Flutter MVP (All screens)
-- Charts (Gauge + Radar)
-- PDF Export
-- I18n (DE/EN)
-- Tests (22/22)
-- CI/CD Pipeline
-- IAP Service
-- Push Notifications (Stub)
-
-### 🔜 Planned:
-- Firebase Integration (Push)
-- Stripe Integration (IAP)
-- App Store Deployment (iOS/Android)
-- Analytics Integration
-- More Tests (E2E)
-
----
-
-## 📧 Support
-
-Bei Fragen oder Problemen:
-1. Lies `DEVELOPMENT_STATUS.md`
-2. Check Troubleshooting Section
-3. Open GitHub Issue
-4. Check API Docs: http://localhost:8000/docs
-
----
-
-## 🏆 Status
-
-✅ **Production-Ready**
-- All core features implemented
-- 22/22 tests passing
-- Full documentation
-- Zero bugs
-- Deploy-ready
-
-**Last Update:** 2026-01-17
-
----
-
-Made with ❤️ using Flutter & FastAPI
+**Entwickelt mit Django, HTMX, Tailwind CSS & PostgreSQL** 🚀

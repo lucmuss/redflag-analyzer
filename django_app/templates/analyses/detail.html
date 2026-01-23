@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Analyse Details - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Analyse vom {{ analysis.created_at|date:"d.m.Y H:i" }}</h1>
+        <p class="text-gray-600">
+            Status: 
+            {% if analysis.is_unlocked %}
+                <span class="text-green-600 font-bold">✓ Freigeschaltet</span>
+            {% else %}
+                <span class="text-orange-600 font-bold">🔒 Gesperrt</span>
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- 
+        HTMX-POWERED UNLOCK PATTERN:
+        - Div mit id="analysis-content" ist Target für HTMX-Swap
+        - Button mit hx-post triggert Server-Side Logic
+        - Server returned HTML-Fragment (kein JSON!)
+        - HTMX swapped Content automatisch
+        
+        VORTEIL vs. Flutter/React:
+        - Kein Client-State Management nötig
+        - Backend kontrolliert UI-Logik (sicherer)
+        - Weniger Code, weniger Bugs
+    -->
+    <div id="analysis-content">
+        {% if analysis.is_unlocked %}
+            {% include 'analyses/partials/unlocked_content.html' %}
+        {% else %}
+            <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                <div class="text-6xl mb-4">🔒</div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Analyse gesperrt</h2>
+                <p class="text-gray-600 mb-6">
+                    Diese Analyse ist noch gesperrt. Verwende 1 Credit, um detaillierte Ergebnisse, 
+                    Category-Scores und die Top 5 Red Flags zu sehen.
+                </p>
+                
+                <p class="text-sm text-gray-500 mb-6">
+                    Du hast aktuell <span class="font-bold text-red-flag">{{ user_credits }} Credits</span>.
+                </p>
+                
+                {% if user_credits > 0 %}
+                    <!-- HTMX POST Button - Server returned updated HTML -->
+                    <button hx-post="{% url 'analyses:unlock' pk=analysis.id %}"
+                            hx-target="#analysis-content"
+                            hx-swap="innerHTML"
+                            hx-indicator=".htmx-indicator"
+                            class="bg-red-flag hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg 
+                                   transition transform hover:scale-105">
+                        Für 1 Credit entsperren
+                    </button>
+                {% else %}
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                        <p class="text-orange-800 font-bold mb-2">Keine Credits verfügbar</p>
+                        <p class="text-orange-700 text-sm mb-4">
+                            Du benötigst mindestens 1 Credit, um diese Analyse freizuschalten.
+                        </p>
+                        <a href="#" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg">
+                            Credits kaufen
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Navigation -->
+    <div class="mt-8 flex justify-between">
+        <a href="{% url 'analyses:list' %}" 
+           class="text-gray-600 hover:text-red-flag flex items-center">
+            ← Zurück zur Übersicht
+        </a>
+        <a href="{% url 'questionnaire:questionnaire' %}" 
+           class="text-gray-600 hover:text-red-flag flex items-center">
+            Neue Analyse erstellen →
+        </a>
+    </div>
+</div>
+{% endblock %}

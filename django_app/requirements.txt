@@ -1,0 +1,28 @@
+# Django Core
+Django==5.0.1
+django-environ==0.11.2
+
+# Database
+psycopg2-binary==2.9.9
+dj-database-url==2.1.0
+
+# Security & Auth
+django-allauth==0.61.1
+argon2-cffi==23.1.0
+
+# HTMX Integration
+django-htmx==1.17.3
+
+# Tailwind CSS (via django-tailwind)
+django-tailwind==3.8.0
+
+# PWA Support
+django-pwa==1.1.0
+
+# Production Server
+gunicorn==21.2.0
+whitenoise==6.6.0
+
+# Utilities
+python-dotenv==1.0.1
+Pillow==10.2.0

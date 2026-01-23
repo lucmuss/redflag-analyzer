@@ -1,0 +1,82 @@
+<!-- HTMX Partial: Unlocked Analysis Content -->
+<div class="space-y-6">
+    <!-- Total Score Card -->
+    <div class="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg shadow-lg p-8 text-center">
+        <h2 class="text-xl font-semibold mb-2">Gesamt Red Flag Score</h2>
+        <div class="text-6xl font-bold mb-2">{{ analysis.score_total }}</div>
+        <p class="text-red-100">von 10 Punkten</p>
+        <div class="mt-4 bg-white/20 rounded-full h-3 overflow-hidden">
+            <div class="bg-white h-full rounded-full transition-all duration-500" 
+                 style="width: {{ analysis.score_total|floatformat:0|add:'0' }}0%"></div>
+        </div>
+    </div>
+
+    <!-- Category Scores -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-2xl font-bold mb-4">📊 Scores pro Kategorie</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+            {% for cat_score in category_scores %}
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-semibold">
+                            {% if cat_score.category == 'TRUST' %}
+                                🤝 Vertrauen
+                            {% elif cat_score.category == 'BEHAVIOR' %}
+                                🎭 Verhalten
+                            {% elif cat_score.category == 'VALUES' %}
+                                💎 Werte
+                            {% elif cat_score.category == 'DYNAMICS' %}
+                                ⚡ Dynamik
+                            {% endif %}
+                        </span>
+                        <span class="text-2xl font-bold text-red-flag">{{ cat_score.score }}</span>
+                    </div>
+                    <div class="bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div class="bg-red-flag h-full rounded-full transition-all duration-500" 
+                             style="width: {{ cat_score.score|floatformat:0|add:'0' }}0%"></div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Top Red Flags -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-2xl font-bold mb-4">🚩 Top 5 Red Flags</h3>
+        <p class="text-gray-600 mb-4">Die größten Warnsignale basierend auf Impact (Wert × Gewicht):</p>
+        
+        <div class="space-y-3">
+            {% for flag in top_red_flags %}
+                <div class="flex items-center justify-between p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div class="flex-1">
+                        <div class="font-semibold text-gray-900">{{ flag.key|title|replace:"_":" " }}</div>
+                        <div class="text-sm text-gray-600">
+                            Bewertung: {{ flag.value }}/5 • Gewicht: {{ flag.weight }}/5
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-red-flag">{{ flag.impact }}</div>
+                        <div class="text-xs text-gray-500">Impact</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Interpretation -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 class="font-bold text-blue-900 mb-2">💡 Interpretation</h3>
+        <div class="text-blue-800 text-sm space-y-2">
+            {% if analysis.score_total < 3 %}
+                <p class="font-semibold text-green-700">Niedriger Red Flag Score (0-3)</p>
+                <p>Die Beziehung zeigt wenige Warnsignale. Dies ist ein positives Zeichen für eine gesunde Dynamik.</p>
+            {% elif analysis.score_total < 6 %}
+                <p class="font-semibold text-orange-700">Mittlerer Red Flag Score (3-6)</p>
+                <p>Einige Warnsignale sind vorhanden. Es lohnt sich, diese Bereiche genauer zu betrachten und zu kommunizieren.</p>
+            {% else %}
+                <p class="font-semibold text-red-700">Hoher Red Flag Score (6-10)</p>
+                <p>Mehrere signifikante Warnsignale wurden identifiziert. Eine kritische Evaluation und eventuell professionelle Beratung könnte sinnvoll sein.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>

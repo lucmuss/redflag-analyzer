@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Fragebogen - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">RedFlag Fragebogen</h1>
+        <p class="text-gray-600">
+            Bewerte jede Aussage von 1 (trifft nicht zu) bis 5 (trifft voll zu).
+            Du hast aktuell <span class="font-bold text-red-flag">{{ user_credits }} Credits</span>.
+        </p>
+    </div>
+
+    <!-- 
+        HTMX-FORM mit hx-post
+        ARCHITEKTUR-VORTEIL vs. Flutter:
+        - Flutter: State Management (Provider/Riverpod), API-Layer, JSON-Serialization
+        - HTMX: Simple Form POST, Server berechnet, returned HTML-Fragment
+        - Keine komplexe Client-Logik, SEO-freundlich, Progressive Enhancement
+    -->
+    <form hx-post="{% url 'questionnaire:submit' %}" 
+          hx-indicator=".htmx-indicator"
+          class="space-y-6">
+        {% csrf_token %}
+        
+        {% for category, questions in questions_by_category.items %}
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    {% if category == 'TRUST' %}
+                        <span class="mr-2">🤝</span> Vertrauen
+                    {% elif category == 'BEHAVIOR' %}
+                        <span class="mr-2">🎭</span> Verhalten
+                    {% elif category == 'VALUES' %}
+                        <span class="mr-2">💎</span> Werte
+                    {% elif category == 'DYNAMICS' %}
+                        <span class="mr-2">⚡</span> Dynamik
+                    {% endif %}
+                </h2>
+                
+                <div class="space-y-4">
+                    {% for question in questions %}
+                        <div class="border-b border-gray-200 pb-4 last:border-0">
+                            <label class="block text-gray-700 mb-2">
+                                {{ question.text_de }}
+                            </label>
+                            
+                            <!-- Radio Buttons als Slider Alternative (Mobile-First) -->
+                            <div class="flex items-center space-x-4">
+                                {% for value in "12345" %}
+                                    <label class="flex-1">
+                                        <input type="radio" 
+                                               name="q_{{ question.key }}" 
+                                               value="{{ value }}"
+                                               class="hidden peer"
+                                               required>
+                                        <div class="cursor-pointer text-center py-2 px-3 rounded-md border-2 border-gray-300 
+                                                    peer-checked:border-red-flag peer-checked:bg-red-flag peer-checked:text-white
+                                                    hover:border-red-flag transition">
+                                            {{ value }}
+                                        </div>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>Trifft nicht zu</span>
+                                <span>Trifft voll zu</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+        <!-- Submit Button mit HTMX Loading State -->
+        <div class="flex justify-center">
+            <button type="submit" 
+                    class="bg-red-flag hover:bg-red-600 text-white font-bold py-4 px-12 rounded-lg shadow-lg 
+                           transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                Analyse erstellen
+            </button>
+        </div>
+    </form>
+
+    <!-- Info Box -->
+    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 class="font-bold text-blue-900 mb-2">ℹ️ Info</h3>
+        <p class="text-blue-800 text-sm">
+            Nach dem Absenden wird deine Analyse erstellt. Du kannst sie dann mit 1 Credit entsperren, 
+            um detaillierte Ergebnisse und Top Red Flags zu sehen.
+        </p>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // HTMX Event Handlers (optional)
+    document.body.addEventListener('htmx:beforeRequest', function(evt) {
+        console.log('Sende Fragebogen...');
+    });
+    
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.successful) {
+            console.log('Fragebogen erfolgreich gesendet!');
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}
