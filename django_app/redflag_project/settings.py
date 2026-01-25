@@ -22,6 +22,9 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app').sp
 
 # Application definition
 INSTALLED_APPS = [
+    # Modeltranslation muss VOR admin stehen
+    'modeltranslation',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -35,11 +38,19 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
     
     # Local Apps
     'accounts',
     'questionnaire',
     'analyses',
+    'feedback',
+    'subscriptions',
+    'referrals',
+    'analytics',
+    'blog',
+    'legal',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +79,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'analytics.context_processors.analytics_settings',
             ],
         },
     },
@@ -113,10 +125,20 @@ PASSWORD_HASHERS = [
 ]
 
 # Internationalization
-LANGUAGE_CODE = 'de-de'
+LANGUAGE_CODE = 'de'
 TIME_ZONE = 'Europe/Berlin'
 USE_I18N = True
 USE_TZ = True
+
+# django-modeltranslation: Nur Deutsch vorerst
+LANGUAGES = (
+    ('de', 'Deutsch'),
+)
+
+# Default Language
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'de'
+MODELTRANSLATION_LANGUAGES = ('de',)
+MODELTRANSLATION_FALLBACK_LANGUAGES = ('de',)
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
@@ -142,9 +164,37 @@ AUTHENTICATION_BACKENDS = [
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = 'optional'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Email-Verifizierung aktiviert
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Custom Signup Form mit erweiterten Feldern
+ACCOUNT_FORMS = {
+    'signup': 'accounts.forms.CustomSignupForm',
+}
+
+# Social Account Settings
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    },
+    'github': {
+        'SCOPE': ['user:email'],
+    }
+}
+
+# Email Backend (Development: Console / Production: SMTP)
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@redflag-analyzer.com')
 
 # PWA Settings
 PWA_APP_NAME = 'RedFlag Analyzer'

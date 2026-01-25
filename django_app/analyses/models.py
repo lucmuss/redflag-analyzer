@@ -18,6 +18,21 @@ class Analysis(models.Model):
         on_delete=models.CASCADE,
         related_name='analyses'
     )
+    
+    # Partner-Information
+    partner_name = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text="Name der analysierten Partnerin"
+    )
+    partner_age = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(18), MaxValueValidator(120)],
+        help_text="Alter der Partnerin"
+    )
+    
     is_unlocked = models.BooleanField(
         default=False,
         help_text="Whether analysis is unlocked (paid)"

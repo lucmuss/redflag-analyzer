@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}AGB - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-gray-900 mb-8">Allgemeine Geschäftsbedingungen (AGB)</h1>
+    
+    <div class="prose prose-lg max-w-none">
+        <h2>§ 1 Geltungsbereich</h2>
+        <p>
+            Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Nutzung der Website und Dienste von RedFlag Analyzer.
+        </p>
+
+        <h2>§ 2 Leistungen</h2>
+        <h3>2.1 Kostenlose Nutzung</h3>
+        <p>
+            Die Basisnutzung von RedFlag Analyzer ist kostenlos und umfasst:
+        </p>
+        <ul>
+            <li>Erstellung eines Benutzerkontos</li>
+            <li>Durchführung von bis zu 3 Beziehungsanalysen</li>
+            <li>Zugriff auf allgemeine Inhalte</li>
+        </ul>
+
+        <h3>2.2 Premium-Mitgliedschaft</h3>
+        <p>
+            Die Premium-Mitgliedschaft kostet €20/Jahr und bietet:
+        </p>
+        <ul>
+            <li>Unbegrenzte Analysen</li>
+            <li>Detaillierte Auswertungen</li>
+            <li>Historische Vergleiche</li>
+            <li>Prioritäts-Support</li>
+        </ul>
+
+        <h2>§ 3 Vertragsschluss</h2>
+        <p>
+            Der Vertrag kommt durch Registrierung zustande. Bei Premium-Mitgliedschaften durch die Bezahlung des Abonnements.
+        </p>
+
+        <h2>§ 4 Nutzerpflichten</h2>
+        <p>Der Nutzer verpflichtet sich:</p>
+        <ul>
+            <li>Wahrheitsgemäße Angaben zu machen</li>
+            <li>Zugangsdaten vertraulich zu behandeln</li>
+            <li>Die Dienste nicht missbräuchlich zu nutzen</li>
+            <li>Keine rechtswidrigen Inhalte zu verbreiten</li>
+        </ul>
+
+        <h2>§ 5 Haftung</h2>
+        <h3>5.1 Haftungsausschluss</h3>
+        <p>
+            Die Analysen und Ergebnisse dienen ausschließlich der Information und ersetzen keine professionelle Beratung (z.B. Paartherapie, psychologische Beratung).
+        </p>
+
+        <h3>5.2 Haftungsbeschränkung</h3>
+        <p>
+            Wir haften nur für vorsätzliche oder grob fahrlässige Pflichtverletzungen. Die Haftung bei leichter Fahrlässigkeit ist ausgeschlossen.
+        </p>
+
+        <h2>§ 6 Widerrufsrecht</h2>
+        <p>
+            Verbraucher haben ein 14-tägiges Widerrufsrecht. Bei digitalen Inhalten erlischt dieses bei Beginn der Leistungserbringung mit ausdrücklicher Zustimmung.
+        </p>
+
+        <h2>§ 7 Kündigung & Löschung</h2>
+        <h3>7.1 Kostenlose Accounts</h3>
+        <p>
+            Können jederzeit über das Profil gelöscht werden.
+        </p>
+
+        <h3>7.2 Premium-Mitgliedschaft</h3>
+        <p>
+            Kann jederzeit zum Ende der Laufzeit gekündigt werden. Bei vorzeitiger Kündigung erfolgt keine Rückerst attung.
+        </p>
+
+        <h2>§ 8 Änderungen der AGB</h2>
+        <p>
+            Wir behalten uns vor, diese AGB zu ändern. Nutzer werden über Änderungen per E-Mail informiert.
+        </p>
+
+        <h2>§ 9 Streitbeilegung</h2>
+        <p>
+            Die EU-Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:<br>
+            <a href="https://ec.europa.eu/consumers/odr" class="text-red-500 hover:underline" target="_blank">https://ec.europa.eu/consumers/odr</a>
+        </p>
+
+        <h2>§ 10 Schlussbestimmungen</h2>
+        <p>
+            Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand ist [Ort], soweit gesetzlich zulässig.
+        </p>
+
+        <p class="mt-8 text-sm text-gray-500">
+            Stand: {{ "now"|date:"d.m.Y" }}
+        </p>
+    </div>
+
+    <div class="mt-8">
+        <a href="{% url 'questionnaire:home' %}" class="text-red-500 hover:text-red-600">
+            ← Zurück zur Startseite
+        </a>
+    </div>
+</div>
+{% endblock %}

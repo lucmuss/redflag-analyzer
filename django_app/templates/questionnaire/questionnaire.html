@@ -8,7 +8,27 @@
         <h1 class="text-3xl font-bold text-gray-900 mb-2">RedFlag Fragebogen</h1>
         <p class="text-gray-600">
             Bewerte jede Aussage von 1 (trifft nicht zu) bis 5 (trifft voll zu).
-            Du hast aktuell <span class="font-bold text-red-flag">{{ user_credits }} Credits</span>.
+            Du hast aktuell <span class="font-bold text-red-flag">
+                {% if user.email == 'skymuss@gmail.com' %}
+                    ∞ (Testbenutzer)
+                {% else %}
+                    {{ user_credits }}
+                {% endif %}
+                Credits</span>.
+        </p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="mb-8 bg-white rounded-lg shadow-md p-6" role="region" aria-label="Fragebogen Fortschritt">
+        <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-semibold text-gray-700">Fortschritt</span>
+            <span class="text-sm font-bold text-red-flag" id="progress-text" aria-live="polite">0%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Fragebogen Fortschritt">
+            <div id="progress-bar" class="bg-gradient-to-r from-red-400 to-red-600 h-4 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">
+            <span id="answered-count" aria-live="polite">0</span> von <span id="total-count">{{ total_questions|default:0 }}</span> Fragen beantwortet
         </p>
     </div>
 
@@ -38,10 +58,10 @@
                     {% endif %}
                 </h2>
                 
-                <div class="space-y-4">
+                <div class="space-y-8">
                     {% for question in questions %}
-                        <div class="border-b border-gray-200 pb-4 last:border-0">
-                            <label class="block text-gray-700 mb-2">
+                        <div class="border-b border-gray-200 pb-6 last:border-0">
+                            <label class="block text-gray-700 mb-4">
                                 {{ question.text_de }}
                             </label>
                             
@@ -63,8 +83,8 @@
                                 {% endfor %}
                             </div>
                             <div class="flex justify-between text-xs text-gray-500 mt-1">
-                                <span>Trifft nicht zu</span>
-                                <span>Trifft voll zu</span>
+                                <span class="font-bold">Trifft nicht zu</span>
+                                <span class="font-bold">Trifft zu</span>
                             </div>
                         </div>
                     {% endfor %}
@@ -94,16 +114,161 @@
 
 {% block extra_js %}
 <script>
-    // HTMX Event Handlers (optional)
-    document.body.addEventListener('htmx:beforeRequest', function(evt) {
-        console.log('Sende Fragebogen...');
-    });
-    
-    document.body.addEventListener('htmx:afterRequest', function(evt) {
-        if (evt.detail.successful) {
-            console.log('Fragebogen erfolgreich gesendet!');
+    // Auto-Save & Progress Tracking für Fragebogen
+    (function() {
+        const STORAGE_KEY = 'redflag_questionnaire_progress';
+        const form = document.querySelector('form');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const answeredCount = document.getElementById('answered-count');
+        const totalCountEl = document.getElementById('total-count');
+        
+        // Zähle alle Fragen
+        const allQuestions = document.querySelectorAll('input[type="radio"]');
+        const questionNames = new Set();
+        allQuestions.forEach(input => questionNames.add(input.name));
+        const totalQuestions = questionNames.size;
+        
+        // Update total count in UI
+        if (totalCountEl) {
+            totalCountEl.textContent = totalQuestions;
         }
-    });
+        
+        // Update Progress Bar
+        function updateProgress() {
+            const answered = new Set();
+            allQuestions.forEach(input => {
+                if (input.checked) {
+                    answered.add(input.name);
+                }
+            });
+            
+            const count = answered.size;
+            const percentage = totalQuestions > 0 ? Math.round((count / totalQuestions) * 100) : 0;
+            
+            // Update UI
+            if (progressBar) progressBar.style.width = percentage + '%';
+            if (progressText) progressText.textContent = percentage + '%';
+            if (answeredCount) answeredCount.textContent = count;
+            
+            return { count, percentage };
+        }
+        
+        // Auto-Save zu LocalStorage
+        function saveProgress() {
+            const formData = {};
+            allQuestions.forEach(input => {
+                if (input.checked) {
+                    formData[input.name] = input.value;
+                }
+            });
+            
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    data: formData,
+                    timestamp: new Date().toISOString()
+                }));
+                console.log('✓ Fortschritt gespeichert');
+            } catch (e) {
+                console.warn('LocalStorage nicht verfügbar:', e);
+            }
+        }
+        
+        // Restore Progress beim Laden
+        function restoreProgress() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (!saved) return;
+                
+                const { data, timestamp } = JSON.parse(saved);
+                
+                // Nur wiederherstellen wenn < 24h alt
+                const savedTime = new Date(timestamp);
+                const now = new Date();
+                const hoursDiff = (now - savedTime) / (1000 * 60 * 60);
+                
+                if (hoursDiff > 24) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    return;
+                }
+                
+                // Restore Values
+                let restored = 0;
+                Object.keys(data).forEach(name => {
+                    const input = document.querySelector(`input[name="${name}"][value="${data[name]}"]`);
+                    if (input) {
+                        input.checked = true;
+                        restored++;
+                    }
+                });
+                
+                if (restored > 0) {
+                    updateProgress();
+                    console.log(`✓ ${restored} Antworten wiederhergestellt`);
+                    
+                    // Show notification
+                    showNotification(`Fortschritt wiederhergestellt: ${restored} Antworten`);
+                }
+            } catch (e) {
+                console.warn('Fehler beim Wiederherstellen:', e);
+            }
+        }
+        
+        // Show Notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
+            notification.textContent = '💾 ' + message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('animate-fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Event Listeners
+        allQuestions.forEach(input => {
+            input.addEventListener('change', function() {
+                updateProgress();
+                saveProgress();
+            });
+        });
+        
+        // Clear storage on successful submit
+        document.body.addEventListener('htmx:beforeRequest', function(evt) {
+            if (evt.detail.elt === form) {
+                console.log('Sende Fragebogen...');
+            }
+        });
+        
+        document.body.addEventListener('htmx:afterRequest', function(evt) {
+            if (evt.detail.successful && evt.detail.elt === form) {
+                localStorage.removeItem(STORAGE_KEY);
+                console.log('✓ Fragebogen erfolgreich gesendet, Fortschritt gelöscht');
+            }
+        });
+        
+        // Initialize
+        restoreProgress();
+        updateProgress();
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fade-in {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes fade-out {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+            .animate-fade-in { animation: fade-in 0.3s ease-out; }
+            .animate-fade-out { animation: fade-out 0.3s ease-out; }
+        `;
+        document.head.appendChild(style);
+    })();
 </script>
 {% endblock %}
 {% endblock %}

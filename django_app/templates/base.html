@@ -29,8 +29,33 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="{% url 'pwa:manifest' %}">
+    <!-- <link rel="manifest" href="{% url 'pwa:manifest' %}"> -->
+    <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+    
+    <!-- Google Analytics (nur laden wenn Consent gegeben) -->
+    {% if ga_enabled %}
+    <script id="ga-script" type="text/plain" data-consent="analytics">
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ analytics_settings.google_analytics_id }}');
+    </script>
+    {% endif %}
+    
+    <!-- Hotjar Tracking Code (nur laden wenn Consent gegeben) -->
+    {% if hotjar_enabled %}
+    <script id="hotjar-script" type="text/plain" data-consent="analytics">
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:'{{ analytics_settings.hotjar_id }}',hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+    {% endif %}
     
     {% block extra_head %}{% endblock %}
 </head>
@@ -51,9 +76,21 @@
                            class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
                             Fragebogen
                         </a>
+                        <a href="{% url 'questionnaire:importance' %}" 
+                           class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
+                            Meine Meinung
+                        </a>
                         <a href="{% url 'analyses:list' %}" 
                            class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
                             Meine Analysen
+                        </a>
+                        <a href="{% url 'feedback:create' %}" 
+                           class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
+                            💬 Feedback
+                        </a>
+                        <a href="{% url 'accounts:badges' %}" 
+                           class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
+                            🏆 Badges
                         </a>
                         <a href="{% url 'accounts:profile' %}" 
                            class="flex items-center text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
@@ -100,18 +137,57 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-12">
+    <footer class="bg-white border-t border-gray-200 mt-12 pb-20 md:pb-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="text-center text-gray-600 text-sm">
                 <p>&copy; 2026 RedFlag Analyzer. Serverless Django + HTMX + PostgreSQL.</p>
                 <p class="mt-2">
-                    <a href="#" class="text-red-flag hover:underline">Datenschutz</a> • 
-                    <a href="#" class="text-red-flag hover:underline">Impressum</a> • 
-                    <a href="#" class="text-red-flag hover:underline">AGB</a>
+                    <a href="{% url 'legal:datenschutz' %}" class="text-red-flag hover:underline">Datenschutz</a> • 
+                    <a href="{% url 'legal:impressum' %}" class="text-red-flag hover:underline">Impressum</a> • 
+                    <a href="{% url 'legal:agb' %}" class="text-red-flag hover:underline">AGB</a> •
+                    <a href="{% url 'blog:list' %}" class="text-red-flag hover:underline">Blog</a>
                 </p>
             </div>
         </div>
     </footer>
+
+    <!-- Mobile Bottom Navigation (nur auf klein Screens sichtbar) -->
+    {% if user.is_authenticated %}
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+        <div class="flex justify-around items-center h-16">
+            <a href="{% url 'questionnaire:home' %}" class="flex flex-col items-center justify-center flex-1 py-2 {% if request.path == '/' %}text-red-flag{% else %}text-gray-600{% endif %} hover:text-red-flag transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span class="text-xs mt-1">Home</span>
+            </a>
+            
+            <a href="{% url 'questionnaire:questionnaire' %}" class="flex flex-col items-center justify-center flex-1 py-2 {% if 'questionnaire' in request.path %}text-red-flag{% else %}text-gray-600{% endif %} hover:text-red-flag transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span class="text-xs mt-1">Fragebogen</span>
+            </a>
+            
+            <a href="{% url 'analyses:list' %}" class="flex flex-col items-center justify-center flex-1 py-2 {% if 'analyses' in request.path %}text-red-flag{% else %}text-gray-600{% endif %} hover:text-red-flag transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span class="text-xs mt-1">Analysen</span>
+            </a>
+            
+            <a href="{% url 'accounts:profile' %}" class="flex flex-col items-center justify-center flex-1 py-2 {% if 'profile' in request.path %}text-red-flag{% else %}text-gray-600{% endif %} hover:text-red-flag transition relative">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <span class="text-xs mt-1">Profil</span>
+                {% if user.credits > 0 %}
+                <span class="absolute top-0 right-2 bg-red-flag text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ user.credits }}</span>
+                {% endif %}
+            </a>
+        </div>
+    </nav>
+    {% endif %}
 
     <!-- HTMX Indicator (optional) -->
     <div class="htmx-indicator fixed top-4 right-4 bg-red-flag text-white px-4 py-2 rounded-lg shadow-lg">
@@ -127,6 +203,101 @@
             display: block;
         }
     </style>
+
+    <!-- DSGVO Cookie Consent Banner -->
+    <div id="cookie-consent-banner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-6 shadow-2xl z-50 transform transition-transform duration-300" style="display: none;">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg mb-2">🍪 Wir verwenden Cookies</h3>
+                    <p class="text-sm text-gray-300">
+                        Wir nutzen Cookies und ähnliche Technologien, um deine Nutzererfahrung zu verbessern und für Analysezwecke. 
+                        Du kannst wählen, welche Cookies du akzeptieren möchtest.
+                        <a href="{% url 'legal:datenschutz' %}" class="underline hover:text-white">Mehr erfahren</a>
+                    </p>
+                </div>
+                <div class="flex gap-3 flex-shrink-0">
+                    <button onclick="acceptCookies(false)" 
+                            class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg transition">
+                        Nur notwendige
+                    </button>
+                    <button onclick="acceptCookies(true)" 
+                            class="bg-red-flag hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition">
+                        Alle akzeptieren
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Cookie Consent Management
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function setCookie(name, value, days) {
+        const expires = new Date();
+        expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+    }
+
+    function acceptCookies(includeAnalytics) {
+        // Setze Cookie Consent
+        setCookie('cookie_consent', includeAnalytics ? 'all' : 'necessary', 365);
+        
+        // Verstecke Banner
+        document.getElementById('cookie-consent-banner').style.display = 'none';
+        
+        // Lade Analytics Scripts wenn akzeptiert
+        if (includeAnalytics) {
+            loadAnalyticsScripts();
+        }
+    }
+
+    function loadAnalyticsScripts() {
+        // Google Analytics laden
+        {% if ga_enabled %}
+        const gaScript = document.createElement('script');
+        gaScript.async = true;
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id={{ analytics_settings.google_analytics_id }}';
+        document.head.appendChild(gaScript);
+        
+        const gaInlineScript = document.getElementById('ga-script');
+        if (gaInlineScript) {
+            const newScript = document.createElement('script');
+            newScript.textContent = gaInlineScript.textContent;
+            document.head.appendChild(newScript);
+        }
+        {% endif %}
+        
+        // Hotjar laden
+        {% if hotjar_enabled %}
+        const hotjarInlineScript = document.getElementById('hotjar-script');
+        if (hotjarInlineScript) {
+            const newScript = document.createElement('script');
+            newScript.textContent = hotjarInlineScript.textContent;
+            document.head.appendChild(newScript);
+        }
+        {% endif %}
+    }
+
+    // Prüfe beim Laden ob Consent bereits gegeben wurde
+    window.addEventListener('DOMContentLoaded', function() {
+        const consent = getCookie('cookie_consent');
+        
+        if (!consent) {
+            // Zeige Banner
+            document.getElementById('cookie-consent-banner').style.display = 'block';
+        } else if (consent === 'all') {
+            // Lade Analytics wenn bereits akzeptiert
+            loadAnalyticsScripts();
+        }
+        // Wenn 'necessary' -> nichts laden
+    });
+    </script>
 
     {% block extra_js %}{% endblock %}
 </body>

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Referral Dashboard - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">🎁 Freunde einladen</h1>
+            <p class="text-gray-600 text-lg">Empfehle einen Freund und erhalte 3 Credits!</p>
+        </div>
+
+        <!-- Main Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Dein Code -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-red-500">
+                <div class="text-sm text-gray-500 mb-2">Dein Einladungscode</div>
+                <div class="text-3xl font-bold text-red-600 mb-4">{{ referral_code.code }}</div>
+                <button onclick="copyCode()" class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition">
+                    📋 Code kopieren
+                </button>
+            </div>
+
+            <!-- Total Referrals -->
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="text-sm text-gray-500 mb-2">Eingeladene Freunde</div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">{{ total_referrals }}</div>
+                <div class="text-sm text-gray-600">von {{ referral_code.max_uses }} möglich</div>
+                <div class="mt-3 bg-gray-200 rounded-full h-2">
+                    <div class="bg-red-500 h-2 rounded-full" style="width: {{ referral_code.usage_percentage }}%"></div>
+                </div>
+            </div>
+
+            <!-- Total Credits -->
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="text-sm text-gray-500 mb-2">Verdiente Credits</div>
+                <div class="text-3xl font-bold text-green-600 mb-2">{{ total_credits_earned }}</div>
+                <div class="text-sm text-gray-600">{{ total_referrals }} × 3 Credits</div>
+            </div>
+        </div>
+
+        <!-- Share Options -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">🚀 Teile deinen Link</h2>
+            <p class="text-gray-600 mb-6">Deine Freunde bekommen 1 Bonus-Credit, du bekommst 3 Credits pro Anmeldung!</p>
+            
+            <!-- Share URL -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <div class="text-sm text-gray-500 mb-2">Dein persönlicher Link</div>
+                <div class="flex gap-2">
+                    <input 
+                        type="text" 
+                        id="shareUrl" 
+                        value="{{ share_url }}" 
+                        readonly 
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-white"
+                    >
+                    <button onclick="copyUrl()" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition">
+                        Kopieren
+                    </button>
+                </div>
+            </div>
+
+            <!-- Social Share Buttons -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="https://api.whatsapp.com/send?text=Probier%20RedFlag%20Analyzer%20aus!%20{{ share_url|urlencode }}" 
+                   target="_blank" 
+                   class="flex items-center justify-center gap-2 bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition">
+                    <span class="text-xl">💬</span>
+                    WhatsApp
+                </a>
+                
+                <a href="https://telegram.me/share/url?url={{ share_url|urlencode }}&text=Probier%20RedFlag%20Analyzer%20aus!" 
+                   target="_blank" 
+                   class="flex items-center justify-center gap-2 bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition">
+                    <span class="text-xl">✈️</span>
+                    Telegram
+                </a>
+                
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ share_url|urlencode }}" 
+                   target="_blank" 
+                   class="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition">
+                    <span class="text-xl">👍</span>
+                    Facebook
+                </a>
+                
+                <a href="https://twitter.com/intent/tweet?text=Probier%20RedFlag%20Analyzer%20aus!&url={{ share_url|urlencode }}" 
+                   target="_blank" 
+                   class="flex items-center justify-center gap-2 bg-sky-500 text-white py-3 px-4 rounded-lg hover:bg-sky-600 transition">
+                    <span class="text-xl">🐦</span>
+                    Twitter
+                </a>
+            </div>
+        </div>
+
+        <!-- Code einlösen -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">🎟️ Code einlösen</h2>
+            <p class="text-gray-600 mb-4">Hast du einen Einladungscode erhalten? Löse ihn hier ein!</p>
+            
+            <form method="post" action="{% url 'referrals:use_code' %}" class="flex gap-2">
+                {% csrf_token %}
+                <input 
+                    type="text" 
+                    name="code" 
+                    placeholder="ABCD1234" 
+                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg uppercase" 
+                    maxlength="20"
+                    required
+                >
+                <button type="submit" class="bg-red-500 text-white px-8 py-3 rounded-lg hover:bg-red-600 transition font-semibold">
+                    Einlösen
+                </button>
+            </form>
+        </div>
+
+        <!-- Recent Rewards -->
+        {% if recent_rewards %}
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">📊 Letzte Einlösungen</h2>
+            <div class="space-y-3">
+                {% for reward in recent_rewards %}
+                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                    <div>
+                        <div class="font-semibold text-gray-900">
+                            {% if reward.reward_type == 'referral_reward' %}
+                                🎉 Freund eingeladen
+                            {% else %}
+                                🎁 Signup Bonus
+                            {% endif %}
+                        </div>
+                        <div class="text-sm text-gray-500">{{ reward.created_at|date:"d.m.Y H:i" }}</div>
+                    </div>
+                    <div class="text-green-600 font-bold text-lg">+{{ reward.credits_earned }} Credits</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function copyCode() {
+    const code = "{{ referral_code.code }}";
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Code kopiert: ' + code);
+    });
+}
+
+function copyUrl() {
+    const url = document.getElementById('shareUrl').value;
+    navigator.clipboard.writeText(url).then(() => {
+        alert('✅ Link kopiert!');
+    });
+}
+</script>
+{% endblock %}

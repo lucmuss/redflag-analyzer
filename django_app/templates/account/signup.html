@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Registrierung - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl w-full space-y-8">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Erstelle dein Konto
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Oder
+                <a href="{% url 'account_login' %}" class="font-medium text-red-flag hover:text-red-600">
+                    melde dich mit einem bestehenden Konto an
+                </a>
+            </p>
+        </div>
+        
+        <form class="mt-8 space-y-6" method="POST" action="{% url 'account_signup' %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <!-- PFLICHTFELDER -->
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Pflichtangaben</h3>
+                
+                <div class="space-y-4">
+                    <!-- Vorname -->
+                    <div>
+                        <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.first_name.label }} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.first_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- E-Mail -->
+                    <div>
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            E-Mail Adresse <span class="text-red-500">*</span>
+                        </label>
+                        <input id="{{ form.email.id_for_label }}" 
+                               name="{{ form.email.html_name }}" 
+                               type="email" 
+                               required 
+                               class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-flag focus:border-red-flag sm:text-sm" 
+                               placeholder="deine@email.de"
+                               value="{{ form.email.value|default:'' }}">
+                        {% if form.email.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Passwort -->
+                    <div>
+                        <label for="{{ form.password1.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            Passwort <span class="text-red-500">*</span>
+                        </label>
+                        <input id="{{ form.password1.id_for_label }}" 
+                               name="{{ form.password1.html_name }}" 
+                               type="password" 
+                               required 
+                               class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-flag focus:border-red-flag sm:text-sm" 
+                               placeholder="Mindestens 8 Zeichen">
+                        {% if form.password1.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.password1.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">Mindestens 8 Zeichen, nicht zu einfach</p>
+                    </div>
+                    
+                    <!-- Passwort bestätigen -->
+                    <div>
+                        <label for="{{ form.password2.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            Passwort bestätigen <span class="text-red-500">*</span>
+                        </label>
+                        <input id="{{ form.password2.id_for_label }}" 
+                               name="{{ form.password2.html_name }}" 
+                               type="password" 
+                               required 
+                               class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-flag focus:border-red-flag sm:text-sm" 
+                               placeholder="Passwort wiederholen">
+                        {% if form.password2.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.password2.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Geburtsdatum -->
+                    <div>
+                        <label for="{{ form.birthdate.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.birthdate.label }} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.birthdate }}
+                        {% if form.birthdate.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.birthdate.errors.0 }}</p>
+                        {% endif %}
+                        {% if form.birthdate.help_text %}
+                            <p class="mt-1 text-xs text-gray-500">{{ form.birthdate.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Land -->
+                    <div>
+                        <label for="{{ form.country.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.country.label }} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.country }}
+                        {% if form.country.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.country.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Geschlecht -->
+                    <div>
+                        <label for="{{ form.gender.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.gender.label }} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.gender }}
+                        {% if form.gender.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.gender.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- OPTIONALE FELDER -->
+            <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Optionale Angaben</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                    Diese Angaben helfen uns, dir bessere Analysen zu bieten und sind vollständig optional.
+                </p>
+                
+                <div class="space-y-4">
+                    <!-- Beziehungsstatus -->
+                    <div>
+                        <label for="{{ form.relationship_status.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.relationship_status.label }}
+                        </label>
+                        {{ form.relationship_status }}
+                        {% if form.relationship_status.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.relationship_status.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Anzahl bisheriger Beziehungen -->
+                    <div>
+                        <label for="{{ form.previous_relationships_count.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.previous_relationships_count.label }}
+                        </label>
+                        {{ form.previous_relationships_count }}
+                        {% if form.previous_relationships_count.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.previous_relationships_count.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Aktuelle Beziehungsdauer -->
+                    <div>
+                        <label for="{{ form.current_relationship_duration.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.current_relationship_duration.label }}
+                        </label>
+                        {{ form.current_relationship_duration }}
+                        {% if form.current_relationship_duration.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.current_relationship_duration.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Wie hast du von uns erfahren -->
+                    <div>
+                        <label for="{{ form.referral_source.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.referral_source.label }}
+                        </label>
+                        {{ form.referral_source }}
+                        {% if form.referral_source.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.referral_source.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Bildungsabschluss -->
+                    <div>
+                        <label for="{{ form.education.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.education.label }}
+                        </label>
+                        {{ form.education }}
+                        {% if form.education.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.education.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Wohnort -->
+                    <div>
+                        <label for="{{ form.city.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.city.label }}
+                        </label>
+                        {{ form.city }}
+                        {% if form.city.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.city.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-flag hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-flag transition-colors">
+                    Konto erstellen
+                </button>
+            </div>
+            
+            <div class="text-xs text-gray-500 text-center">
+                <p>Mit der Registrierung akzeptierst du unsere 
+                    <a href="#" class="text-red-flag hover:underline">AGB</a> und 
+                    <a href="#" class="text-red-flag hover:underline">Datenschutzerklärung</a>.
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

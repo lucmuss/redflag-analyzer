@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - RedFlag Blog{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Category Header -->
+    <div class="text-center mb-12">
+        <div class="text-6xl mb-4">{{ category.icon }}</div>
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ category.name }}</h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            {{ category.description }}
+        </p>
+    </div>
+
+    <!-- Back to all posts -->
+    <div class="mb-6">
+        <a href="{% url 'blog:list' %}" class="text-red-500 hover:text-red-600 font-medium">
+            ← Zurück zu allen Posts
+        </a>
+    </div>
+
+    <!-- Posts Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for post in posts %}
+        <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+            {% if post.featured_image %}
+            <img src="{{ post.featured_image.url }}" 
+                 alt="{{ post.title }}" 
+                 class="w-full h-48 object-cover">
+            {% endif %}
+            
+            <div class="p-6">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-xs text-gray-500">
+                        {{ post.reading_time }} Min. Lesezeit
+                    </span>
+                    {% if post.category.category_type == 'video' and post.video_url %}
+                    <span class="text-xs text-red-500">📹 Video</span>
+                    {% elif post.category.category_type == 'podcast' and post.podcast_url %}
+                    <span class="text-xs text-red-500">🎙️ Podcast</span>
+                    {% endif %}
+                </div>
+                
+                <h2 class="text-xl font-bold mb-2">
+                    <a href="{% url 'blog:detail' post.slug %}" 
+                       class="hover:text-red-500 transition">
+                        {{ post.title }}
+                    </a>
+                </h2>
+                
+                <p class="text-gray-600 mb-4">{{ post.excerpt|truncatewords:25 }}</p>
+                
+                <div class="flex items-center justify-between text-sm text-gray-500">
+                    <span>👤 {{ post.author.get_full_name|default:post.author.email }}</span>
+                    <span>{{ post.published_at|date:"d.m.Y" }}</span>
+                </div>
+            </div>
+        </article>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <p class="text-gray-500 text-lg">Noch keine Posts in dieser Kategorie.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Category-specific CTA -->
+    {% if category.category_type == 'video' %}
+    <div class="mt-16 bg-red-50 rounded-lg p-8 text-center">
+        <h2 class="text-2xl font-bold mb-4">📹 Verpasse kein Video!</h2>
+        <p class="text-gray-600 mb-6">
+            Abonniere unseren Newsletter für neue Erklärvid eos & Testimonials.
+        </p>
+        <form hx-post="{% url 'blog:subscribe' %}" 
+              hx-target="#category-subscription-message" 
+              hx-swap="innerHTML"
+              class="max-w-md mx-auto">
+            {% csrf_token %}
+            <input type="hidden" name="source" value="category_{{ category.slug }}">
+            <div class="flex gap-2">
+                <input type="email" 
+                       name="email" 
+                       placeholder="Deine E-Mail..." 
+                       required
+                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg">
+                <button type="submit" 
+                        class="bg-red-flag hover:bg-red-600 text-white font-bold px-6 py-3 rounded-lg">
+                    Abonnieren
+                </button>
+            </div>
+            <div id="category-subscription-message"></div>
+        </form>
+    </div>
+    {% elif category.category_type == 'podcast' %}
+    <div class="mt-16 bg-red-50 rounded-lg p-8 text-center">
+        <h2 class="text-2xl font-bold mb-4">🎙️ Höre weitere Interviews!</h2>
+        <p class="text-gray-600 mb-6">
+            Bleib informiert über neue Podcast-Episoden mit Beziehungsexperten.
+        </p>
+        <form hx-post="{% url 'blog:subscribe' %}" 
+              hx-target="#category-subscription-message" 
+              hx-swap="innerHTML"
+              class="max-w-md mx-auto">
+            {% csrf_token %}
+            <input type="hidden" name="source" value="category_{{ category.slug }}">
+            <div class="flex gap-2">
+                <input type="email" 
+                       name="email" 
+                       placeholder="Deine E-Mail..." 
+                       required
+                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg">
+                <button type="submit" 
+                        class="bg-red-flag hover:bg-red-600 text-white font-bold px-6 py-3 rounded-lg">
+                    Abonnieren
+                </button>
+            </div>
+            <div id="category-subscription-message"></div>
+        </form>
+    </div>
+    {% elif category.category_type == 'case_study' %}
+    <div class="mt-16 bg-green-50 rounded-lg p-8 text-center">
+        <h2 class="text-2xl font-bold mb-4">✅ Erfolgsgeschichten inspirieren!</h2>
+        <p class="text-gray-600 mb-6">
+            Lass dich von weiteren Case Studies & Success Stories motivieren.
+        </p>
+        <form hx-post="{% url 'blog:subscribe' %}" 
+              hx-target="#category-subscription-message" 
+              hx-swap="innerHTML"
+              class="max-w-md mx-auto">
+            {% csrf_token %}
+            <input type="hidden" name="source" value="category_{{ category.slug }}">
+            <div class="flex gap-2">
+                <input type="email" 
+                       name="email" 
+                       placeholder="Deine E-Mail..." 
+                       required
+                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg">
+                <button type="submit" 
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-lg">
+                    Abonnieren
+                </button>
+            </div>
+            <div id="category-subscription-message"></div>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

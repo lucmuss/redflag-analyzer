@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Premium Features - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-yellow-50 to-amber-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+        
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                {% if is_premium %}
+                    💎 Du bist Premium!
+                {% else %}
+                    Upgrade zu Premium
+                {% endif %}
+            </h1>
+            <p class="text-xl text-gray-600">
+                {% if is_premium %}
+                    Genieße alle Premium-Features
+                {% else %}
+                    Schalte alle Features frei für nur €20/Jahr
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Current Status -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Dein aktueller Status</h2>
+            
+            {% if is_premium %}
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-lg font-semibold text-green-600">✅ Premium Aktiv</p>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Gültig bis: {{ subscription.expires_at|date:"d.m.Y" }}
+                        </p>
+                    </div>
+                    <a href="{% url 'subscriptions:manage' %}" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition">
+                        Abo verwalten
+                    </a>
+                </div>
+            {% else %}
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-lg font-semibold text-gray-700">📊 Free Tier</p>
+                        <p class="text-sm text-gray-600 mt-1">
+                            {{ remaining_analyses }} von 3 Analysen verbleibend
+                        </p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2" style="max-width: 300px;">
+                            <div class="bg-red-flag h-2 rounded-full" style="width: {{ subscription.free_analyses_used|floatformat:0 }}%"></div>
+                        </div>
+                    </div>
+                    <a href="{% url 'subscriptions:upgrade' %}" class="bg-red-flag text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-600 transition">
+                        Jetzt upgraden
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Feature Comparison -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <!-- Free Tier -->
+            <div class="bg-white rounded-xl shadow-lg p-8 border-2 border-gray-200">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Free</h3>
+                <p class="text-3xl font-bold text-gray-700 mb-6">€0</p>
+                
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-start">
+                        <span class="text-green-500 mr-2">✓</span>
+                        <span>3 Analysen kostenlos</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-500 mr-2">✓</span>
+                        <span>Basis RedFlag-Scores</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-500 mr-2">✓</span>
+                        <span>Kategorie-Übersicht</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-red-500 mr-2">✗</span>
+                        <span class="text-gray-400">Percentile-Ranking</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-red-500 mr-2">✗</span>
+                        <span class="text-gray-400">Altersgruppen-Vergleich</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-red-500 mr-2">✗</span>
+                        <span class="text-gray-400">Regional Statistics</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-red-500 mr-2">✗</span>
+                        <span class="text-gray-400">PDF-Export</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Premium Tier -->
+            <div class="bg-gradient-to-br from-yellow-100 to-amber-100 rounded-xl shadow-2xl p-8 border-4 border-yellow-400 relative">
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
+                    EMPFOHLEN
+                </div>
+                
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Premium</h3>
+                <p class="text-3xl font-bold text-gray-900 mb-1">€20<span class="text-lg">/Jahr</span></p>
+                <p class="text-sm text-gray-600 mb-6">Nur €1.67/Monat</p>
+                
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-start">
+                        <span class="text-green-600 mr-2">✓</span>
+                        <span class="font-semibold">Unbegrenzte Analysen</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-600 mr-2">✓</span>
+                        <span>Alle Basis-Features</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-600 mr-2">✓</span>
+                        <span class="font-semibold">📊 Percentile-Ranking</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-600 mr-2">✓</span>
+                        <span class="font-semibold">👥 Altersgruppen-Vergleich</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-600 mr-2">✓</span>
+                        <span class="font-semibold">🌍 Regional Statistics</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-600 mr-2">✓</span>
+                        <span class="font-semibold">📄 PDF-Export</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-600 mr-2">✓</span>
+                        <span class="font-semibold">Priority Support</span>
+                    </li>
+                </ul>
+
+                {% if not is_premium %}
+                <a href="{% url 'subscriptions:upgrade' %}" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-center py-3 rounded-lg font-bold transition">
+                    Jetzt Premium werden
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Premium Features Details -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Premium Features im Detail</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="text-4xl mb-3">📊</div>
+                    <h3 class="font-bold text-lg mb-2">Percentile-Ranking</h3>
+                    <p class="text-sm text-gray-600">
+                        Sieh wo du im Vergleich zu anderen stehst. "Du bist im 68. Percentile deiner Altersgruppe"
+                    </p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-4xl mb-3">👥</div>
+                    <h3 class="font-bold text-lg mb-2">Altersgruppen-Vergleich</h3>
+                    <p class="text-sm text-gray-600">
+                        Vergleiche deine Beziehung mit Durchschnitts-Scores anderer Altersgruppen
+                    </p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-4xl mb-3">🌍</div>
+                    <h3 class="font-bold text-lg mb-2">Regional Statistics</h3>
+                    <p class="text-sm text-gray-600">
+                        Entdecke regionale Unterschiede in Beziehungsmustern weltweit
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Häufige Fragen</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Wie lange gilt Premium?</h3>
+                    <p class="text-gray-600">Premium gilt für 12 Monate ab Kaufdatum.</p>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Kann ich jederzeit kündigen?</h3>
+                    <p class="text-gray-600">Da es ein einmaliger Kauf ist, gibt es keine automatische Verlängerung.</p>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Was passiert nach 12 Monaten?</h3>
+                    <p class="text-gray-600">Du kannst Premium einfach erneuern. Deine Analysen bleiben gespeichert.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Datenschutzerklärung - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-gray-900 mb-8">Datenschutzerklärung</h1>
+    
+    <div class="prose prose-lg max-w-none">
+        <p class="lead">
+            Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Diese Datenschutzerklärung informiert Sie über die Verarbeitung personenbezogener Daten bei der Nutzung dieser Website.
+        </p>
+
+        <h2>1. Verantwortlicher</h2>
+        <p>
+            Verantwortlich für die Datenverarbeitung ist:<br>
+            [Name/Firma]<br>
+            [Adresse]<br>
+            E-Mail: [datenschutz@beispiel.de]
+        </p>
+
+        <h2>2. Erhebung und Speicherung personenbezogener Daten</h2>
+        <h3>2.1 Beim Besuch der Website</h3>
+        <p>
+            Beim Aufrufen unserer Website werden durch den Browser automatisch Informationen an unseren Server gesendet:
+        </p>
+        <ul>
+            <li>IP-Adresse</li>
+            <li>Datum und Uhrzeit der Anfrage</li>
+            <li>Browsertyp und Browserversion</li>
+            <li>Verwendetes Betriebssystem</li>
+            <li>Referrer URL</li>
+        </ul>
+
+        <h3>2.2 Bei der Registrierung</h3>
+        <p>
+            Bei der Erstellung eines Benutzerkontos erheben wir:
+        </p>
+        <ul>
+            <li>E-Mail-Adresse (verpflichtend)</li>
+            <li>Geschlecht (optional)</li>
+            <li>Alter (optional)</li>
+            <li>Beziehungsstatus (optional)</li>
+        </ul>
+
+        <h3>2.3 Bei der Nutzung des Fragebogens</h3>
+        <p>
+            Ihre Antworten im Fragebogen werden gespeichert und zur Berechnung Ihrer Analyse verwendet.
+            Diese Daten werden verschlüsselt in unserer PostgreSQL-Datenbank gespeichert.
+        </p>
+
+        <h2>3. Einsatz von Cookies</h2>
+        <p>
+            Wir setzen Cookies ein, um die Funktionalität unserer Website zu gewährleisten.
+            Cookies sind kleine Textdateien, die auf Ihrem Computer gespeichert werden.
+        </p>
+        <h3>Notwendige Cookies:</h3>
+        <ul>
+            <li>Session-Cookies für die Anmeldung</li>
+            <li>CSRF-Tokens für Sicherheit</li>
+        </ul>
+
+        <h3>Analyse-Cookies (optional):</h3>
+        <ul>
+            <li>Google Analytics (nur mit Ihrer Einwilligung)</li>
+            <li>Hotjar (nur mit Ihrer Einwilligung)</li>
+        </ul>
+
+        <h2>4. Weitergabe von Daten</h2>
+        <p>
+            Wir geben Ihre personenbezogenen Daten nur weiter, wenn:
+        </p>
+        <ul>
+            <li>Sie ausdrücklich eingewilligt haben</li>
+            <li>Dies gesetzlich vorgeschrieben ist</li>
+            <li>Dies zur Durchsetzung unserer Rechte erforderlich ist</li>
+        </ul>
+
+        <h2>5. Ihre Rechte</h2>
+        <p>Sie haben folgende Rechte:</p>
+        <ul>
+            <li><strong>Auskunft:</strong> Sie können Auskunft über Ihre gespeicherten Daten verlangen</li>
+            <li><strong>Berichtigung:</strong> Fehlerhafte Daten können korrigiert werden</li>
+            <li><strong>Löschung:</strong> Sie können die Löschung Ihrer Daten verlangen</li>
+            <li><strong>Einschränkung:</strong> Sie können die Verarbeitung einschränken lassen</li>
+            <li><strong>Datenportabilität:</strong> Sie können Ihre Daten in strukturierter Form erhalten</li>
+            <li><strong>Widerspruch:</strong> Sie können der Datenverarbeitung widersprechen</li>
+        </ul>
+
+        <h2>6. Google Analytics</h2>
+        <p>
+            Diese Website nutzt Google Analytics (nur mit Ihrer Einwilligung).
+            Google Analytics verwendet Cookies zur Analyse der Websitenutzung.
+            IP-Adressen werden anonymisiert (IP-Masking).
+        </p>
+
+        <h2>7. Hotjar</h2>
+        <p>
+            Wir nutzen Hotjar (nur mit Einwilligung) zur Analyse des Nutzerverhaltens.
+            Hotjar erfasst Mausbewegungen, Klicks und Scrollverhalten zur Verbesserung der Nutzererfahrung.
+        </p>
+
+        <h2>8. Speicherdauer</h2>
+        <p>
+            Wir speichern personenbezogene Daten nur so lange, wie dies für den jeweiligen Zweck erforderlich ist oder gesetzliche Aufbewahrungsfristen bestehen.
+        </p>
+
+        <h2>9. Sicherheit</h2>
+        <p>
+            Wir setzen technische und organisatorische Sicherheitsmaßnahmen ein, um Ihre Daten zu schützen:
+        </p>
+        <ul>
+            <li>SSL/TLS-Verschlüsselung</li>
+            <li>Argon2-Passwort-Hashing</li>
+            <li>Verschlüsselte Datenbank</li>
+            <li>Regelmäßige Sicherheitsupdates</li>
+        </ul>
+
+        <h2>10. Kontakt</h2>
+        <p>
+            Bei Fragen zum Datenschutz wenden Sie sich bitte an:<br>
+            E-Mail: [datenschutz@beispiel.de]
+        </p>
+
+        <p class="mt-8 text-sm text-gray-500">
+            Stand: {{ "now"|date:"d.m.Y" }}
+        </p>
+    </div>
+
+    <div class="mt-8">
+        <a href="{% url 'questionnaire:home' %}" class="text-red-500 hover:text-red-600">
+            ← Zurück zur Startseite
+        </a>
+    </div>
+</div>
+{% endblock %}

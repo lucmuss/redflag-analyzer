@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Willkommen bei RedFlag Analyzer!</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        h1 {
+            color: #EF4444;
+            margin-bottom: 10px;
+        }
+        .welcome-text {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #EF4444;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .cta-button:hover {
+            background-color: #DC2626;
+        }
+        .benefits {
+            background-color: #FEF2F2;
+            border-left: 4px solid #EF4444;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .benefits ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .benefits li {
+            margin: 8px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #999;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            text-decoration: none;
+            color: #EF4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🚩</div>
+            <h1>Willkommen bei RedFlag Analyzer!</h1>
+        </div>
+
+        <p class="welcome-text">
+            Hallo und herzlich willkommen! 👋
+        </p>
+
+        <p>
+            Vielen Dank, dass du dich für unseren Newsletter angemeldet hast. Wir freuen uns, dich auf deiner Reise zu gesünderen Beziehungen begleiten zu dürfen!
+        </p>
+
+        <div class="benefits">
+            <h2 style="margin-top: 0;">Das erwartet dich:</h2>
+            <ul>
+                <li>📊 <strong>Wöchentliche Beziehungstipps</strong> von Experten</li>
+                <li>📹 <strong>Exklusive Videos</strong> & Erklärvideos</li>
+                <li>🎙️ <strong>Podcast-Interviews</strong> mit Beziehungscoaches</li>
+                <li>📖 <strong>Case Studies</strong> & Success Stories</li>
+                <li>🎁 <strong>Early Access</strong> zu neuen Features</li>
+            </ul>
+        </div>
+
+        <p style="text-align: center;">
+            <strong>Bereit, Red Flags zu erkennen, bevor es zu spät ist?</strong>
+        </p>
+
+        <div style="text-align: center;">
+            <a href="{{ site_url }}" class="cta-button">
+                🚀 Jetzt Fragebogen starten
+            </a>
+        </div>
+
+        <p style="margin-top: 30px;">
+            <strong>Dein nächster Schritt:</strong><br>
+            Erstelle deinen kostenlosen Account und führe deine erste Beziehungsanalyse durch. Es dauert nur 10 Minuten und du erhältst sofort wertvolle Insights!
+        </p>
+
+        <p>
+            Hast du Fragen oder Feedback? Antworte einfach auf diese E-Mail – wir lesen jede Nachricht persönlich! 💌
+        </p>
+
+        <p style="margin-top: 30px;">
+            Mit freundlichen Grüßen,<br>
+            <strong>Dein RedFlag Analyzer Team</strong>
+        </p>
+
+        <div class="footer">
+            <div class="social-links">
+                <a href="#">Twitter</a> •
+                <a href="#">Instagram</a> •
+                <a href="#">LinkedIn</a>
+            </div>
+            <p>
+                Du erhältst diese E-Mail, weil du dich für unseren Newsletter angemeldet hast.<br>
+                <a href="{{ unsubscribe_url }}" style="color: #999;">Abmelden</a> | 
+                <a href="{{ site_url }}/datenschutz/" style="color: #999;">Datenschutz</a>
+            </p>
+            <p>
+                © {{ year }} RedFlag Analyzer. Alle Rechte vorbehalten.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

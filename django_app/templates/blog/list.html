@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header mit Email Subscription -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">📝 RedFlag Blog</h1>
+        <p class="text-xl text-gray-600 mb-8">
+            Beziehungswissen, Expertentipps & Success Stories
+        </p>
+        
+        <!-- Email Subscription Form (HTMX) -->
+        <form hx-post="{% url 'blog:subscribe' %}" 
+              hx-target="#subscription-message" 
+              hx-swap="innerHTML"
+              class="max-w-md mx-auto">
+            {% csrf_token %}
+            <input type="hidden" name="source" value="blog_header">
+            <div class="flex gap-2">
+                <input type="email" 
+                       name="email" 
+                       placeholder="Deine E-Mail für Updates..." 
+                       required
+                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                <button type="submit" 
+                        class="bg-red-flag hover:bg-red-600 text-white font-bold px-6 py-3 rounded-lg transition">
+                    Abonnieren
+                </button>
+            </div>
+            <div id="subscription-message"></div>
+        </form>
+    </div>
+
+    <!-- Search Bar -->
+    {% if search_query %}
+    <div class="mb-6">
+        <p class="text-gray-600">
+            Suche nach: <strong>"{{ search_query }}"</strong> 
+            <a href="{% url 'blog:list' %}" class="text-red-500 ml-2">Zurücksetzen</a>
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- Kategorie Filter -->
+    <div class="flex flex-wrap gap-2 mb-8 justify-center">
+        <a href="{% url 'blog:list' %}" 
+           class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-full text-sm font-medium transition">
+            Alle
+        </a>
+        {% for category in categories %}
+        <a href="{% url 'blog:category' category.slug %}" 
+           class="px-4 py-2 bg-white hover:bg-gray-100 border border-gray-300 rounded-full text-sm font-medium transition">
+            {{ category.icon }} {{ category.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Blog Posts Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for post in posts %}
+        <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+            {% if post.featured_image %}
+            <img src="{{ post.featured_image.url }}" 
+                 alt="{{ post.title }}" 
+                 class="w-full h-48 object-cover">
+            {% endif %}
+            
+            <div class="p-6">
+                <!-- Kategorie Badge -->
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-xs font-semibold px-3 py-1 bg-red-100 text-red-600 rounded-full">
+                        {{ post.category.icon }} {{ post.category.name }}
+                    </span>
+                    <span class="text-xs text-gray-500">
+                        {{ post.reading_time }} Min. Lesezeit
+                    </span>
+                </div>
+                
+                <h2 class="text-xl font-bold mb-2">
+                    <a href="{% url 'blog:detail' post.slug %}" 
+                       class="hover:text-red-500 transition">
+                        {{ post.title }}
+                    </a>
+                </h2>
+                
+                <p class="text-gray-600 mb-4">{{ post.excerpt|truncatewords:25 }}</p>
+                
+                <div class="flex items-center justify-between text-sm text-gray-500">
+                    <div class="flex items-center gap-2">
+                        <span>👤 {{ post.author.get_full_name|default:post.author.email }}</span>
+                    </div>
+                    <span>{{ post.published_at|date:"d.m.Y" }}</span>
+                </div>
+                
+                {% if post.category.category_type == 'video' and post.video_url %}
+                <div class="mt-4">
+                    <span class="text-sm text-red-500">📹 Video verfügbar</span>
+                </div>
+                {% elif post.category.category_type == 'podcast' and post.podcast_url %}
+                <div class="mt-4">
+                    <span class="text-sm text-red-500">🎙️ Podcast verfügbar</span>
+                </div>
+                {% endif %}
+            </div>
+        </article>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <p class="text-gray-500 text-lg">Noch keine Blog-Posts veröffentlicht.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

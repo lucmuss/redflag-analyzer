@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Mein RedFlag Score teilen - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">🎯 Teile deinen Score</h1>
+            <p class="text-gray-600 text-lg">Zeige deiner Community dein Ergebnis!</p>
+        </div>
+
+        <!-- Share Card (Ästhetisch für Social Media) -->
+        <div id="shareCard" class="bg-gradient-to-br from-red-500 to-orange-500 rounded-3xl shadow-2xl p-8 mb-8 text-white">
+            <div class="text-center">
+                <!-- Branding -->
+                <div class="mb-6">
+                    <div class="text-2xl font-bold mb-1">RedFlag Analyzer</div>
+                    <div class="text-red-100 text-sm">🚩 Beziehungsanalyse</div>
+                </div>
+
+                <!-- Score Display -->
+                <div class="bg-white/20 backdrop-blur-lg rounded-2xl p-8 mb-6">
+                    <div class="text-white/80 text-sm uppercase tracking-wider mb-2">Mein Red-Flag Score</div>
+                    <div class="text-7xl font-bold mb-2">{{ analysis.score_total }}/10</div>
+                    
+                    {% if analysis.score_total >= 7 %}
+                        <div class="text-2xl">🚨 Kritisch</div>
+                    {% elif analysis.score_total >= 4 %}
+                        <div class="text-2xl">⚠️ Bedenklich</div>
+                    {% else %}
+                        <div class="text-2xl">✅ Gesund</div>
+                    {% endif %}
+                </div>
+
+                <!-- Category Breakdown -->
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-4">
+                        <div class="text-xs text-white/70 mb-1">Kommunikation</div>
+                        <div class="text-2xl font-bold">{{ analysis.score_communication }}/10</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-4">
+                        <div class="text-xs text-white/70 mb-1">Respekt</div>
+                        <div class="text-2xl font-bold">{{ analysis.score_respect }}/10</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-4">
+                        <div class="text-xs text-white/70 mb-1">Vertrauen</div>
+                        <div class="text-2xl font-bold">{{ analysis.score_trust }}/10</div>
+                    </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="border-t border-white/20 pt-6">
+                    <div class="text-white/90 text-sm mb-2">Analysiere auch deine Beziehung</div>
+                    <div class="font-mono text-xl font-bold bg-white/20 backdrop-blur rounded-lg py-2 px-4 inline-block">
+                        {{ share_url|truncatechars:35 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Share Actions -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">🚀 Jetzt teilen</h2>
+            
+            <!-- Social Share Buttons -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <form method="post" action="{% url 'referrals:track_share' analysis.id %}" class="contents">
+                    {% csrf_token %}
+                    <input type="hidden" name="platform" value="whatsapp">
+                    <button type="submit" 
+                            onclick="shareToWhatsApp(event)"
+                            class="flex items-center justify-center gap-2 bg-green-500 text-white py-4 px-4 rounded-xl hover:bg-green-600 transition shadow-lg">
+                        <span class="text-2xl">💬</span>
+                        <span>WhatsApp</span>
+                    </button>
+                </form>
+
+                <form method="post" action="{% url 'referrals:track_share' analysis.id %}" class="contents">
+                    {% csrf_token %}
+                    <input type="hidden" name="platform" value="telegram">
+                    <button type="submit"
+                            onclick="shareToTelegram(event)"
+                            class="flex items-center justify-center gap-2 bg-blue-500 text-white py-4 px-4 rounded-xl hover:bg-blue-600 transition shadow-lg">
+                        <span class="text-2xl">✈️</span>
+                        <span>Telegram</span>
+                    </button>
+                </form>
+
+                <form method="post" action="{% url 'referrals:track_share' analysis.id %}" class="contents">
+                    {% csrf_token %}
+                    <input type="hidden" name="platform" value="facebook">
+                    <button type="submit"
+                            onclick="shareToFacebook(event)"
+                            class="flex items-center justify-center gap-2 bg-blue-600 text-white py-4 px-4 rounded-xl hover:bg-blue-700 transition shadow-lg">
+                        <span class="text-2xl">👍</span>
+                        <span>Facebook</span>
+                    </button>
+                </form>
+
+                <form method="post" action="{% url 'referrals:track_share' analysis.id %}" class="contents">
+                    {% csrf_token %}
+                    <input type="hidden" name="platform" value="twitter">
+                    <button type="submit"
+                            onclick="shareToTwitter(event)"
+                            class="flex items-center justify-center gap-2 bg-sky-500 text-white py-4 px-4 rounded-xl hover:bg-sky-600 transition shadow-lg">
+                        <span class="text-2xl">🐦</span>
+                        <span>Twitter</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Copy Link -->
+            <div class="border-t border-gray-200 pt-6">
+                <form method="post" action="{% url 'referrals:track_share' analysis.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="platform" value="link">
+                    <div class="flex gap-2">
+                        <input 
+                            type="text" 
+                            id="shareUrlInput" 
+                            value="{{ share_url }}" 
+                            readonly 
+                            class="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
+                        >
+                        <button type="submit" onclick="copyLink(event)" class="bg-red-500 text-white px-8 py-3 rounded-lg hover:bg-red-600 transition font-semibold">
+                            📋 Link kopieren
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Download Card Option -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 text-center">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">💾 Als Bild speichern</h3>
+            <p class="text-gray-600 mb-4">Speichere deine Score-Card als Bild für Instagram Stories oder andere Plattformen.</p>
+            <button onclick="downloadCard()" class="bg-gradient-to-r from-red-500 to-orange-500 text-white px-8 py-3 rounded-lg hover:opacity-90 transition font-semibold">
+                🖼️ Bild herunterladen
+            </button>
+        </div>
+
+        <!-- Back Button -->
+        <div class="text-center mt-8">
+            <a href="{% url 'analyses:detail' analysis.id %}" class="text-gray-600 hover:text-gray-900">
+                ← Zurück zur Analyse
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const shareText = "Ich habe meinen Red-Flag Score analysiert: {{ analysis.score_total }}/10! 🚩 Probiere es auch aus:";
+const shareUrl = "{{ share_url }}";
+
+function shareToWhatsApp(event) {
+    event.preventDefault();
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
+    event.target.closest('form').submit();
+}
+
+function shareToTelegram(event) {
+    event.preventDefault();
+    window.open(`https://telegram.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
+    event.target.closest('form').submit();
+}
+
+function shareToFacebook(event) {
+    event.preventDefault();
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+    event.target.closest('form').submit();
+}
+
+function shareToTwitter(event) {
+    event.preventDefault();
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+    event.target.closest('form').submit();
+}
+
+function copyLink(event) {
+    event.preventDefault();
+    const input = document.getElementById('shareUrlInput');
+    input.select();
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('✅ Link kopiert!');
+        event.target.closest('form').submit();
+    });
+}
+
+function downloadCard() {
+    const card = document.getElementById('shareCard');
+    html2canvas(card, {
+        scale: 2,
+        backgroundColor: null
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'redflag-score-{{ analysis.id }}.png';
+        link.href = canvas.toDataURL();
+        link.click();
+        
+        // Track als Download
+        fetch("{% url 'referrals:track_share' analysis.id %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'platform=download&share_type=score_card_image'
+        });
+    });
+}
+</script>
+{% endblock %}

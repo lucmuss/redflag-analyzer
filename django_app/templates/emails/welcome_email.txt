@@ -1,0 +1,33 @@
+🚩 WILLKOMMEN BEI REDFLAG ANALYZER!
+
+Hallo und herzlich willkommen! 👋
+
+Vielen Dank, dass du dich für unseren Newsletter angemeldet hast. Wir freuen uns, dich auf deiner Reise zu gesünderen Beziehungen begleiten zu dürfen!
+
+DAS ERWARTET DICH:
+==================
+- 📊 Wöchentliche Beziehungstipps von Experten
+- 📹 Exklusive Videos & Erklärvideos
+- 🎙️ Podcast-Interviews mit Beziehungscoaches
+- 📖 Case Studies & Success Stories
+- 🎁 Early Access zu neuen Features
+
+BEREIT, RED FLAGS ZU ERKENNEN, BEVOR ES ZU SPÄT IST?
+
+🚀 Jetzt Fragebogen starten: {{ site_url }}
+
+DEIN NÄCHSTER SCHRITT:
+======================
+Erstelle deinen kostenlosen Account und führe deine erste Beziehungsanalyse durch. Es dauert nur 10 Minuten und du erhältst sofort wertvolle Insights!
+
+Hast du Fragen oder Feedback? Antworte einfach auf diese E-Mail – wir lesen jede Nachricht persönlich! 💌
+
+Mit freundlichen Grüßen,
+Dein RedFlag Analyzer Team
+
+---
+Du erhältst diese E-Mail, weil du dich für unseren Newsletter angemeldet hast.
+Abmelden: {{ unsubscribe_url }}
+Datenschutz: {{ site_url }}/datenschutz/
+
+© {{ year }} RedFlag Analyzer. Alle Rechte vorbehalten.

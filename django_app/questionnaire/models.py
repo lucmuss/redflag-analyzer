@@ -4,6 +4,7 @@ Relationaler Ansatz mit Foreign Keys
 """
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.conf import settings
 
 
 class Question(models.Model):
@@ -65,3 +66,56 @@ class Question(models.Model):
     def get_text(self, language='de'):
         """Business Logic: Hole Text in bevorzugter Sprache."""
         return self.text_de if language == 'de' else self.text_en
+
+
+class WeightResponse(models.Model):
+    """
+    User-spezifische Gewichtungen für Questions.
+    Erlaubt personalisierte Score-Berechnungen basierend auf individueller Wichtigkeit.
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='weight_responses'
+    )
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name='weight_responses'
+    )
+    importance = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        help_text="User's importance rating (1-10)"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'weight_responses'
+        unique_together = [['user', 'question']]
+        indexes = [
+            models.Index(fields=['user', 'question']),
+        ]
+        ordering = ['question__category', 'question__key']
+    
+    def __str__(self):
+        return f"{self.user.email} - {self.question.key}: {self.importance}/10"
+    
+    @classmethod
+    def get_user_weights(cls, user) -> dict:
+        """
+        Business Logic: Hole alle Gewichtungen eines Users.
+        Returns: {question_key: importance_value}
+        """
+        weights = cls.objects.filter(user=user).select_related('question')
+        return {wr.question.key: wr.importance for wr in weights}
+    
+    @classmethod
+    def has_completed_importance_questionnaire(cls, user) -> bool:
+        """
+        Business Logic: Prüfe ob User Importance Questionnaire ausgefüllt hat.
+        """
+        active_questions_count = Question.objects.filter(is_active=True).count()
+        user_weights_count = cls.objects.filter(user=user).count()
+        return user_weights_count == active_questions_count

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Profil - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">Mein Profil</h1>
+        
+        <!-- User Info -->
+        <div class="space-y-6">
+            <div class="border-b border-gray-200 pb-4">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Account-Informationen</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">E-Mail</label>
+                        <p class="mt-1 text-gray-900">{{ user.email }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Credits</label>
+                        <p class="mt-1 text-2xl font-bold text-red-flag">
+                            {% if user.email == 'skymuss@gmail.com' %}
+                                ∞ (Testbenutzer)
+                            {% else %}
+                                {{ user.credits }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Mitglied seit</label>
+                        <p class="mt-1 text-gray-900">{{ user.created_at|date:"d.m.Y" }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">E-Mail verifiziert</label>
+                        <p class="mt-1">
+                            {% if user.is_verified %}
+                                <span class="text-green-600">✓ Ja</span>
+                            {% else %}
+                                <span class="text-yellow-600">⚠ Nein</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="pt-4">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Aktionen</h2>
+                
+                <div class="space-y-3">
+                    <a href="{% url 'questionnaire:questionnaire' %}" 
+                       class="block w-full md:w-auto inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-flag hover:bg-red-600">
+                        🚩 Neue Analyse starten
+                    </a>
+                    
+                    <a href="{% url 'analyses:list' %}" 
+                       class="block w-full md:w-auto inline-flex justify-center items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        📊 Meine Analysen ansehen
+                    </a>
+                    
+                    {% if user.email != 'skymuss@gmail.com' %}
+                    <a href="#" 
+                       class="block w-full md:w-auto inline-flex justify-center items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        💳 Credits kaufen
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Info Box für Testnutzer -->
+            {% if user.email == 'skymuss@gmail.com' %}
+            <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h3 class="font-bold text-blue-900 mb-2">ℹ️ Testbenutzer-Modus</h3>
+                <p class="text-blue-800 text-sm">
+                    Du bist als Testbenutzer angemeldet und hast unbegrenzte Credits.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

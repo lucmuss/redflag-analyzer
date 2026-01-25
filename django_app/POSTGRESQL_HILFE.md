@@ -174,8 +174,8 @@ sudo -u postgres createuser --interactive --pwprompt
 
 # Oder in psql:
 CREATE USER redflag_user WITH PASSWORD 'sicheres_passwort';
-CREATE DATABASE redflag_db OWNER redflag_user;
-GRANT ALL PRIVILEGES ON DATABASE redflag_db TO redflag_user;
+CREATE DATABASE "redflag-analyzer" OWNER redflag_user;
+GRANT ALL PRIVILEGES ON DATABASE "redflag-analyzer" TO redflag_user;
 ```
 
 ---
@@ -185,15 +185,15 @@ GRANT ALL PRIVILEGES ON DATABASE redflag_db TO redflag_user;
 ### Datenbank erstellen
 ```bash
 # Als postgres-User
-sudo -u postgres createdb redflag_db
+sudo -u postgres createdb redflag-analyzer
 
 # Oder als normaler User (wenn konfiguriert)
-createdb redflag_db
+createdb redflag-analyzer
 ```
 
 ### Datenbank löschen
 ```bash
-dropdb redflag_db
+dropdb redflag-analyzer
 ```
 
 ### Alle Datenbanken anzeigen
@@ -203,7 +203,7 @@ psql -U postgres -l
 
 ### Verbindung testen
 ```bash
-psql -U postgres -d redflag_db -c "SELECT 1;"
+psql -U postgres -d redflag-analyzer -c "SELECT 1;"
 ```
 
 ---
@@ -244,7 +244,7 @@ sudo -u postgres createuser -s $(whoami)
 ```bash
 # Als postgres-User Rechte geben
 sudo -u postgres psql
-GRANT ALL PRIVILEGES ON DATABASE redflag_db TO dein_username;
+GRANT ALL PRIVILEGES ON DATABASE "redflag-analyzer" TO dein_username;
 \q
 ```
 

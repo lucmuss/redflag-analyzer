@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Upgrade zu Premium - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-yellow-50 to-amber-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                🚀 Upgrade zu Premium
+            </h1>
+            <p class="text-xl text-gray-600">
+                Schalte alle Features frei für nur €20/Jahr
+            </p>
+        </div>
+
+        <!-- Pricing Card -->
+        <div class="bg-gradient-to-br from-yellow-100 to-amber-100 rounded-2xl shadow-2xl p-8 md:p-12 border-4 border-yellow-400 mb-8">
+            <div class="text-center mb-8">
+                <div class="text-6xl mb-4">💎</div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Premium Jahresabo</h2>
+                <div class="text-5xl font-bold text-gray-900 mb-2">€20</div>
+                <p class="text-lg text-gray-700">Nur €1.67 pro Monat</p>
+                <p class="text-sm text-gray-600 mt-2">Einmalige Zahlung • 12 Monate Zugang</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 mb-6">
+                <h3 class="font-bold text-lg mb-4 text-center">Das bekommst du:</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-center">
+                        <span class="text-green-600 mr-3 text-xl">✓</span>
+                        <span class="font-semibold">Unbegrenzte Analysen</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-green-600 mr-3 text-xl">✓</span>
+                        <span><strong>Percentile-Ranking:</strong> Vergleich mit deiner Altersgruppe</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-green-600 mr-3 text-xl">✓</span>
+                        <span><strong>Altersgruppen-Stats:</strong> Durchschnitt in 5-Jahres-Schritten</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-green-600 mr-3 text-xl">✓</span>
+                        <span><strong>Regional Heatmap:</strong> Vergleich nach Ländern</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-green-600 mr-3 text-xl">✓</span>
+                        <span><strong>PDF-Export:</strong> Professionelle Reports</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-green-600 mr-3 text-xl">✓</span>
+                        <span><strong>Priority Support</strong></span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Payment Info -->
+            <div class="bg-white bg-opacity-50 rounded-xl p-6 mb-6">
+                <h3 class="font-bold text-gray-900 mb-3">💳 Zahlung</h3>
+                <p class="text-gray-700 mb-4">
+                    Die Zahlung erfolgt sicher über Stripe. Wir akzeptieren alle gängigen Kreditkarten und Zahlungsmethoden.
+                </p>
+                <div class="flex items-center justify-center space-x-4 text-3xl">
+                    <span>💳</span>
+                    <span>🏦</span>
+                    <span>📱</span>
+                </div>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="text-center">
+                <p class="text-sm text-gray-600 mb-4">
+                    ⚠️ Stripe-Integration wird in Kürze aktiviert
+                </p>
+                <button disabled class="w-full bg-gray-400 text-white py-4 rounded-xl font-bold text-lg cursor-not-allowed opacity-75">
+                    Zahlung (Coming Soon)
+                </button>
+                <p class="text-xs text-gray-500 mt-3">
+                    Kontaktiere den Admin für manuelle Premium-Aktivierung
+                </p>
+            </div>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="grid md:grid-cols-3 gap-6 text-center">
+                <div>
+                    <div class="text-3xl mb-2">🔒</div>
+                    <h4 class="font-semibold text-gray-900">Sichere Zahlung</h4>
+                    <p class="text-sm text-gray-600">256-bit SSL Verschlüsselung</p>
+                </div>
+                <div>
+                    <div class="text-3xl mb-2">✅</div>
+                    <h4 class="font-semibold text-gray-900">Sofortiger Zugang</h4>
+                    <p class="text-sm text-gray-600">Features sofort freigeschaltet</p>
+                </div>
+                <div>
+                    <div class="text-3xl mb-2">🇩🇪</div>
+                    <h4 class="font-semibold text-gray-900">DSGVO-konform</h4>
+                    <p class="text-sm text-gray-600">Made in Germany</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h3 class="font-bold text-xl mb-4">Häufige Fragen</h3>
+            <div class="space-y-4">
+                <div>
+                    <h4 class="font-semibold text-gray-900">Was passiert nach der Zahlung?</h4>
+                    <p class="text-gray-600 text-sm">Dein Account wird sofort auf Premium upgegradet und alle Features sind verfügbar.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Verlängert sich das Abo automatisch?</h4>
+                    <p class="text-gray-600 text-sm">Nein, es ist eine einmalige Zahlung für 12 Monate. Du entscheidest nach Ablauf, ob du verlängern möchtest.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Kann ich meine Meinung ändern?</h4>
+                    <p class="text-gray-600 text-sm">Ja, du hast 14 Tage Widerrufsrecht gemäß deutschem Verbraucherrecht.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Link -->
+        <div class="text-center mt-8">
+            <a href="{% url 'subscriptions:premium' %}" class="text-gray-600 hover:text-gray-900">
+                ← Zurück zur Übersicht
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

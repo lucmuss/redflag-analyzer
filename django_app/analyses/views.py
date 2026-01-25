@@ -9,6 +9,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.contrib import messages
 from .models import Analysis
+from .analytics import AnalyticsService
+from .image_generator import ShareImageGenerator
+from .statistics import StatisticsService
+from subscriptions.models import Subscription
+from django.http import FileResponse
 
 
 class AnalysisListView(LoginRequiredMixin, ListView):
@@ -49,11 +54,29 @@ class AnalysisDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         analysis = self.object
         
+        # Subscription Status holen
+        subscription, _ = Subscription.objects.get_or_create(user=self.request.user)
+        context['subscription'] = subscription
+        context['is_premium'] = subscription.is_premium
+        
         if analysis.is_unlocked:
             # Hole Category Scores (optimiert mit prefetch)
             context['category_scores'] = analysis.category_scores.all()
             # Hole Top Red Flags (Business Logic im Model)
             context['top_red_flags'] = analysis.get_top_red_flags(limit=5)
+            
+            # Compare with Average
+            context['comparison'] = StatisticsService.compare_with_average(analysis)
+            
+            # PREMIUM FEATURES: Analytics & Insights
+            if subscription.is_premium:
+                # Generiere Premium Insights
+                premium_insights = AnalyticsService.get_user_premium_insights(analysis)
+                context['premium_insights'] = premium_insights
+                context['show_premium_features'] = True
+            else:
+                context['show_premium_features'] = False
+                context['show_premium_paywall'] = True
         
         context['user_credits'] = self.request.user.credits
         return context
@@ -97,3 +120,26 @@ class UnlockAnalysisView(LoginRequiredMixin, View):
         
         # Fallback für Non-HTMX Requests
         return redirect('analyses:detail', pk=pk)
+
+
+class GenerateShareImageView(LoginRequiredMixin, View):
+    """
+    Generiert und liefert Share-Grafik für eine Analyse.
+    Format: 'story' für Instagram Story (1080x1920), 'post' für Standard (1200x630)
+    """
+    
+    def get(self, request, pk, format='post'):
+        analysis = get_object_or_404(Analysis, pk=pk, user=request.user, is_unlocked=True)
+        
+        # Generiere Grafik basierend auf Format
+        if format == 'story':
+            filepath = ShareImageGenerator.generate_instagram_story(analysis)
+        else:
+            filepath = ShareImageGenerator.generate_standard_post(analysis)
+        
+        # Liefere Datei als Download
+        return FileResponse(
+            open(filepath, 'rb'),
+            as_attachment=True,
+            filename=f'redflag_analysis_{analysis.id}_{format}.png'
+        )

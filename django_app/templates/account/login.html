@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Login - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Bei deinem Konto anmelden
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Oder
+                <a href="{% url 'account_signup' %}" class="font-medium text-red-flag hover:text-red-600">
+                    erstelle ein neues Konto
+                </a>
+            </p>
+        </div>
+        
+        <form class="mt-8 space-y-6" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <div class="rounded-md shadow-sm -space-y-px">
+                <div>
+                    <label for="{{ form.login.id_for_label }}" class="sr-only">E-Mail</label>
+                    <input id="{{ form.login.id_for_label }}" 
+                           name="{{ form.login.html_name }}" 
+                           type="email" 
+                           required 
+                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-red-flag focus:border-red-flag focus:z-10 sm:text-sm" 
+                           placeholder="E-Mail Adresse"
+                           value="{{ form.login.value|default:'' }}">
+                    {% if form.login.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.login.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="{{ form.password.id_for_label }}" class="sr-only">Passwort</label>
+                    <input id="{{ form.password.id_for_label }}" 
+                           name="{{ form.password.html_name }}" 
+                           type="password" 
+                           required 
+                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-red-flag focus:border-red-flag focus:z-10 sm:text-sm" 
+                           placeholder="Passwort">
+                    {% if form.password.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.password.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input id="{{ form.remember.id_for_label }}" 
+                           name="{{ form.remember.html_name }}" 
+                           type="checkbox" 
+                           class="h-4 w-4 text-red-flag focus:ring-red-flag border-gray-300 rounded"
+                           {% if form.remember.value %}checked{% endif %}>
+                    <label for="{{ form.remember.id_for_label }}" class="ml-2 block text-sm text-gray-900">
+                        Angemeldet bleiben
+                    </label>
+                </div>
+
+                <div class="text-sm">
+                    <a href="{% url 'account_reset_password' %}" class="font-medium text-red-flag hover:text-red-600">
+                        Passwort vergessen?
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-flag hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-flag">
+                    Anmelden
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -91,7 +91,7 @@ pip install -r requirements.txt
 
 ### 6. PostgreSQL Service starten
 
-**Linux:**
+**Linux/WSL:**
 ```bash
 sudo service postgresql start
 ```
@@ -104,28 +104,68 @@ brew services start postgresql@14
 **Windows:**
 PostgreSQL läuft normalerweise automatisch nach Installation.
 
-### 7. Datenbank erstellen
+### 7. PostgreSQL-Benutzer und Datenbank erstellen
 
-**Option A - Mit createdb Kommando:**
+**Für WSL/Ubuntu-Nutzer (WICHTIG!):**
+
+PostgreSQL unter Linux verwendet standardmäßig "Peer Authentication", die deinen Linux-Benutzernamen erwartet. Du musst zuerst einen PostgreSQL-Benutzer erstellen:
+
 ```bash
-createdb redflag_db
+# Als postgres-Benutzer anmelden
+sudo -u postgres psql
+
+# In der psql Shell - PostgreSQL-Benutzer erstellen (mit deinem Linux-Benutzernamen):
+CREATE USER skymuss WITH PASSWORD 'dein_passwort';
+ALTER USER skymuss CREATEDB;
+
+# Oder als Superuser (mit allen Rechten):
+ALTER USER skymuss WITH SUPERUSER;
+
+# Shell verlassen
+\q
+```
+
+**Jetzt Datenbank erstellen:**
+
+**Option A - Mit createdb Kommando (Empfohlen für WSL/Linux):**
+```bash
+createdb redflag-analyzer
 ```
 
 **Option B - Mit psql:**
 ```bash
-# PostgreSQL Shell öffnen
-psql -U postgres
+# Als dein Benutzer
+psql -U skymuss -d postgres
 
 # In der psql Shell:
-CREATE DATABASE redflag_db;
+CREATE DATABASE "redflag-analyzer";
 \q
 ```
 
-**Option C - Mit pgAdmin:**
+**Option C - Als postgres-Benutzer:**
+```bash
+sudo -u postgres psql
+
+# In der psql Shell:
+CREATE DATABASE "redflag-analyzer";
+GRANT ALL PRIVILEGES ON DATABASE "redflag-analyzer" TO skymuss;
+\q
+```
+
+**Option D - Mit pgAdmin:**
 1. pgAdmin öffnen
 2. Rechtsklick auf "Databases" → "Create" → "Database"
-3. Name: `redflag_db`
+3. Name: `redflag-analyzer`
 4. Save
+
+**Datenbank verifizieren:**
+```bash
+# Alle Datenbanken auflisten
+psql -l
+
+# Oder:
+psql -U skymuss -d redflag-analyzer -c "\dt"
+```
 
 ---
 
@@ -148,8 +188,13 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 
 # Database (PostgreSQL)
 # Format: postgresql://USER:PASSWORD@HOST:PORT/DATABASE
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/redflag_db
+DATABASE_URL=postgresql://skymuss:dein_passwort@localhost:5432/redflag-analyzer
 ```
+
+**Für WSL/Ubuntu:**
+- User: Dein Linux-Benutzername (z.B. `skymuss`)
+- Password: Das Passwort, das du bei `CREATE USER` gesetzt hast
+- Database: `redflag-analyzer`
 
 🔑 **SECRET_KEY generieren:**
 ```bash
@@ -159,10 +204,12 @@ python3 -c 'from django.core.management.utils import get_random_secret_key; prin
 Kopiere den Output und füge ihn als `SECRET_KEY` in `.env` ein.
 
 **PostgreSQL Zugangsdaten:**
-- Standard-User: `postgres`
-- Standard-Password: Dein bei Installation festgelegtes Passwort
+- **WSL/Ubuntu:** User ist dein Linux-Benutzername (z.B. `skymuss`)
+- **Windows/Mac:** Standard-User ist `postgres`
+- Password: Dein festgelegtes Passwort
 - Host: `localhost`
 - Port: `5432`
+- Datenbank: `redflag-analyzer`
 
 ---
 
@@ -310,10 +357,39 @@ python manage.py runserver 8001
 python manage.py migrate --fake-initial
 
 # Oder Datenbank komplett neu:
-dropdb redflag_db
-createdb redflag_db
+dropdb redflag-analyzer
+createdb redflag-analyzer
 python manage.py migrate
 python manage.py seed_questions
+```
+
+### Problem: "role 'USERNAME' does not exist" oder "Peer authentication failed"
+**Lösung für WSL/Ubuntu:**
+```bash
+# PostgreSQL-Benutzer erstellen
+sudo -u postgres psql
+CREATE USER skymuss WITH PASSWORD 'dein_passwort' CREATEDB SUPERUSER;
+\q
+
+# Oder pg_hba.conf anpassen für md5-Authentication:
+sudo nano /etc/postgresql/*/main/pg_hba.conf
+# Ändere "peer" zu "md5" für local connections
+# Dann PostgreSQL neu starten:
+sudo service postgresql restart
+```
+
+### Problem: createdb oder psql funktioniert nicht
+**Lösung:**
+```bash
+# Stelle sicher, dass PostgreSQL läuft:
+sudo service postgresql status
+sudo service postgresql start
+
+# Überprüfe, ob dein Benutzer existiert:
+sudo -u postgres psql -c "\du"
+
+# Erstelle Benutzer falls nicht vorhanden:
+sudo -u postgres createuser -s skymuss
 ```
 
 ### Problem: "No module named 'django'"

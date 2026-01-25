@@ -10,7 +10,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # PWA URLs
-    path('', include('pwa.urls')),
+    path('', include(('pwa.urls', 'pwa'), namespace='pwa')),
     
     # Authentication (Django Allauth)
     path('accounts/', include('allauth.urls')),
@@ -19,6 +19,11 @@ urlpatterns = [
     path('', include('questionnaire.urls')),
     path('analyses/', include('analyses.urls')),
     path('profile/', include('accounts.urls')),
+    path('feedback/', include('feedback.urls')),
+    path('subscriptions/', include('subscriptions.urls')),
+    path('referrals/', include('referrals.urls')),
+    path('blog/', include('blog.urls')),
+    path('', include('legal.urls')),
 ]
 
 # Static/Media Files in Development

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Meine Analysen - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Meine Analysen</h1>
+        <p class="text-gray-600">
+            Hier findest du alle deine bisherigen Beziehungsanalysen.
+        </p>
+    </div>
+
+    {% if analyses %}
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {% for analysis in analyses %}
+                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">
+                                Analyse #{{ analysis.id }}
+                            </h3>
+                            <p class="text-sm text-gray-500">
+                                {{ analysis.created_at|date:"d.m.Y H:i" }}
+                            </p>
+                        </div>
+                        
+                        <!-- Status Badge -->
+                        {% if analysis.is_unlocked %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                ✓ Entsperrt
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                🔒 Gesperrt
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if analysis.is_unlocked %}
+                        <!-- Preview der Ergebnisse -->
+                        <div class="mb-4 space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Gesamt-Score:</span>
+                                <span class="font-semibold text-red-flag">{{ analysis.total_score|floatformat:1 }}/5.0</span>
+                            </div>
+                            
+                            {% if analysis.category_scores %}
+                                <div class="text-xs text-gray-500">
+                                    {% for category, score in analysis.category_scores.items %}
+                                        <div class="flex justify-between">
+                                            <span>{{ category }}:</span>
+                                            <span>{{ score|floatformat:1 }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <a href="{% url 'analyses:detail' analysis.id %}" 
+                           class="block w-full text-center px-4 py-2 bg-red-flag text-white rounded-md hover:bg-red-600 transition">
+                            Details ansehen
+                        </a>
+                    {% else %}
+                        <!-- Locked State -->
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600">
+                                Diese Analyse ist noch gesperrt. Entsperre sie für 1 Credit, um die detaillierten Ergebnisse zu sehen.
+                            </p>
+                        </div>
+                        
+                        <a href="{% url 'analyses:detail' analysis.id %}" 
+                           class="block w-full text-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition">
+                            Entsperren (1 Credit)
+                        </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Leerzustand -->
+        <div class="text-center py-12">
+            <div class="text-6xl mb-4">📊</div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Noch keine Analysen</h3>
+            <p class="text-gray-600 mb-6">
+                Starte jetzt deinen ersten Fragebogen und erhalte wertvolle Einblicke in deine Beziehung.
+            </p>
+            <a href="{% url 'questionnaire:questionnaire' %}" 
+               class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-flag hover:bg-red-600">
+                🚩 Fragebogen starten
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -81,11 +81,11 @@ cp .env.example .env
 ### 4. Datenbank erstellen
 ```bash
 # PostgreSQL Datenbank erstellen
-createdb redflag_db
+createdb redflag-analyzer
 
 # Oder mit psql:
 psql -U postgres
-CREATE DATABASE redflag_db;
+CREATE DATABASE "redflag-analyzer";
 \q
 ```
 

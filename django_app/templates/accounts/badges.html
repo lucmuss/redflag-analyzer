@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Meine Badges - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">🏆 Deine Badges</h1>
+            <p class="text-gray-600">Sammle Badges durch aktive Nutzung und werde zum RedFlag-Experten!</p>
+            
+            <!-- Fortschrittsbalken -->
+            <div class="mt-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-gray-700">Fortschritt</span>
+                    <span class="text-sm font-medium text-gray-700">{{ progress.earned_count }}/{{ progress.total_badges }} Badges</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-red-flag h-3 rounded-full transition-all duration-500" style="width: {{ progress.percentage }}%"></div>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">
+                    <span class="font-semibold text-red-flag">{{ progress.total_points }}</span> Punkte insgesamt
+                </p>
+            </div>
+        </div>
+
+        <!-- Verdiente Badges -->
+        {% if earned_badges %}
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">✨ Verdiente Badges</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for badge in earned_badges %}
+                <div class="border-2 border-green-200 bg-green-50 rounded-lg p-4 flex items-start space-x-4">
+                    <div class="text-4xl">{{ badge.icon }}</div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900">{{ badge.title }}</h3>
+                        <p class="text-sm text-gray-600 mt-1">{{ badge.description }}</p>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs text-green-600 font-medium">+{{ badge.points }} Punkte</span>
+                            <span class="text-xs text-gray-500">{{ badge.earned_at|date:"d.m.Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Nächste Badges -->
+        {% if progress.next_badges %}
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🎯 Nächste Ziele</h2>
+            <div class="space-y-3">
+                {% for next_badge in progress.next_badges %}
+                <div class="border-2 border-gray-200 bg-gray-50 rounded-lg p-4 flex items-start space-x-4 hover:border-red-flag transition-colors">
+                    <div class="text-3xl opacity-50">{{ next_badge.title|slice:":2" }}</div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-700">{{ next_badge.title|slice:"2:" }}</h3>
+                        <p class="text-sm text-gray-600 mt-1">{{ next_badge.hint }}</p>
+                        {% if next_badge.progress_count is not None %}
+                        <div class="mt-2">
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-flag h-2 rounded-full" style="width: {{ next_badge.progress_count|floatformat:0|add:'0'|divisibleby:next_badge.required_count|yesno:'100,66' }}%"></div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Alle verfügbaren Badges -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">📋 Alle Badges</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for badge_key, badge_def in all_badges.items %}
+                <div class="border rounded-lg p-4 {% if badge_key in earned_badge_keys %}bg-green-50 border-green-200{% else %}bg-gray-50 border-gray-200 opacity-60{% endif %}">
+                    <div class="flex items-start space-x-3">
+                        <div class="text-3xl">{{ badge_def.icon }}</div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-900">{{ badge_def.title }}</h3>
+                            <p class="text-sm text-gray-600 mt-1">{{ badge_def.description }}</p>
+                            <span class="text-xs text-gray-500 mt-2 inline-block">{{ badge_def.points }} Punkte</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="mt-6 text-center">
+            <a href="{% url 'home' %}" class="inline-block bg-red-flag text-white px-6 py-3 rounded-lg font-medium hover:bg-red-600 transition-colors">
+                Neue Analyse starten
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

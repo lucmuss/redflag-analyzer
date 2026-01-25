@@ -29,7 +29,7 @@ source venv/bin/activate  # Linux/Mac
 pip install -r requirements.txt
 
 # 4. PostgreSQL Datenbank erstellen
-createdb redflag_db
+createdb redflag-analyzer
 
 # 5. .env konfigurieren
 cp .env.example .env

@@ -51,28 +51,36 @@ logs/
 # Database
 *.db
 *.sqlite3
+*.sqlite3-journal
 
-# Flutter
-flutter/.dart_tool/
-flutter/.flutter-plugins
-flutter/.flutter-plugins-dependencies
-flutter/.packages
-flutter/build/
-flutter/.pub-cache/
-flutter/.pub/
-flutter/ios/Pods/
-flutter/ios/.symlinks/
-flutter/android/.gradle/
-flutter/android/app/debug/
-flutter/android/app/profile/
-flutter/android/app/release/
+# Django
+django_app/staticfiles/
+django_app/static_root/
+django_app/media/
+django_app/db.sqlite3
+*.pyc
+*.pyo
+*.log
+*.pot
+.pytest_cache/
+celerybeat-schedule
+celerybeat.pid
 
-# Flutter Web - Generated Files (aber web/ Source bleibt!)
-flutter/web/flutter_service_worker.js
-flutter/web/version.json
+# Django migrations (optional - manche Teams committen diese)
+# **/migrations/*.py
+# !**/migrations/__init__.py
 
-# WICHTIG: web/ Ordner selbst NICHT ignorieren!
-# web/ enthält Source-Code (index.html, manifest.json, icons)
+# Django collected static files
+django_app/collected_static/
+django_app/static/admin/
+django_app/static/rest_framework/
+
+# Django session files
+django.session.*
+
+# Alte Implementierungen (nicht mehr verwendet)
+flutter/
+backend/
 
 # macOS
 .DS_Store

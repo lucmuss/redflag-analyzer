@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Feedback senden{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            💬 Feedback & Bug Reports
+        </h1>
+        <p class="text-gray-600">
+            Deine Meinung ist uns wichtig! Teile uns Bugs, Feature-Wünsche oder Verbesserungsvorschläge mit.
+        </p>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Feedback Type -->
+            <div>
+                <label for="id_feedback_type" class="block text-sm font-medium text-gray-700 mb-2">
+                    Art des Feedbacks *
+                </label>
+                <select 
+                    name="feedback_type" 
+                    id="id_feedback_type" 
+                    required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent"
+                >
+                    <option value="bug">🐛 Bug Report</option>
+                    <option value="feature">✨ Feature Request</option>
+                    <option value="improvement">📈 Verbesserungsvorschlag</option>
+                    <option value="other">💭 Sonstiges</option>
+                </select>
+            </div>
+
+            <!-- Subject -->
+            <div>
+                <label for="id_subject" class="block text-sm font-medium text-gray-700 mb-2">
+                    Betreff *
+                </label>
+                <input 
+                    type="text" 
+                    name="subject" 
+                    id="id_subject" 
+                    required
+                    maxlength="200"
+                    placeholder="z.B. Fragebogen-Button funktioniert nicht"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent"
+                >
+            </div>
+
+            <!-- Message -->
+            <div>
+                <label for="id_message" class="block text-sm font-medium text-gray-700 mb-2">
+                    Nachricht *
+                </label>
+                <textarea 
+                    name="message" 
+                    id="id_message" 
+                    required
+                    rows="8"
+                    placeholder="Beschreibe dein Feedback so detailliert wie möglich..."
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent resize-none"
+                ></textarea>
+                <p class="text-xs text-gray-500 mt-1">
+                    💡 Tipp: Je detaillierter, desto besser können wir dir helfen!
+                </p>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="flex gap-4">
+                <button 
+                    type="submit" 
+                    class="flex-1 bg-red-flag hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition transform hover:scale-105"
+                >
+                    📤 Feedback absenden
+                </button>
+                
+                <a 
+                    href="{% url 'questionnaire:home' %}" 
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg transition"
+                >
+                    Abbrechen
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Info Box -->
+    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-8">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <span class="text-2xl">ℹ️</span>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">
+                    Dein Feedback wird vertraulich behandelt
+                </h3>
+                <p class="mt-2 text-sm text-blue-700">
+                    Wir nehmen jedes Feedback ernst und werden uns bemühen, schnellstmöglich zu antworten. 
+                    Du kannst den Status deiner Feedbacks in deinem <a href="{% url 'feedback:list' %}" class="underline font-medium">Feedback-Verlauf</a> einsehen.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@ Admin Interface für Users und Profiles
 """
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, UserProfile
+from .models import User, UserProfile, BannedIP, BannedEmail, UserBadge
 
 
 class UserProfileInline(admin.StackedInline):
@@ -35,4 +35,37 @@ class UserAdmin(BaseUserAdmin):
             'classes': ('wide',),
             'fields': ('email', 'password1', 'password2', 'credits'),
         }),
+    )
+
+
+@admin.register(BannedIP)
+class BannedIPAdmin(admin.ModelAdmin):
+    list_display = ['ip_address', 'reason', 'banned_by', 'banned_at']
+    list_filter = ['banned_at']
+    search_fields = ['ip_address', 'reason']
+    ordering = ['-banned_at']
+    readonly_fields = ['banned_at']
+
+
+@admin.register(BannedEmail)
+class BannedEmailAdmin(admin.ModelAdmin):
+    list_display = ['email', 'reason', 'banned_by', 'banned_at']
+    list_filter = ['banned_at']
+    search_fields = ['email', 'reason']
+    ordering = ['-banned_at']
+    readonly_fields = ['banned_at']
+
+
+@admin.register(UserBadge)
+class UserBadgeAdmin(admin.ModelAdmin):
+    list_display = ['user', 'title', 'icon', 'points', 'earned_at']
+    list_filter = ['badge_key', 'earned_at']
+    search_fields = ['user__email', 'title', 'badge_key']
+    ordering = ['-earned_at']
+    readonly_fields = ['earned_at']
+    
+    fieldsets = (
+        ('Badge Info', {'fields': ('user', 'badge_key', 'name', 'title', 'icon')}),
+        ('Details', {'fields': ('description', 'points')}),
+        ('Timestamps', {'fields': ('earned_at',)}),
     )

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Willkommen - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl w-full">
+        <!-- Motivation Screen -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+            <div class="text-center mb-8">
+                <div class="text-6xl mb-4">🚩</div>
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                    Willkommen beim RedFlag Analyzer
+                </h1>
+                <p class="text-xl text-gray-600">
+                    Dein persönlicher Beziehungs-Check für mehr Klarheit
+                </p>
+            </div>
+
+            <!-- Warum RedFlag Analyzer? -->
+            <div class="space-y-6 mb-10">
+                <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">
+                    Warum RedFlag Analyzer nutzen?
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Benefit 1 -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 text-3xl">🔍</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-1">Objektive Analyse</h3>
+                            <p class="text-gray-600 text-sm">
+                                Erhalte eine unvoreingenommene Einschätzung deiner Beziehung basierend auf bewährten psychologischen Kriterien.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Benefit 2 -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 text-3xl">💡</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-1">Selbstreflexion</h3>
+                            <p class="text-gray-600 text-sm">
+                                Lerne deine eigenen Prioritäten und Grenzen in Beziehungen besser kennen.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Benefit 3 -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 text-3xl">📊</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-1">Datenbasiert</h3>
+                            <p class="text-gray-600 text-sm">
+                                Wissenschaftlich fundierte RedFlag-Kategorien geben dir konkrete Einblicke.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Benefit 4 -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 text-3xl">🔒</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-1">100% Privat</h3>
+                            <p class="text-gray-600 text-sm">
+                                Deine Daten bleiben privat und sicher. Niemand außer dir sieht deine Analysen.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Benefit 5 -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 text-3xl">⚡</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-1">Schnell & Einfach</h3>
+                            <p class="text-gray-600 text-sm">
+                                In wenigen Minuten erhältst du eine detaillierte Analyse mit klaren Empfehlungen.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Benefit 6 -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 text-3xl">🎯</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-1">Personalisiert</h3>
+                            <p class="text-gray-600 text-sm">
+                                Passe die Wichtigkeit einzelner RedFlags an deine Werte an.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prozess -->
+            <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                <h3 class="font-semibold text-gray-900 mb-4 text-center">So funktioniert's:</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-3 md:space-y-0 md:space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-8 h-8 bg-red-flag text-white rounded-full flex items-center justify-center font-bold">1</span>
+                        <span class="text-sm text-gray-700">Partner-Info eingeben</span>
+                    </div>
+                    <span class="hidden md:block text-gray-400">→</span>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-8 h-8 bg-red-flag text-white rounded-full flex items-center justify-center font-bold">2</span>
+                        <span class="text-sm text-gray-700">Fragebogen ausfüllen</span>
+                    </div>
+                    <span class="hidden md:block text-gray-400">→</span>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-8 h-8 bg-red-flag text-white rounded-full flex items-center justify-center font-bold">3</span>
+                        <span class="text-sm text-gray-700">Analyse erhalten</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'questionnaire:home' %}" class="bg-red-flag text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-600 transition-colors text-center">
+                    Jetzt starten
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'accounts:badges' %}" class="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors text-center">
+                    Badges ansehen
+                </a>
+                {% else %}
+                <a href="{% url 'account_signup' %}" class="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors text-center">
+                    Konto erstellen
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Gamification Hint -->
+            {% if user.is_authenticated %}
+            <div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="flex items-center space-x-2 text-blue-800">
+                    <span class="text-2xl">🏆</span>
+                    <p class="text-sm">
+                        <strong>Tipp:</strong> Sammle Badges und Punkte durch aktive Nutzung! 
+                        <a href="{% url 'accounts:badges' %}" class="underline font-semibold">Deine Badges ansehen</a>
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Trust Indicators -->
+        <div class="mt-8 text-center text-sm text-gray-600">
+            <p>✅ DSGVO-konform • 🔒 Verschlüsselt • 🇩🇪 Made in Germany</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -87,14 +87,31 @@ class ScoreCalculator:
         return category_scores
     
     @staticmethod
-    def create_weight_snapshot(questions=None) -> Dict[str, int]:
+    def create_weight_snapshot(user=None, questions=None) -> Dict[str, int]:
         """
         Erstelle Snapshot der aktuellen Gewichte.
-        Speichert Gewichte zum Zeitpunkt der Analyse.
+        Verwendet User-spezifische Gewichte falls vorhanden, sonst default_weight.
+        
+        Args:
+            user: User-Objekt (optional). Wenn vorhanden, werden personalisierte Gewichte verwendet.
+            questions: Question QuerySet (optional)
+        
+        Returns:
+            Dict mit {question_key: weight}
         """
-        from questionnaire.models import Question
+        from questionnaire.models import Question, WeightResponse
         
         if questions is None:
             questions = Question.objects.filter(is_active=True)
         
+        # Hole User-spezifische Gewichte falls User vorhanden
+        if user:
+            user_weights = WeightResponse.get_user_weights(user)
+            # Verwende user_weights falls vorhanden, sonst default_weight
+            return {
+                q.key: user_weights.get(q.key, q.default_weight) 
+                for q in questions
+            }
+        
+        # Fallback: Verwende default_weights
         return {q.key: q.default_weight for q in questions}
