@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Confirm Email Address" %} - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <div class="text-center mb-6">
+            <div class="text-6xl mb-4">📧</div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">{% trans "Confirm Email Address" %}</h1>
+        </div>
+
+        {% if confirmation %}
+            {% user_display confirmation.email_address.user as user_display %}
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                <p class="text-blue-900">
+                    {% blocktrans with confirmation.email_address.email as email %}Bitte bestätige, dass <strong>{{ email }}</strong> eine E-Mail-Adresse für den Benutzer {{ user_display }} ist.{% endblocktrans %}
+                </p>
+            </div>
+
+            <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="w-full bg-red-flag hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition transform hover:scale-105">
+                    {% trans "Confirm" %}
+                </button>
+            </form>
+        {% else %}
+            <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                <p class="text-red-900">
+                    {% url 'account_email' as email_url %}
+                    {% blocktrans %}Dieser E-Mail-Bestätigungslink ist abgelaufen oder ungültig. Bitte <a href="{{ email_url }}" class="underline">fordere eine neue E-Mail-Bestätigung an</a>.{% endblocktrans %}
+                </p>
+            </div>
+        {% endif %}
+
+        <div class="mt-6 text-center">
+            <a href="{% url 'questionnaire:home' %}" 
+               class="text-gray-600 hover:text-red-flag">
+                ← Zur Startseite
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

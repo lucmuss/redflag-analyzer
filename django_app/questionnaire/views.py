@@ -121,9 +121,11 @@ class QuestionnaireSubmitView(LoginRequiredMixin, View):
         # Erstelle Weight Snapshot (verwendet User-spezifische Gewichte falls vorhanden)
         snapshot_weights = ScoreCalculator.create_weight_snapshot(user=request.user)
         
-        # Hole Partner-Info aus Session
-        partner_name = request.session.get('partner_name', None)
-        partner_age = request.session.get('partner_age', None)
+        # Hole Partner-Informationen aus POST-Request
+        partner_name = request.POST.get('partner_name', '').strip() or None
+        partner_age_str = request.POST.get('partner_age', '').strip()
+        partner_age = int(partner_age_str) if partner_age_str else None
+        partner_country = request.POST.get('partner_country', '').strip() or None
         
         # Berechne Scores
         calculator = ScoreCalculator(responses, snapshot_weights)
@@ -135,6 +137,7 @@ class QuestionnaireSubmitView(LoginRequiredMixin, View):
             user=request.user,
             partner_name=partner_name,
             partner_age=partner_age,
+            partner_country=partner_country,
             responses=responses,
             snapshot_weights=snapshot_weights,
             score_total=score_total,

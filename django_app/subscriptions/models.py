@@ -57,10 +57,6 @@ class Subscription(models.Model):
     @property
     def is_premium(self) -> bool:
         """Business Logic: Prüfe ob User Premium hat."""
-        # Testbenutzer hat immer Premium-Zugang
-        if self.user.email == 'skymuss@gmail.com':
-            return True
-            
         if self.tier == SubscriptionTier.PREMIUM and self.is_active:
             # Prüfe ob nicht abgelaufen
             if self.expires_at and self.expires_at < timezone.now():
@@ -79,10 +75,6 @@ class Subscription(models.Model):
         Premium: Unbegrenzt
         Free: 3 Analysen max
         """
-        # Testbenutzer kann immer Analysen erstellen
-        if self.user.email == 'skymuss@gmail.com':
-            return True
-            
         if self.is_premium:
             return True
         
@@ -94,10 +86,6 @@ class Subscription(models.Model):
         Business Logic: Verbrauche eine Free Analysis.
         Returns True wenn erfolgreich, False wenn Limit erreicht.
         """
-        # Testbenutzer verbraucht keine Analysen
-        if self.user.email == 'skymuss@gmail.com':
-            return True
-            
         if self.is_premium:
             return True  # Premium hat unbegrenzt
         
@@ -129,10 +117,6 @@ class Subscription(models.Model):
     @property
     def remaining_free_analyses(self) -> int:
         """Berechne verbleibende Free Analysen."""
-        # Testbenutzer hat unbegrenzt
-        if self.user.email == 'skymuss@gmail.com':
-            return float('inf')
-            
         if self.is_premium:
             return float('inf')  # Unbegrenzt
         return max(0, self.free_analyses_limit - self.free_analyses_used)

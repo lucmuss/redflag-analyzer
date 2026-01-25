@@ -10,7 +10,13 @@
         <!-- User Info -->
         <div class="space-y-6">
             <div class="border-b border-gray-200 pb-4">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Account-Informationen</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Account-Informationen</h2>
+                    <a href="{% url 'accounts:profile_edit' %}" 
+                       class="text-red-flag hover:text-red-600 text-sm font-medium">
+                        ✏️ Bearbeiten
+                    </a>
+                </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -19,14 +25,38 @@
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-600">Credits</label>
-                        <p class="mt-1 text-2xl font-bold text-red-flag">
-                            {% if user.email == 'skymuss@gmail.com' %}
-                                ∞ (Testbenutzer)
+                        <label class="block text-sm font-medium text-gray-600">Benutzerrolle</label>
+                        <p class="mt-1">
+                            {% if user.is_superuser %}
+                                <a href="{% url 'blog:admin_dashboard' %}" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-purple-100 text-purple-800 hover:bg-purple-200 transition cursor-pointer">
+                                    👑 Administrator
+                                </a>
+                            {% elif user.is_staff %}
+                                <a href="{% url 'blog:admin_dashboard' %}" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 hover:bg-blue-200 transition cursor-pointer">
+                                    🛠️ Mitarbeiter
+                                </a>
                             {% else %}
-                                {{ user.credits }}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+                                    👤 Benutzer
+                                </span>
                             {% endif %}
                         </p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Name</label>
+                        <p class="mt-1 text-gray-900">
+                            {% if user.first_name or user.last_name %}
+                                {{ user.first_name }} {{ user.last_name }}
+                            {% else %}
+                                <span class="text-gray-400">Nicht angegeben</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Credits</label>
+                        <p class="mt-1 text-2xl font-bold text-red-flag">{{ user.credits }}</p>
                     </div>
                     
                     <div>
@@ -44,6 +74,94 @@
                             {% endif %}
                         </p>
                     </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Wohnort</label>
+                        <p class="mt-1 text-gray-900">
+                            {% if user.profile.city %}
+                                {{ user.profile.city }}{% if user.profile.country %}, {{ user.profile.country }}{% endif %}
+                            {% else %}
+                                <span class="text-gray-400">Nicht angegeben</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Persönliche Informationen -->
+            <div class="border-b border-gray-200 pb-4">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Persönliche Informationen</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Alter</label>
+                        <p class="mt-1 text-gray-900">
+                            {% if user.profile.age %}
+                                {{ user.profile.age }} Jahre
+                            {% else %}
+                                <span class="text-gray-400">Nicht angegeben</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Geschlecht</label>
+                        <p class="mt-1 text-gray-900">
+                            {% if user.profile.gender == 'male' %}
+                                👨 Männlich
+                            {% elif user.profile.gender == 'female' %}
+                                👩 Weiblich
+                            {% elif user.profile.gender == 'other' %}
+                                🌈 Divers
+                            {% else %}
+                                <span class="text-gray-400">Nicht angegeben</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Beziehungsstatus</label>
+                        <p class="mt-1 text-gray-900">
+                            {% if user.profile.relationship_status == 'single' %}
+                                💔 Single
+                            {% elif user.profile.relationship_status == 'in_relationship' %}
+                                💑 In einer Beziehung
+                            {% elif user.profile.relationship_status == 'married' %}
+                                💍 Verheiratet
+                            {% elif user.profile.relationship_status == 'divorced' %}
+                                📄 Geschieden
+                            {% elif user.profile.relationship_status == 'complicated' %}
+                                🤔 Es ist kompliziert
+                            {% else %}
+                                <span class="text-gray-400">Nicht angegeben</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Bildungsstand</label>
+                        <p class="mt-1 text-gray-900">
+                            {% if user.profile.education %}
+                                🎓 {{ user.profile.get_education_display }}
+                            {% else %}
+                                <span class="text-gray-400">Nicht angegeben</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    {% if user.profile.previous_relationships_count %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Bisherige Beziehungen</label>
+                        <p class="mt-1 text-gray-900">{{ user.profile.previous_relationships_count }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if user.profile.current_relationship_duration %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Aktuelle Beziehungsdauer</label>
+                        <p class="mt-1 text-gray-900">{{ user.profile.current_relationship_duration }} Monate</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             
@@ -62,24 +180,12 @@
                         📊 Meine Analysen ansehen
                     </a>
                     
-                    {% if user.email != 'skymuss@gmail.com' %}
-                    <a href="#" 
+                    <a href="{% url 'accounts:credit_purchase' %}" 
                        class="block w-full md:w-auto inline-flex justify-center items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                         💳 Credits kaufen
                     </a>
-                    {% endif %}
                 </div>
             </div>
-            
-            <!-- Info Box für Testnutzer -->
-            {% if user.email == 'skymuss@gmail.com' %}
-            <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h3 class="font-bold text-blue-900 mb-2">ℹ️ Testbenutzer-Modus</h3>
-                <p class="text-blue-800 text-sm">
-                    Du bist als Testbenutzer angemeldet und hast unbegrenzte Credits.
-                </p>
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>

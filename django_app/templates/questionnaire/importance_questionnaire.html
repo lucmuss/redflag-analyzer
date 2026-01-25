@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block title %}Wichtigkeits-Fragebogen{% endblock %}
 
@@ -33,6 +34,20 @@
         {% endif %}
     </div>
 
+    <!-- Progress Bar (Sticky) -->
+    <div class="sticky top-16 z-40 mb-8 bg-white rounded-lg shadow-md p-6" role="region" aria-label="Wichtigkeits-Fragebogen Fortschritt">
+        <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-semibold text-gray-700">Fortschritt</span>
+            <span class="text-sm font-bold text-red-flag" id="progress-text" aria-live="polite">0%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Wichtigkeits-Fragebogen Fortschritt">
+            <div id="progress-bar" class="bg-gradient-to-r from-red-400 to-red-600 h-4 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">
+            <span id="answered-count" aria-live="polite">0</span> von <span id="total-count">0</span> Fragen bewertet
+        </p>
+    </div>
+
     <!-- Form -->
     <form method="post" action="{% url 'questionnaire:importance_submit' %}" class="space-y-8">
         {% csrf_token %}
@@ -41,49 +56,67 @@
             {% if questions %}
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6 pb-3 border-b-2 border-red-flag">
-                    {{ category }}
+                    {% if category == 'TRUST' %}
+                        🤝 Vertrauen
+                    {% elif category == 'BEHAVIOR' %}
+                        🎭 Verhalten
+                    {% elif category == 'VALUES' %}
+                        💎 Werte
+                    {% elif category == 'DYNAMICS' %}
+                        ⚡ Dynamik
+                    {% else %}
+                        {{ category }}
+                    {% endif %}
                 </h2>
                 
                 <div class="space-y-6">
                     {% for question in questions %}
                     <div class="border-b border-gray-200 pb-6 last:border-0">
                         <label class="block mb-3">
-                            <span class="text-gray-800 font-medium">{{ question.get_text }}</span>
+                            <span class="text-gray-900 text-lg font-bold">{{ question.get_text }}</span>
                         </label>
                         
-                        <!-- Importance Slider (1-5) -->
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-500 font-bold w-20">Unwichtig</span>
-                            
-                            <div class="flex-1">
-                                <input 
-                                    type="range" 
-                                    name="importance_{{ question.key }}" 
-                                    min="1" 
-                                    max="5" 
-                                    value="{% if existing_weights %}{{ existing_weights|get_item:question.key|default:3 }}{% else %}3{% endif %}"
-                                    class="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-flag"
-                                    oninput="document.getElementById('value_{{ question.key }}').textContent = this.value"
-                                    required
-                                >
-                                <div class="flex justify-between text-sm text-gray-400 mt-2 px-1">
-                                    <span class="font-bold">1</span>
-                                    <span class="font-bold">2</span>
-                                    <span class="font-bold">3</span>
-                                    <span class="font-bold">4</span>
-                                    <span class="font-bold">5</span>
+                        <!-- Importance Radio Buttons inkl. "Keine Angabe" -->
+                        <div class="flex items-center space-x-2">
+                            <!-- Keine Angabe (Neutral = 3) -->
+                            <label class="flex-1">
+                                <input type="radio" 
+                                       name="importance_{{ question.key }}" 
+                                       value="3"
+                                       {% if not existing_weights or existing_weights|get_item:question.key == 3 or not existing_weights|get_item:question.key %}checked{% endif %}
+                                       class="hidden peer"
+                                       required>
+                                <div class="cursor-pointer text-center py-2 px-2 rounded-md border-2 border-gray-300 
+                                            peer-checked:border-gray-500 peer-checked:bg-gray-500 peer-checked:text-white
+                                            hover:border-gray-400 transition text-xs">
+                                    K.A.
                                 </div>
-                            </div>
+                            </label>
                             
-                            <span class="text-sm text-gray-500 font-bold w-24">Sehr wichtig</span>
-                            
-                            <!-- Current Value Display -->
-                            <div class="w-16 text-center">
-                                <span id="value_{{ question.key }}" class="text-3xl font-bold text-red-flag">
-                                    {% if existing_weights %}{{ existing_weights|get_item:question.key|default:3 }}{% else %}3{% endif %}
-                                </span>
-                                <span class="text-xs text-gray-500 block">/5</span>
-                            </div>
+                            <!-- Werte 1-5 -->
+                            {% for value in "12345" %}
+                                <label class="flex-1">
+                                    <input type="radio" 
+                                           name="importance_{{ question.key }}" 
+                                           value="{{ value }}"
+                                           {% if existing_weights and existing_weights|get_item:question.key|stringformat:"s" == value %}checked{% endif %}
+                                           class="hidden peer"
+                                           required>
+                                    <div class="cursor-pointer text-center py-2 px-3 rounded-md border-2 border-gray-300 
+                                                peer-checked:border-red-flag peer-checked:bg-red-flag peer-checked:text-white
+                                                hover:border-red-flag transition font-bold">
+                                        {{ value }}
+                                    </div>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <div class="flex text-xs text-gray-500 mt-1">
+                            <span class="flex-1 text-center font-bold text-gray-400">K.A.</span>
+                            <span class="flex-1 text-left font-bold ml-1">Unwichtig</span>
+                            <span class="flex-1"></span>
+                            <span class="flex-1"></span>
+                            <span class="flex-1"></span>
+                            <span class="flex-1 text-right font-bold mr-1">Sehr wichtig</span>
                         </div>
                     </div>
                     {% endfor %}
@@ -117,6 +150,71 @@
     </form>
 </div>
 
-<!-- Custom filter für dict lookup -->
-{% load custom_filters %}
+{% block extra_js %}
+<script>
+    // Progress Tracking für Wichtigkeits-Fragebogen
+    (function() {
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const answeredCount = document.getElementById('answered-count');
+        const totalCountEl = document.getElementById('total-count');
+        
+        // Zähle alle Fragen
+        const allQuestions = document.querySelectorAll('input[type="radio"]');
+        const questionNames = new Set();
+        allQuestions.forEach(input => questionNames.add(input.name));
+        const totalQuestions = questionNames.size;
+        
+        // Update total count in UI
+        if (totalCountEl) {
+            totalCountEl.textContent = totalQuestions;
+        }
+        
+        // Update Progress Bar
+        function updateProgress() {
+            const answered = new Set();
+            allQuestions.forEach(input => {
+                if (input.checked) {
+                    answered.add(input.name);
+                }
+            });
+            
+            const count = answered.size;
+            const percentage = totalQuestions > 0 ? Math.round((count / totalQuestions) * 100) : 0;
+            
+            // Update UI
+            if (progressBar) progressBar.style.width = percentage + '%';
+            if (progressText) progressText.textContent = percentage + '%';
+            if (answeredCount) answeredCount.textContent = count;
+            
+            return { count, percentage };
+        }
+        
+        // Make radio buttons deselectable
+        let lastSelected = {};
+        
+        allQuestions.forEach(input => {
+            input.addEventListener('click', function(e) {
+                const questionName = this.name;
+                
+                // Wenn derselbe Button nochmal geklickt wird, abwählen
+                if (lastSelected[questionName] === this) {
+                    this.checked = false;
+                    lastSelected[questionName] = null;
+                    updateProgress();
+                } else {
+                    lastSelected[questionName] = this;
+                }
+            });
+            
+            input.addEventListener('change', function() {
+                updateProgress();
+            });
+        });
+        
+        // Initialize
+        updateProgress();
+    })();
+</script>
+{% endblock %}
 {% endblock %}

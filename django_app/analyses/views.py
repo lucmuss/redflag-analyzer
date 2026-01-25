@@ -122,6 +122,25 @@ class UnlockAnalysisView(LoginRequiredMixin, View):
         return redirect('analyses:detail', pk=pk)
 
 
+class DeleteAnalysisView(LoginRequiredMixin, View):
+    """
+    Lösche eine Analyse.
+    User kann nur eigene Analysen löschen.
+    """
+    
+    def post(self, request, pk):
+        analysis = get_object_or_404(Analysis, pk=pk, user=request.user)
+        
+        # Speichere Info für Nachricht
+        partner_name = analysis.partner_name or f"Analyse #{analysis.id}"
+        
+        # Lösche Analyse (CASCADE löscht auch CategoryScores)
+        analysis.delete()
+        
+        messages.success(request, f'"{partner_name}" wurde erfolgreich gelöscht.')
+        return redirect('analyses:list')
+
+
 class GenerateShareImageView(LoginRequiredMixin, View):
     """
     Generiert und liefert Share-Grafik für eine Analyse.

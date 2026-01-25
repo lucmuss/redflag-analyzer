@@ -78,7 +78,7 @@ class StatisticsService:
         
         # Total Vergleich
         user_total = float(analysis.score_total)
-        avg_total = averages['total']
+        avg_total = float(averages['total'])
         diff_total = user_total - avg_total
         diff_total_percent = ((diff_total / avg_total) * 100) if avg_total > 0 else 0
         

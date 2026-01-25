@@ -39,12 +39,21 @@
                 <p class="text-gray-600 mb-4 whitespace-pre-line">{{ feedback.message|truncatewords:50 }}</p>
                 
                 {% if feedback.admin_response %}
-                <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
                     <p class="text-sm font-semibold text-blue-900 mb-1">Antwort vom Team:</p>
                     <p class="text-sm text-blue-800">{{ feedback.admin_response }}</p>
                     <p class="text-xs text-blue-600 mt-2">{{ feedback.responded_at|date:"d.m.Y H:i" }}</p>
                 </div>
                 {% endif %}
+                
+                <!-- Lösch-Button -->
+                <form method="post" action="{% url 'feedback:delete' feedback.id %}" onsubmit="return confirm('Möchtest du dieses Feedback wirklich löschen?');" class="mt-4">
+                    {% csrf_token %}
+                    <button type="submit" 
+                            class="text-sm px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-red-100 hover:text-red-700 transition">
+                        🗑️ Löschen
+                    </button>
+                </form>
             </div>
             {% endfor %}
         </div>

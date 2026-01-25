@@ -24,13 +24,19 @@ class Analysis(models.Model):
         max_length=100,
         null=True,
         blank=True,
-        help_text="Name der analysierten Partnerin"
+        help_text="Name der analysierten Partnerin (optional)"
     )
     partner_age = models.IntegerField(
         null=True,
         blank=True,
         validators=[MinValueValidator(18), MaxValueValidator(120)],
-        help_text="Alter der Partnerin"
+        help_text="Alter der Partnerin (optional)"
+    )
+    partner_country = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        help_text="Herkunftsland der Partnerin (optional)"
     )
     
     is_unlocked = models.BooleanField(

@@ -2,9 +2,11 @@
 Feedback Views
 """
 from django.views.generic import CreateView, ListView
+from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
 from .models import Feedback
 
 
@@ -37,3 +39,22 @@ class FeedbackListView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         return Feedback.objects.filter(user=self.request.user)
+
+
+class FeedbackDeleteView(LoginRequiredMixin, View):
+    """
+    Lösche ein Feedback.
+    User kann nur eigene Feedbacks löschen.
+    """
+    
+    def post(self, request, pk):
+        feedback = get_object_or_404(Feedback, pk=pk, user=request.user)
+        
+        # Speichere Info für Nachricht
+        subject = feedback.subject
+        
+        # Lösche Feedback
+        feedback.delete()
+        
+        messages.success(request, f'Feedback "{subject}" wurde erfolgreich gelöscht.')
+        return redirect('feedback:list')

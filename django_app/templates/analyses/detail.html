@@ -5,8 +5,19 @@
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Analyse vom {{ analysis.created_at|date:"d.m.Y H:i" }}</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            {% if analysis.partner_name %}
+                Analyse: {{ analysis.partner_name }}{% if analysis.partner_age %}, {{ analysis.partner_age }} Jahre{% endif %}
+            {% else %}
+                Analyse vom {{ analysis.created_at|date:"d.m.Y H:i" }}
+            {% endif %}
+        </h1>
         <p class="text-gray-600">
+            Erstellt am: {{ analysis.created_at|date:"d.m.Y H:i" }}
+            {% if analysis.partner_country %}
+                • Herkunft: {{ analysis.partner_country }}
+            {% endif %}
+            <br>
             Status: 
             {% if analysis.is_unlocked %}
                 <span class="text-green-600 font-bold">✓ Freigeschaltet</span>
@@ -45,15 +56,18 @@
                 </p>
                 
                 {% if user_credits > 0 %}
-                    <!-- HTMX POST Button - Server returned updated HTML -->
-                    <button hx-post="{% url 'analyses:unlock' pk=analysis.id %}"
-                            hx-target="#analysis-content"
-                            hx-swap="innerHTML"
-                            hx-indicator=".htmx-indicator"
-                            class="bg-red-flag hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg 
-                                   transition transform hover:scale-105">
-                        Für 1 Credit entsperren
-                    </button>
+                    <!-- HTMX POST Button mit CSRF-Token -->
+                    <form hx-post="{% url 'analyses:unlock' pk=analysis.id %}"
+                          hx-target="#analysis-content"
+                          hx-swap="innerHTML"
+                          hx-indicator=".htmx-indicator">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="bg-red-flag hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg 
+                                       transition transform hover:scale-105">
+                            Für 1 Credit entsperren
+                        </button>
+                    </form>
                 {% else %}
                     <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
                         <p class="text-orange-800 font-bold mb-2">Keine Credits verfügbar</p>

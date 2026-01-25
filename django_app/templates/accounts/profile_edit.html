@@ -1,98 +1,295 @@
 {% extends 'base.html' %}
 
-{% block title %}Profil bearbeiten{% endblock %}
+{% block title %}Profil bearbeiten - RedFlag Analyzer{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-8">⚙️ Profil bearbeiten</h1>
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">✏️ Profil bearbeiten</h1>
     
-    <!-- Profil-Formular -->
-    <form method="post" class="bg-white rounded-lg shadow-md p-6 space-y-6 mb-8">
+    <form method="post" class="space-y-6">
         {% csrf_token %}
         
-        <div>
-            <label for="id_first_name" class="block text-sm font-medium text-gray-700 mb-2">
-                Vorname
-            </label>
-            <input 
-                type="text" 
-                name="first_name" 
-                id="id_first_name"
-                value="{{ user.first_name|default:'' }}" 
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent"
-            >
+        <!-- Account Informationen -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold mb-4">Account Informationen</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" name="email" value="{{ user.email }}" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag"
+                           required>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            Vorname (optional)
+                        </label>
+                        <input type="text" 
+                               id="first_name" 
+                               name="first_name" 
+                               value="{{ user.first_name|default:'' }}"
+                               placeholder="Dein Vorname"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag">
+                    </div>
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            Nachname (optional)
+                        </label>
+                        <input type="text" 
+                               id="last_name" 
+                               name="last_name" 
+                               value="{{ user.last_name|default:'' }}"
+                               placeholder="Dein Nachname"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="city" class="block text-sm font-medium text-gray-700 mb-2">
+                        Wohnort/Stadt (optional)
+                    </label>
+                    <input type="text" 
+                           id="city" 
+                           name="city" 
+                           value="{{ profile.city|default:'' }}"
+                           list="cities-list"
+                           placeholder="z.B. Berlin"
+                           autocomplete="off"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag">
+                    <datalist id="cities-list">
+                        <option value="Berlin">
+                        <option value="Hamburg">
+                        <option value="München">
+                        <option value="Köln">
+                        <option value="Frankfurt am Main">
+                        <option value="Stuttgart">
+                        <option value="Düsseldorf">
+                        <option value="Dortmund">
+                        <option value="Essen">
+                        <option value="Leipzig">
+                        <option value="Bremen">
+                        <option value="Dresden">
+                        <option value="Hannover">
+                        <option value="Nürnberg">
+                        <option value="Duisburg">
+                        <option value="Bochum">
+                        <option value="Wuppertal">
+                        <option value="Bielefeld">
+                        <option value="Bonn">
+                        <option value="Münster">
+                        <option value="Karlsruhe">
+                        <option value="Mannheim">
+                        <option value="Augsburg">
+                        <option value="Wiesbaden">
+                        <option value="Gelsenkirchen">
+                        <option value="Mönchengladbach">
+                        <option value="Braunschweig">
+                        <option value="Chemnitz">
+                        <option value="Kiel">
+                        <option value="Aachen">
+                        <option value="Halle (Saale)">
+                        <option value="Magdeburg">
+                        <option value="Freiburg im Breisgau">
+                        <option value="Krefeld">
+                        <option value="Lübeck">
+                        <option value="Oberhausen">
+                        <option value="Erfurt">
+                        <option value="Mainz">
+                        <option value="Rostock">
+                        <option value="Kassel">
+                        <option value="Hagen">
+                        <option value="Hamm">
+                        <option value="Saarbrücken">
+                        <option value="Mülheim an der Ruhr">
+                        <option value="Potsdam">
+                        <option value="Ludwigshafen am Rhein">
+                        <option value="Oldenburg">
+                        <option value="Leverkusen">
+                        <option value="Osnabrück">
+                        <option value="Solingen">
+                        <option value="Heidelberg">
+                        <option value="Herne">
+                        <option value="Neuss">
+                        <option value="Darmstadt">
+                        <option value="Paderborn">
+                        <option value="Regensburg">
+                        <option value="Ingolstadt">
+                        <option value="Würzburg">
+                        <option value="Fürth">
+                        <option value="Wolfsburg">
+                        <option value="Offenbach am Main">
+                        <option value="Ulm">
+                        <option value="Heilbronn">
+                        <option value="Pforzheim">
+                        <option value="Göttingen">
+                        <option value="Bottrop">
+                        <option value="Trier">
+                        <option value="Recklinghausen">
+                        <option value="Reutlingen">
+                        <option value="Bremerhaven">
+                        <option value="Koblenz">
+                        <option value="Bergisch Gladbach">
+                        <option value="Jena">
+                        <option value="Remscheid">
+                        <option value="Erlangen">
+                        <option value="Moers">
+                        <option value="Siegen">
+                        <option value="Hildesheim">
+                        <option value="Salzgitter">
+                        <!-- Österreich -->
+                        <option value="Wien">
+                        <option value="Graz">
+                        <option value="Linz">
+                        <option value="Salzburg">
+                        <option value="Innsbruck">
+                        <!-- Schweiz -->
+                        <option value="Zürich">
+                        <option value="Genf">
+                        <option value="Basel">
+                        <option value="Bern">
+                        <option value="Lausanne">
+                    </datalist>
+                </div>
+            </div>
         </div>
         
-        <div>
-            <label for="id_last_name" class="block text-sm font-medium text-gray-700 mb-2">
-                Nachname
-            </label>
-            <input 
-                type="text" 
-                name="last_name" 
-                id="id_last_name"
-                value="{{ user.last_name|default:'' }}" 
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent"
-            >
+        <!-- Persönliche Informationen -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold mb-4">Persönliche Informationen</h2>
+            
+            <div class="space-y-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Geburtsdatum</label>
+                        <input type="date" name="birthdate" value="{{ profile.birthdate|date:'Y-m-d' }}" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Geschlecht</label>
+                        <select name="gender" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag">
+                            <option value="">Keine Angabe</option>
+                            <option value="male" {% if profile.gender == 'male' %}selected{% endif %}>Männlich</option>
+                            <option value="female" {% if profile.gender == 'female' %}selected{% endif %}>Weiblich</option>
+                            <option value="other" {% if profile.gender == 'other' %}selected{% endif %}>Divers</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Land</label>
+                    <select name="country" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag">
+                        <option value="">Bitte wählen</option>
+                        <option value="DE" {% if profile.country == 'DE' %}selected{% endif %}>🇩🇪 Deutschland</option>
+                        <option value="AT" {% if profile.country == 'AT' %}selected{% endif %}>🇦🇹 Österreich</option>
+                        <option value="CH" {% if profile.country == 'CH' %}selected{% endif %}>🇨🇭 Schweiz</option>
+                        <option value="LI" {% if profile.country == 'LI' %}selected{% endif %}>🇱🇮 Liechtenstein</option>
+                        <option value="LU" {% if profile.country == 'LU' %}selected{% endif %}>🇱🇺 Luxemburg</option>
+                        <option value="BE" {% if profile.country == 'BE' %}selected{% endif %}>🇧🇪 Belgien</option>
+                        <option value="NL" {% if profile.country == 'NL' %}selected{% endif %}>🇳🇱 Niederlande</option>
+                        <option value="FR" {% if profile.country == 'FR' %}selected{% endif %}>🇫🇷 Frankreich</option>
+                        <option value="IT" {% if profile.country == 'IT' %}selected{% endif %}>🇮🇹 Italien</option>
+                        <option value="ES" {% if profile.country == 'ES' %}selected{% endif %}>🇪🇸 Spanien</option>
+                        <option value="GB" {% if profile.country == 'GB' %}selected{% endif %}>🇬🇧 Großbritannien</option>
+                        <option value="US" {% if profile.country == 'US' %}selected{% endif %}>🇺🇸 USA</option>
+                        <option value="OTHER" {% if profile.country == 'OTHER' %}selected{% endif %}>🌍 Anderes Land</option>
+                    </select>
+                </div>
+            </div>
         </div>
         
-        <div>
-            <label for="id_email" class="block text-sm font-medium text-gray-700 mb-2">
-                E-Mail
-            </label>
-            <input 
-                type="email" 
-                name="email" 
-                id="id_email"
-                value="{{ user.email }}" 
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent"
-            >
+        <!-- Beziehungsinformationen -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold mb-4">Beziehungsinformationen</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Beziehungsstatus</label>
+                    <select name="relationship_status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag">
+                        <option value="">Keine Angabe</option>
+                        <option value="single" {% if profile.relationship_status == 'single' %}selected{% endif %}>Single</option>
+                        <option value="in_relationship" {% if profile.relationship_status == 'in_relationship' %}selected{% endif %}>In einer Beziehung</option>
+                        <option value="married" {% if profile.relationship_status == 'married' %}selected{% endif %}>Verheiratet</option>
+                        <option value="divorced" {% if profile.relationship_status == 'divorced' %}selected{% endif %}>Geschieden</option>
+                        <option value="complicated" {% if profile.relationship_status == 'complicated' %}selected{% endif %}>Es ist kompliziert</option>
+                    </select>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Anzahl bisheriger Beziehungen</label>
+                        <select name="previous_relationships_count" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag">
+                            <option value="">Keine Angabe</option>
+                            <option value="0" {% if profile.previous_relationships_count == '0' %}selected{% endif %}>Keine</option>
+                            <option value="1-3" {% if profile.previous_relationships_count == '1-3' %}selected{% endif %}>1-3</option>
+                            <option value="4-7" {% if profile.previous_relationships_count == '4-7' %}selected{% endif %}>4-7</option>
+                            <option value="8+" {% if profile.previous_relationships_count == '8+' %}selected{% endif %}>8+</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Aktuelle Beziehungsdauer (Monate)</label>
+                        <input type="number" name="current_relationship_duration" value="{{ profile.current_relationship_duration }}" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag"
+                               min="0" placeholder="z.B. 12">
+                    </div>
+                </div>
+            </div>
         </div>
         
+        <!-- Weitere Informationen -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold mb-4">Weitere Informationen</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Bildungsstand</label>
+                    <select name="education" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag">
+                        <option value="">Keine Angabe</option>
+                        <option value="hauptschule" {% if profile.education == 'hauptschule' %}selected{% endif %}>Hauptschule</option>
+                        <option value="realschule" {% if profile.education == 'realschule' %}selected{% endif %}>Realschule</option>
+                        <option value="abitur" {% if profile.education == 'abitur' %}selected{% endif %}>Abitur</option>
+                        <option value="bachelor" {% if profile.education == 'bachelor' %}selected{% endif %}>Bachelor</option>
+                        <option value="master" {% if profile.education == 'master' %}selected{% endif %}>Master</option>
+                        <option value="phd" {% if profile.education == 'phd' %}selected{% endif %}>PhD/Doktor</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Wie hast du von uns erfahren? (optional)</label>
+                    <select name="referral_source" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-flag focus:border-red-flag">
+                        <option value="">Keine Angabe</option>
+                        <option value="google" {% if profile.referral_source == 'google' %}selected{% endif %}>Google Suche</option>
+                        <option value="instagram" {% if profile.referral_source == 'instagram' %}selected{% endif %}>Instagram</option>
+                        <option value="tiktok" {% if profile.referral_source == 'tiktok' %}selected{% endif %}>TikTok</option>
+                        <option value="facebook" {% if profile.referral_source == 'facebook' %}selected{% endif %}>Facebook</option>
+                        <option value="twitter_x" {% if profile.referral_source == 'twitter_x' %}selected{% endif %}>Twitter/X</option>
+                        <option value="youtube" {% if profile.referral_source == 'youtube' %}selected{% endif %}>YouTube</option>
+                        <option value="reddit" {% if profile.referral_source == 'reddit' %}selected{% endif %}>Reddit</option>
+                        <option value="friend" {% if profile.referral_source == 'friend' %}selected{% endif %}>Freund/Bekannter</option>
+                        <option value="podcast" {% if profile.referral_source == 'podcast' %}selected{% endif %}>Podcast</option>
+                        <option value="blog" {% if profile.referral_source == 'blog' %}selected{% endif %}>Blog/Artikel</option>
+                        <option value="advertisement" {% if profile.referral_source == 'advertisement' %}selected{% endif %}>Online-Werbung</option>
+                        <option value="app_store" {% if profile.referral_source == 'app_store' %}selected{% endif %}>App Store</option>
+                        <option value="influencer" {% if profile.referral_source == 'influencer' %}selected{% endif %}>Influencer-Empfehlung</option>
+                        <option value="news" {% if profile.referral_source == 'news' %}selected{% endif %}>Nachrichten/Presse</option>
+                        <option value="other" {% if profile.referral_source == 'other' %}selected{% endif %}>Sonstiges</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Buttons -->
         <div class="flex gap-4">
-            <button 
-                type="submit" 
-                class="bg-red-flag hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition transform hover:scale-105"
-            >
-                💾 Speichern
+            <button type="submit" 
+                    class="flex-1 bg-red-flag hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition transform hover:scale-105">
+                💾 Änderungen speichern
             </button>
-            <a 
-                href="{% url 'accounts:profile' %}" 
-                class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg transition"
-            >
+            <a href="{% url 'accounts:profile' %}" 
+               class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg text-center transition">
                 Abbrechen
             </a>
         </div>
     </form>
-
-    <!-- Passwort ändern -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">🔐 Passwort ändern</h2>
-        <p class="text-gray-600 mb-4">
-            Möchtest du dein Passwort ändern? Nutze die sichere Passwort-Änderungs-Funktion.
-        </p>
-        <a 
-            href="{% url 'account_change_password' %}" 
-            class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition"
-        >
-            Passwort ändern
-        </a>
-    </div>
-    
-    <!-- Danger Zone -->
-    <div class="bg-red-50 border-2 border-red-200 rounded-lg p-6">
-        <h2 class="text-xl font-bold text-red-900 mb-4">⚠️ Danger Zone</h2>
-        <p class="text-red-700 mb-4">
-            Account-Löschung ist permanent und kann nicht rückgängig gemacht werden. 
-            Alle deine Daten, Analysen und Credits werden unwiderruflich gelöscht.
-        </p>
-        <a 
-            href="{% url 'accounts:delete' %}" 
-            class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition"
-        >
-            Account löschen
-        </a>
-    </div>
 </div>
 {% endblock %}

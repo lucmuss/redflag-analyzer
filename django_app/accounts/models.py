@@ -36,9 +36,6 @@ class User(AbstractUser):
     
     def has_credits(self) -> bool:
         """Business Logic: Prüfe ob User Credits hat."""
-        # Testbenutzer hat unendliche Credits
-        if self.email == 'skymuss@gmail.com':
-            return True
         return self.credits > 0
     
     def consume_credit(self) -> bool:
@@ -46,9 +43,6 @@ class User(AbstractUser):
         Business Logic: Verbrauche 1 Credit atomisch.
         Returns True wenn erfolgreich, False wenn keine Credits.
         """
-        # Testbenutzer verbraucht keine Credits
-        if self.email == 'skymuss@gmail.com':
-            return True
         if self.credits > 0:
             self.credits -= 1
             self.save(update_fields=['credits'])
@@ -132,9 +126,19 @@ class UserProfile(models.Model):
     # Marketing & Demographics
     REFERRAL_SOURCE_CHOICES = [
         ('google', 'Google Suche'),
-        ('social_media', 'Social Media'),
+        ('instagram', 'Instagram'),
+        ('tiktok', 'TikTok'),
+        ('facebook', 'Facebook'),
+        ('twitter_x', 'Twitter/X'),
+        ('youtube', 'YouTube'),
+        ('reddit', 'Reddit'),
         ('friend', 'Freund/Bekannter'),
-        ('advertisement', 'Werbung'),
+        ('podcast', 'Podcast'),
+        ('blog', 'Blog/Artikel'),
+        ('advertisement', 'Online-Werbung'),
+        ('app_store', 'App Store'),
+        ('influencer', 'Influencer-Empfehlung'),
+        ('news', 'Nachrichten/Presse'),
         ('other', 'Sonstiges'),
     ]
     referral_source = models.CharField(

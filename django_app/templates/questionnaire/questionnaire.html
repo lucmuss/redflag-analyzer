@@ -8,18 +8,12 @@
         <h1 class="text-3xl font-bold text-gray-900 mb-2">RedFlag Fragebogen</h1>
         <p class="text-gray-600">
             Bewerte jede Aussage von 1 (trifft nicht zu) bis 5 (trifft voll zu).
-            Du hast aktuell <span class="font-bold text-red-flag">
-                {% if user.email == 'skymuss@gmail.com' %}
-                    ∞ (Testbenutzer)
-                {% else %}
-                    {{ user_credits }}
-                {% endif %}
-                Credits</span>.
+            Du hast aktuell <span class="font-bold text-red-flag">{{ user_credits }} Credits</span>.
         </p>
     </div>
 
-    <!-- Progress Bar -->
-    <div class="mb-8 bg-white rounded-lg shadow-md p-6" role="region" aria-label="Fragebogen Fortschritt">
+    <!-- Progress Bar (Sticky) -->
+    <div class="sticky top-16 z-40 mb-8 bg-white rounded-lg shadow-md p-6" role="region" aria-label="Fragebogen Fortschritt">
         <div class="flex justify-between items-center mb-2">
             <span class="text-sm font-semibold text-gray-700">Fortschritt</span>
             <span class="text-sm font-bold text-red-flag" id="progress-text" aria-live="polite">0%</span>
@@ -44,6 +38,64 @@
           class="space-y-6">
         {% csrf_token %}
         
+        <!-- Partner-Informationen (Optional) -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold mb-4">📝 Partner-Informationen (Optional)</h2>
+            <p class="text-gray-600 text-sm mb-4">
+                Um die Analyse persönlicher zu gestalten, kannst du optional Informationen über die Person angeben.
+                Diese Daten bleiben anonym und werden nur für deine Analyse verwendet.
+            </p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Name/Spitzname (optional)
+                    </label>
+                    <input type="text" 
+                           name="partner_name" 
+                           placeholder="z.B. Sarah, Meine Ex, etc."
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent">
+                    <p class="text-xs text-gray-500 mt-1">Du kannst einen Spitznamen verwenden für mehr Anonymität</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Alter (optional)
+                        </label>
+                        <input type="number" 
+                               name="partner_age" 
+                               min="18" 
+                               max="120"
+                               placeholder="z.B. 25"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Herkunftsland (optional)
+                        </label>
+                        <select name="partner_country" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent">
+                            <option value="">Bitte wählen</option>
+                            <option value="Deutschland">🇩🇪 Deutschland</option>
+                            <option value="Österreich">🇦🇹 Österreich</option>
+                            <option value="Schweiz">🇨🇭 Schweiz</option>
+                            <option value="Liechtenstein">🇱🇮 Liechtenstein</option>
+                            <option value="Luxemburg">🇱🇺 Luxemburg</option>
+                            <option value="Belgien">🇧🇪 Belgien</option>
+                            <option value="Niederlande">🇳🇱 Niederlande</option>
+                            <option value="Frankreich">🇫🇷 Frankreich</option>
+                            <option value="Italien">🇮🇹 Italien</option>
+                            <option value="Spanien">🇪🇸 Spanien</option>
+                            <option value="Großbritannien">🇬🇧 Großbritannien</option>
+                            <option value="USA">🇺🇸 USA</option>
+                            <option value="Anderes Land">🌍 Anderes Land</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         {% for category, questions in questions_by_category.items %}
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-2xl font-bold mb-4 flex items-center">
@@ -61,12 +113,27 @@
                 <div class="space-y-8">
                     {% for question in questions %}
                         <div class="border-b border-gray-200 pb-6 last:border-0">
-                            <label class="block text-gray-700 mb-4">
+                            <label class="block text-gray-900 text-lg font-bold mb-4">
                                 {{ question.text_de }}
                             </label>
                             
-                            <!-- Radio Buttons als Slider Alternative (Mobile-First) -->
-                            <div class="flex items-center space-x-4">
+                            <!-- Radio Buttons inkl. "Keine Angabe" Option -->
+                            <div class="flex items-center space-x-2">
+                                <!-- Keine Angabe (Neutral = 3) -->
+                                <label class="flex-1">
+                                    <input type="radio" 
+                                           name="q_{{ question.key }}" 
+                                           value="3"
+                                           class="hidden peer"
+                                           required>
+                                    <div class="cursor-pointer text-center py-2 px-2 rounded-md border-2 border-gray-300 
+                                                peer-checked:border-gray-500 peer-checked:bg-gray-500 peer-checked:text-white
+                                                hover:border-gray-400 transition text-xs">
+                                        K.A.
+                                    </div>
+                                </label>
+                                
+                                <!-- Werte 1-5 -->
                                 {% for value in "12345" %}
                                     <label class="flex-1">
                                         <input type="radio" 
@@ -82,9 +149,13 @@
                                     </label>
                                 {% endfor %}
                             </div>
-                            <div class="flex justify-between text-xs text-gray-500 mt-1">
-                                <span class="font-bold">Trifft nicht zu</span>
-                                <span class="font-bold">Trifft zu</span>
+                            <div class="flex text-xs text-gray-500 mt-1">
+                                <span class="flex-1 text-center font-bold text-gray-400">K.A.</span>
+                                <span class="flex-1 text-left font-bold ml-1">Trifft nicht zu</span>
+                                <span class="flex-1"></span>
+                                <span class="flex-1"></span>
+                                <span class="flex-1"></span>
+                                <span class="flex-1 text-right font-bold mr-1">Trifft zu</span>
                             </div>
                         </div>
                     {% endfor %}
@@ -227,8 +298,24 @@
             }, 3000);
         }
         
-        // Event Listeners
+        // Make radio buttons deselectable
+        let lastSelected = {};
+        
         allQuestions.forEach(input => {
+            input.addEventListener('click', function(e) {
+                const questionName = this.name;
+                
+                // Wenn derselbe Button nochmal geklickt wird, abwählen
+                if (lastSelected[questionName] === this) {
+                    this.checked = false;
+                    lastSelected[questionName] = null;
+                    updateProgress();
+                    saveProgress();
+                } else {
+                    lastSelected[questionName] = this;
+                }
+            });
+            
             input.addEventListener('change', function() {
                 updateProgress();
                 saveProgress();
