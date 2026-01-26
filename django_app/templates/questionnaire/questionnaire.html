@@ -110,11 +110,11 @@
                     {% endif %}
                 </h2>
                 
-                <div class="space-y-8">
+                <div class="space-y-16">
                     {% for question in questions %}
-                        <div class="border-b border-gray-200 pb-6 last:border-0">
+                        <div class="border-b border-gray-200 pb-12 last:border-0">
                             <label class="block text-gray-900 text-lg font-bold mb-4">
-                                {{ question.text_de }}
+                                {{ question.get_display_number }}) {{ question.text_de }}
                             </label>
                             
                             <!-- Radio Buttons inkl. "Keine Angabe" Option -->
@@ -248,6 +248,22 @@
         // Restore Progress beim Laden
         function restoreProgress() {
             try {
+                // Prüfe ob kürzlich erfolgreich submitted wurde
+                const lastSubmit = localStorage.getItem('redflag_last_submit');
+                if (lastSubmit) {
+                    const submitTime = new Date(lastSubmit);
+                    const now = new Date();
+                    const minutesSinceSubmit = (now - submitTime) / (1000 * 60);
+                    
+                    // Wenn Submit < 5 Minuten her, lösche Fortschritt und zeige leeren Fragebogen
+                    if (minutesSinceSubmit < 5) {
+                        localStorage.removeItem(STORAGE_KEY);
+                        localStorage.removeItem('redflag_last_submit');
+                        console.log('✓ Fragebogen zurückgesetzt nach erfolgreichem Submit');
+                        return;
+                    }
+                }
+                
                 const saved = localStorage.getItem(STORAGE_KEY);
                 if (!saved) return;
                 
@@ -322,17 +338,20 @@
             });
         });
         
-        // Clear storage on successful submit
+        // Clear storage SOFORT beim Submit-Klick
         document.body.addEventListener('htmx:beforeRequest', function(evt) {
             if (evt.detail.elt === form) {
                 console.log('Sende Fragebogen...');
+                // Lösche SOFORT den gespeicherten Fortschritt
+                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem('redflag_last_submit');
+                console.log('✓ LocalStorage gelöscht beim Submit');
             }
         });
         
         document.body.addEventListener('htmx:afterRequest', function(evt) {
             if (evt.detail.successful && evt.detail.elt === form) {
-                localStorage.removeItem(STORAGE_KEY);
-                console.log('✓ Fragebogen erfolgreich gesendet, Fortschritt gelöscht');
+                console.log('✓ Fragebogen erfolgreich gesendet');
             }
         });
         

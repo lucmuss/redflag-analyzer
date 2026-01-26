@@ -69,11 +69,11 @@
                     {% endif %}
                 </h2>
                 
-                <div class="space-y-6">
+                <div class="space-y-12">
                     {% for question in questions %}
-                    <div class="border-b border-gray-200 pb-6 last:border-0">
+                    <div class="border-b border-gray-200 pb-10 last:border-0">
                         <label class="block mb-3">
-                            <span class="text-gray-900 text-lg font-bold">{{ question.get_text }}</span>
+                            <span class="text-gray-900 text-lg font-bold">{{ question.get_display_number }}) {{ question.get_text }}</span>
                         </label>
                         
                         <!-- Importance Radio Buttons inkl. "Keine Angabe" -->

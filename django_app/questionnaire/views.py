@@ -28,6 +28,7 @@ class HomeView(TemplateView):
         # Social Proof Counter
         from django.utils import timezone
         from datetime import timedelta
+        from django.db.models import Avg
         
         context['total_analyses'] = Analysis.objects.count()
         context['total_users'] = User.objects.count()
@@ -35,6 +36,10 @@ class HomeView(TemplateView):
         # Analysen heute
         today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         context['analyses_today'] = Analysis.objects.filter(created_at__gte=today_start).count()
+        
+        # Durchschnittlicher Red Flag Score über alle Analysen
+        avg_score = Analysis.objects.aggregate(avg=Avg('score_total'))['avg']
+        context['average_redflag_score'] = round(float(avg_score), 2) if avg_score else 0.0
         
         return context
 

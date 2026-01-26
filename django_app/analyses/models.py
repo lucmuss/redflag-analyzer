@@ -94,6 +94,7 @@ class Analysis(models.Model):
         """
         Business Logic: Hole Top Red Flags basierend auf Impact.
         Impact = response_value * calculated_weight (DYNAMISCH aus Question)
+        Verwendet kompakte Texte für bessere mobile Darstellung.
         """
         if not self.is_unlocked:
             return None
@@ -109,13 +110,21 @@ class Analysis(models.Model):
             # DYNAMISCH: Hole aktuelles calculated_weight und Text
             question = questions.get(key)
             weight = question.calculated_weight if question else 5.0
-            text = question.text_de if question else key.replace('_', ' ').title()
+            
+            # Verwende kompakten Text falls vorhanden, sonst normalen Text
+            if question:
+                text = question.text_short_de if question.text_short_de else question.text_de
+                number = question.get_display_number()
+            else:
+                text = key.replace('_', ' ').title()
+                number = 0
             
             impact = value * weight
             max_possible = 5 * weight  # Maximum möglich: 5 × Gewicht
             red_flags.append({
                 'key': key,
                 'text': text,
+                'number': number,
                 'value': value,
                 'weight': weight,
                 'impact': impact,

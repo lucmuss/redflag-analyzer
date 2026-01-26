@@ -37,6 +37,8 @@ class Question(models.Model):
     )
     text_de = models.TextField(help_text="German question text")
     text_en = models.TextField(help_text="English question text")
+    text_short_de = models.CharField(max_length=100, blank=True, help_text="Kompakte deutsche Version")
+    text_short_en = models.CharField(max_length=100, blank=True, help_text="Short English version")
     
     # Metadaten
     is_active = models.BooleanField(default=True)
@@ -66,6 +68,18 @@ class Question(models.Model):
     def get_text(self, language='de'):
         """Business Logic: Hole Text in bevorzugter Sprache."""
         return self.text_de if language == 'de' else self.text_en
+    
+    def get_display_number(self):
+        """
+        Business Logic: Hole die Anzeige-Nummer dieser Frage.
+        Basiert auf der Position in der sortierten Liste aktiver Fragen.
+        """
+        # Hole alle aktiven Fragen in der gleichen Reihenfolge wie in der DB
+        active_questions = Question.objects.filter(is_active=True).order_by('id')
+        for index, q in enumerate(active_questions, start=1):
+            if q.id == self.id:
+                return index
+        return 0
 
 
 class WeightResponse(models.Model):

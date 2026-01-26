@@ -63,7 +63,7 @@ class AnalysisDetailView(LoginRequiredMixin, DetailView):
             # Hole Category Scores (optimiert mit prefetch)
             context['category_scores'] = analysis.category_scores.all()
             # Hole Top Red Flags (Business Logic im Model)
-            context['top_red_flags'] = analysis.get_top_red_flags(limit=5)
+            context['top_red_flags'] = analysis.get_top_red_flags(limit=7)
             
             # Compare with Average
             context['comparison'] = StatisticsService.compare_with_average(analysis)
