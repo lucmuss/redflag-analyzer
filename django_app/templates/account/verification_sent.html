@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}E-Mail-Verifizierung gesendet - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div class="text-center">
+            <div class="text-6xl mb-4">📧</div>
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-4">
+                Bitte bestätige deine E-Mail-Adresse
+            </h2>
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 text-left">
+                <p class="text-blue-900 mb-3">
+                    Wir haben dir eine E-Mail mit einem Bestätigungslink gesendet.
+                </p>
+                <p class="text-blue-800 text-sm">
+                    Bitte überprüfe dein Postfach und klicke auf den Link, um deine E-Mail-Adresse zu bestätigen und die Registrierung abzuschließen.
+                </p>
+            </div>
+
+            <div class="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4 text-left">
+                <h3 class="font-semibold text-gray-900 mb-2">💡 Hinweis:</h3>
+                <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• Überprüfe auch deinen Spam-Ordner</li>
+                    <li>• Der Link ist 3 Tage gültig</li>
+                    <li>• Du kannst dich erst anmelden, nachdem du deine E-Mail bestätigt hast</li>
+                </ul>
+            </div>
+
+            <div class="mt-8">
+                <a href="{% url 'questionnaire:home' %}" 
+                   class="text-gray-600 hover:text-red-flag">
+                    ← Zur Startseite
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

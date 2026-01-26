@@ -1,6 +1,6 @@
 """
 Service Layer für Score-Berechnungen
-Trennung von Business Logic und Models (Fat Models, aber komplexe Logik in Services)
+DYNAMISCH: Verwendet Question.calculated_weight (wird automatisch aktualisiert)
 """
 from typing import Dict, List
 from decimal import Decimal
@@ -9,22 +9,37 @@ from decimal import Decimal
 class ScoreCalculator:
     """
     Service für Score-Berechnung.
-    Entkoppelt Berechnungslogik vom Model.
+    DYNAMISCH: Holt Gewichte direkt aus Question.calculated_weight
     """
     
-    def __init__(self, responses: List[Dict], weights: Dict[str, int]):
+    def __init__(self, responses: List[Dict]):
         """
         Args:
             responses: List von {"key": str, "value": int}
-            weights: Dict von {key: weight}
         """
         self.responses = responses
-        self.weights = weights
+        # Hole aktuelle calculated_weights DYNAMISCH aus DB
+        self.weights = self._get_current_weights()
+    
+    def _get_current_weights(self) -> Dict[str, float]:
+        """
+        Holt aktuelle calculated_weights aus Question Model.
+        DYNAMISCH: Gewichte werden immer frisch aus DB geladen.
+        """
+        from questionnaire.models import Question
+        
+        questions = Question.objects.filter(is_active=True)
+        return {q.key: q.calculated_weight for q in questions}
     
     def calculate_total_score(self) -> Decimal:
         """
-        Berechne Gesamt-Score (0-10).
-        Formula: Durchschnitt von (value * weight) / max_possible_weight
+        Berechne Gesamt-Score (0-5).
+        Formula: Gewichtete Summe normalisiert auf 0-5 Skala
+        
+        Berechnung:
+        1. Gewichtete Summe = Σ(Bewertung × Calculated Weight)
+        2. Max mögliche Summe = Σ(5 × Calculated Weight) 
+        3. Score = (Gewichtete Summe / Max mögliche Summe) × 5
         """
         if not self.responses:
             return Decimal('0.00')
@@ -34,17 +49,20 @@ class ScoreCalculator:
         
         for response in self.responses:
             key = response['key']
-            value = response['value']  # 1-5
-            weight = self.weights.get(key, 3)  # Default 3
+            value = response['value']  # 1-5 (Bewertung aus Fragebogen)
+            weight = self.weights.get(key, 5.0)  # Calculated Weight aus Question
             
+            # Gewichtete Summe: Bewertung × Calculated Weight
             total_weighted_sum += value * weight
-            max_possible += 5 * weight  # Max value is 5
+            
+            # Max mögliche Summe: 5 (max Bewertung) × Calculated Weight
+            max_possible += 5 * weight
         
         if max_possible == 0:
             return Decimal('0.00')
         
-        # Normalisiere auf 0-10 Skala
-        score = (total_weighted_sum / max_possible) * 10
+        # Normalisiere auf 0-5 Skala
+        score = (total_weighted_sum / max_possible) * 5
         return Decimal(str(round(score, 2)))
     
     def calculate_category_scores(self) -> Dict[str, Decimal]:
@@ -79,39 +97,9 @@ class ScoreCalculator:
         category_scores = {}
         for category, responses in category_responses.items():
             if responses:
-                calc = ScoreCalculator(responses, self.weights)
+                calc = ScoreCalculator(responses)
                 category_scores[category] = calc.calculate_total_score()
             else:
                 category_scores[category] = Decimal('0.00')
         
         return category_scores
-    
-    @staticmethod
-    def create_weight_snapshot(user=None, questions=None) -> Dict[str, int]:
-        """
-        Erstelle Snapshot der aktuellen Gewichte.
-        Verwendet User-spezifische Gewichte falls vorhanden, sonst default_weight.
-        
-        Args:
-            user: User-Objekt (optional). Wenn vorhanden, werden personalisierte Gewichte verwendet.
-            questions: Question QuerySet (optional)
-        
-        Returns:
-            Dict mit {question_key: weight}
-        """
-        from questionnaire.models import Question, WeightResponse
-        
-        if questions is None:
-            questions = Question.objects.filter(is_active=True)
-        
-        # Hole User-spezifische Gewichte falls User vorhanden
-        if user:
-            user_weights = WeightResponse.get_user_weights(user)
-            # Verwende user_weights falls vorhanden, sonst default_weight
-            return {
-                q.key: user_weights.get(q.key, q.default_weight) 
-                for q in questions
-            }
-        
-        # Fallback: Verwende default_weights
-        return {q.key: q.default_weight for q in questions}

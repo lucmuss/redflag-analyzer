@@ -18,7 +18,7 @@ class AnalysisAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'score_total', 'is_unlocked', 'created_at']
     list_filter = ['is_unlocked', 'created_at']
     search_fields = ['user__email']
-    readonly_fields = ['user', 'responses', 'snapshot_weights', 'score_total', 'created_at', 'updated_at']
+    readonly_fields = ['user', 'responses', 'score_total', 'created_at', 'updated_at']
     ordering = ['-created_at']
     
     fieldsets = (
@@ -26,7 +26,7 @@ class AnalysisAdmin(admin.ModelAdmin):
             'fields': ('user', 'is_unlocked', 'score_total')
         }),
         ('Data', {
-            'fields': ('responses', 'snapshot_weights'),
+            'fields': ('responses',),
             'classes': ('collapse',)
         }),
         ('Timestamps', {

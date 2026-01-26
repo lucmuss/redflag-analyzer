@@ -118,28 +118,25 @@ class QuestionnaireSubmitView(LoginRequiredMixin, View):
             messages.error(request, 'Bitte beantworte mindestens eine Frage.')
             return redirect('questionnaire:questionnaire')
         
-        # Erstelle Weight Snapshot (verwendet User-spezifische Gewichte falls vorhanden)
-        snapshot_weights = ScoreCalculator.create_weight_snapshot(user=request.user)
-        
         # Hole Partner-Informationen aus POST-Request
         partner_name = request.POST.get('partner_name', '').strip() or None
         partner_age_str = request.POST.get('partner_age', '').strip()
         partner_age = int(partner_age_str) if partner_age_str else None
         partner_country = request.POST.get('partner_country', '').strip() or None
         
-        # Berechne Scores
-        calculator = ScoreCalculator(responses, snapshot_weights)
+        # Berechne Scores DYNAMISCH mit aktuellen Question.calculated_weight
+        calculator = ScoreCalculator(responses)
         score_total = calculator.calculate_total_score()
         category_scores_dict = calculator.calculate_category_scores()
         
         # Erstelle Analysis (Fat Model Pattern)
+        # KEIN snapshot_weights mehr - verwendet immer aktuelle calculated_weights
         analysis = Analysis.objects.create(
             user=request.user,
             partner_name=partner_name,
             partner_age=partner_age,
             partner_country=partner_country,
             responses=responses,
-            snapshot_weights=snapshot_weights,
             score_total=score_total,
             is_unlocked=False  # User muss Credits verwenden
         )

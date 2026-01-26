@@ -44,7 +44,7 @@ class AdminDashboardView(StaffRequiredMixin, TemplateView):
         context['recent_posts'] = BlogPost.objects.select_related('author', 'category').order_by('-created_at')[:5]
         
         # Top Blog Posts (nach Views)
-        context['top_posts'] = BlogPost.objects.filter(status='published').order_by('-view_count')[:5]
+        context['top_posts'] = BlogPost.objects.filter(status='published').order_by('-views_count')[:5]
         
         # Neueste Subscriber
         context['recent_subscribers'] = EmailSubscriber.objects.filter(is_subscribed=True).order_by('-subscribed_at')[:5]

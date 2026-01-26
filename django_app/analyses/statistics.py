@@ -31,7 +31,8 @@ class StatisticsService:
         # Durchschnittlicher Total Score
         avg_total = Analysis.objects.filter(is_unlocked=True).aggregate(
             avg=Avg('score_total')
-        )['avg'] or 0.0
+        )['avg']
+        avg_total = float(avg_total) if avg_total is not None else 0.0
         
         # Durchschnitt pro Kategorie
         categories = ['TRUST', 'BEHAVIOR', 'VALUES', 'DYNAMICS']
@@ -40,7 +41,8 @@ class StatisticsService:
         for category in categories:
             avg = CategoryScore.objects.filter(category=category).aggregate(
                 avg=Avg('score')
-            )['avg'] or 0.0
+            )['avg']
+            avg = float(avg) if avg is not None else 0.0
             by_category[category] = round(avg, 1)
         
         return {
@@ -95,6 +97,7 @@ class StatisticsService:
         
         for category, avg_score in averages['by_category'].items():
             user_score = float(category_scores.get(category, 0))
+            avg_score = float(avg_score)  # Konvertiere Decimal zu float
             diff = user_score - avg_score
             diff_percent = ((diff / avg_score) * 100) if avg_score > 0 else 0
             

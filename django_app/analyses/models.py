@@ -48,15 +48,11 @@ class Analysis(models.Model):
     responses = models.JSONField(
         help_text="Question responses as JSON array"
     )
-    # Snapshot der Gewichte zum Zeitpunkt der Analyse
-    snapshot_weights = models.JSONField(
-        help_text="Snapshot of weights used at analysis time"
-    )
     score_total = models.DecimalField(
         max_digits=4,
         decimal_places=2,
-        validators=[MinValueValidator(0), MaxValueValidator(10)],
-        help_text="Total weighted score (0-10)"
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
+        help_text="Total weighted score (0-5)"
     )
     
     # Timestamps
@@ -88,31 +84,42 @@ class Analysis(models.Model):
     def calculate_scores(self):
         """
         Business Logic: Berechne Category Scores aus responses.
-        Dies wird normalerweise bei Erstellung aufgerufen.
+        Verwendet DYNAMISCH aktuelle Question.calculated_weight Werte.
         """
         from analyses.services import ScoreCalculator
-        calculator = ScoreCalculator(self.responses, self.snapshot_weights)
+        calculator = ScoreCalculator(self.responses)
         return calculator.calculate_category_scores()
     
     def get_top_red_flags(self, limit=5):
         """
         Business Logic: Hole Top Red Flags basierend auf Impact.
-        Impact = response_value * weight
+        Impact = response_value * calculated_weight (DYNAMISCH aus Question)
         """
         if not self.is_unlocked:
             return None
+        
+        # Hole aktuelle calculated_weights UND Texte aus Question Model
+        questions = {q.key: q for q in Question.objects.filter(is_active=True)}
         
         red_flags = []
         for response in self.responses:
             key = response['key']
             value = response['value']
-            weight = self.snapshot_weights.get(key, 3)
+            
+            # DYNAMISCH: Hole aktuelles calculated_weight und Text
+            question = questions.get(key)
+            weight = question.calculated_weight if question else 5.0
+            text = question.text_de if question else key.replace('_', ' ').title()
+            
             impact = value * weight
+            max_possible = 5 * weight  # Maximum möglich: 5 × Gewicht
             red_flags.append({
                 'key': key,
+                'text': text,
                 'value': value,
                 'weight': weight,
-                'impact': impact
+                'impact': impact,
+                'max_possible': max_possible
             })
         
         # Sortiere nach Impact (absteigend)
@@ -137,7 +144,7 @@ class CategoryScore(models.Model):
     score = models.DecimalField(
         max_digits=4,
         decimal_places=2,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
     )
     
     class Meta:

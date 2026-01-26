@@ -30,10 +30,10 @@ class Question(models.Model):
         choices=CATEGORY_CHOICES,
         db_index=True
     )
-    default_weight = models.IntegerField(
-        default=3,
-        validators=[MinValueValidator(1), MaxValueValidator(5)],
-        help_text="Default importance weight (1-5)"
+    calculated_weight = models.FloatField(
+        default=3.0,
+        validators=[MinValueValidator(1.0), MaxValueValidator(5.0)],
+        help_text="Calculated global weight from Z-Score standardization (1-5)"
     )
     text_de = models.TextField(help_text="German question text")
     text_en = models.TextField(help_text="English question text")
@@ -84,8 +84,8 @@ class WeightResponse(models.Model):
         related_name='weight_responses'
     )
     importance = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(10)],
-        help_text="User's importance rating (1-10)"
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        help_text="User's importance rating (1-5)"
     )
     
     created_at = models.DateTimeField(auto_now_add=True)
@@ -100,7 +100,7 @@ class WeightResponse(models.Model):
         ordering = ['question__category', 'question__key']
     
     def __str__(self):
-        return f"{self.user.email} - {self.question.key}: {self.importance}/10"
+        return f"{self.user.email} - {self.question.key}: {self.importance}/5"
     
     @classmethod
     def get_user_weights(cls, user) -> dict:

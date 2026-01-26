@@ -23,7 +23,7 @@
                 <!-- Score Display -->
                 <div class="bg-white/20 backdrop-blur-lg rounded-2xl p-8 mb-6">
                     <div class="text-white/80 text-sm uppercase tracking-wider mb-2">Mein Red-Flag Score</div>
-                    <div class="text-7xl font-bold mb-2">{{ analysis.score_total }}/10</div>
+                    <div class="text-7xl font-bold mb-2">{{ analysis.score_total }}/5</div>
                     
                     {% if analysis.score_total >= 7 %}
                         <div class="text-2xl">🚨 Kritisch</div>
@@ -38,15 +38,15 @@
                 <div class="grid grid-cols-3 gap-3 mb-6">
                     <div class="bg-white/10 backdrop-blur rounded-xl p-4">
                         <div class="text-xs text-white/70 mb-1">Kommunikation</div>
-                        <div class="text-2xl font-bold">{{ analysis.score_communication }}/10</div>
+                        <div class="text-2xl font-bold">{{ analysis.score_communication }}/5</div>
                     </div>
                     <div class="bg-white/10 backdrop-blur rounded-xl p-4">
                         <div class="text-xs text-white/70 mb-1">Respekt</div>
-                        <div class="text-2xl font-bold">{{ analysis.score_respect }}/10</div>
+                        <div class="text-2xl font-bold">{{ analysis.score_respect }}/5</div>
                     </div>
                     <div class="bg-white/10 backdrop-blur rounded-xl p-4">
                         <div class="text-xs text-white/70 mb-1">Vertrauen</div>
-                        <div class="text-2xl font-bold">{{ analysis.score_trust }}/10</div>
+                        <div class="text-2xl font-bold">{{ analysis.score_trust }}/5</div>
                     </div>
                 </div>
 
@@ -152,7 +152,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-const shareText = "Ich habe meinen Red-Flag Score analysiert: {{ analysis.score_total }}/10! 🚩 Probiere es auch aus:";
+const shareText = "Ich habe meinen Red-Flag Score analysiert: {{ analysis.score_total }}/5! 🚩 Probiere es auch aus:";
 const shareUrl = "{{ share_url }}";
 
 function shareToWhatsApp(event) {
