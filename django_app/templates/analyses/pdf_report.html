@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>RedFlag Analysis Report</title>
+</head>
+<body>
+    <!-- Watermark -->
+    <div class="watermark">
+        RedFlag Analyzer © 2026
+    </div>
+    
+    <!-- Header -->
+    <div class="header">
+        <h1>🚩 RedFlag Analysis Report</h1>
+        <p><strong>Erstellt am:</strong> {{ analysis.created_at|date:"d.m.Y H:i" }}</p>
+        <p><strong>Report ID:</strong> #{{ analysis.id }}</p>
+    </div>
+    
+    <!-- Partner Information -->
+    <div class="score-card">
+        <h2>Partner-Information</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <td>{{ partner_name }}</td>
+            </tr>
+            <tr>
+                <th>Alter</th>
+                <td>{{ partner_age }}</td>
+            </tr>
+            {% if analysis.partner_country %}
+            <tr>
+                <th>Herkunft</th>
+                <td>{{ analysis.partner_country }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    
+    <!-- Overall Score -->
+    <div class="score-card {% if score_total >= 3.5 %}score-high{% elif score_total >= 2.5 %}score-medium{% else %}score-low{% endif %}">
+        <h2>Gesamtergebnis</h2>
+        <p style="font-size: 36pt; font-weight: bold; text-align: center; margin: 20px 0;">
+            {{ score_total|floatformat:2 }} / 5.0
+        </p>
+        <p style="text-align: center;">
+            {% if score_total >= 3.5 %}
+                <strong style="color: #EF4444;">⚠️ Hohes Red Flag Risiko</strong>
+            {% elif score_total >= 2.5 %}
+                <strong style="color: #f59e0b;">⚡ Mittleres Red Flag Risiko</strong>
+            {% else %}
+                <strong style="color: #10b981;">✅ Geringes Red Flag Risiko</strong>
+            {% endif %}
+        </p>
+    </div>
+    
+    <!-- Category Scores -->
+    <h2>Kategorie-Scores</h2>
+    <div class="category-grid">
+        {% for category, score in category_scores.items %}
+        <div class="score-card {% if score >= 3.5 %}score-high{% elif score >= 2.5 %}score-medium{% else %}score-low{% endif %}">
+            <h3>
+                {% if category == 'TRUST' %}🔐 Vertrauen{% endif %}
+                {% if category == 'BEHAVIOR' %}🎭 Verhalten{% endif %}
+                {% if category == 'VALUES' %}💎 Werte{% endif %}
+                {% if category == 'DYNAMICS' %}⚡ Dynamik{% endif %}
+            </h3>
+            <p style="font-size: 24pt; font-weight: bold; margin: 10px 0;">{{ score|floatformat:2 }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Top Red Flags -->
+    <h2>Top 10 Red Flags (nach Impact)</h2>
+    {% for flag in top_red_flags %}
+    <div class="red-flag-item">
+        <h3>{{ forloop.counter }}. {{ flag.text }}</h3>
+        <table>
+            <tr>
+                <th>Deine Antwort</th>
+                <td>{{ flag.value }} / 5</td>
+            </tr>
+            <tr>
+                <th>Gewichtung</th>
+                <td>{{ flag.weight|floatformat:1 }}</td>
+            </tr>
+            <tr>
+                <th>Impact-Score</th>
+                <td><strong>{{ flag.impact|floatformat:2 }}</strong> / {{ flag.max_possible|floatformat:1 }}</td>
+            </tr>
+        </table>
+        <div style="background: #f3f4f6; border-radius: 4px; overflow: hidden; margin-top: 10px;">
+            <div style="background: #EF4444; height: 20px; width: {{ flag.impact|floatformat:0 }}%;"></div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    <!-- Interpretation -->
+    <h2>Interpretation</h2>
+    <div class="score-card">
+        {% if score_total >= 4.0 %}
+        <p><strong>Sehr hohes Red Flag Level (4.0+):</strong></p>
+        <p>
+            Die Analyse zeigt sehr viele kritische Red Flags. Es wird dringend empfohlen, 
+            professionelle Beratung in Anspruch zu nehmen und die Beziehungssituation 
+            kritisch zu reflektieren. Deine Sicherheit und dein Wohlbefinden sollten 
+            Priorität haben.
+        </p>
+        {% elif score_total >= 3.5 %}
+        <p><strong>Hohes Red Flag Level (3.5-3.9):</strong></p>
+        <p>
+            Es wurden bedeutende Red Flags identifiziert, die nicht ignoriert werden sollten. 
+            Erwäge ein offenes Gespräch mit deinem Partner und ggf. professionelle Unterstützung 
+            durch Paartherapie oder Beratung.
+        </p>
+        {% elif score_total >= 2.5 %}
+        <p><strong>Mittleres Red Flag Level (2.5-3.4):</strong></p>
+        <p>
+            Es gibt einige potenzielle Problembereiche in der Beziehung. Diese sollten 
+            angesprochen und gemeinsam bearbeitet werden. Kommunikation und gegenseitiges 
+            Verständnis sind hier der Schlüssel.
+        </p>
+        {% elif score_total >= 1.5 %}
+        <p><strong>Moderates Red Flag Level (1.5-2.4):</strong></p>
+        <p>
+            Die Beziehung zeigt einige kleinere Red Flags, die typisch für viele Partnerschaften 
+            sind. Wichtig ist, diese im Auge zu behalten und an der Beziehung zu arbeiten.
+        </p>
+        {% else %}
+        <p><strong>Geringes Red Flag Level (&lt;1.5):</strong></p>
+        <p>
+            Die Analyse zeigt nur wenige Red Flags. Dies deutet auf eine gesunde Beziehung hin. 
+            Weiterhin ist es wichtig, an Kommunikation und gegenseitigem Respekt zu arbeiten.
+        </p>
+        {% endif %}
+    </div>
+    
+    <!-- Empfehlungen -->
+    <h2>Empfehlungen</h2>
+    <div class="score-card">
+        <ul style="margin-left: 20px;">
+            <li><strong>Selbstreflexion:</strong> Nimm dir Zeit, über deine eigenen Bedürfnisse und Grenzen nachzudenken.</li>
+            <li><strong>Kommunikation:</strong> Sprich offen mit deinem Partner über deine Bedenken.</li>
+            <li><strong>Professionelle Hilfe:</strong> Bei ernsten Bedenken, scheue dich nicht, Hilfe zu suchen.</li>
+            <li><strong>Vertraue deinem Bauchgefühl:</strong> Deine Intuition ist oft ein guter Indikator.</li>
+            <li><strong>Grenzen setzen:</strong> Lerne, klare Grenzen zu kommunizieren und durchzusetzen.</li>
+        </ul>
+    </div>
+    
+    <!-- Disclaimer -->
+    <div class="footer">
+        <p>
+            <strong>Wichtiger Hinweis:</strong> Diese Analyse ersetzt keine professionelle psychologische 
+            oder therapeutische Beratung. Bei ernsten Beziehungsproblemen oder Bedenken bezüglich 
+            deiner Sicherheit, wende dich bitte an qualifizierte Fachkräfte.
+        </p>
+        <p style="margin-top: 20px;">
+            RedFlag Analyzer - Dein Partner für Beziehungsanalysen<br>
+            www.redflag-analyzer.com
+        </p>
+    </div>
+</body>
+</html>

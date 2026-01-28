@@ -6,6 +6,9 @@ django-environ==0.11.2
 psycopg2-binary==2.9.9
 dj-database-url==2.1.0
 
+# PDF Export
+weasyprint==60.1
+
 # Security & Auth
 django-allauth==0.61.1
 argon2-cffi==23.1.0

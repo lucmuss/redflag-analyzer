@@ -14,6 +14,11 @@ from .image_generator import ShareImageGenerator
 from .statistics import StatisticsService
 from subscriptions.models import Subscription
 from django.http import FileResponse
+from .pdf_export import export_analysis_pdf
+from .trend_analysis import TrendAnalysisService
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AnalysisListView(LoginRequiredMixin, ListView):
@@ -162,3 +167,67 @@ class GenerateShareImageView(LoginRequiredMixin, View):
             as_attachment=True,
             filename=f'redflag_analysis_{analysis.id}_{format}.png'
         )
+
+
+class ExportAnalysisPDFView(LoginRequiredMixin, View):
+    """
+    Exportiert eine Analyse als PDF-Report.
+    Nur für entsperrte Analysen verfügbar.
+    """
+    
+    def get(self, request, pk):
+        # Hole Analysis und prüfe Berechtigung
+        analysis = get_object_or_404(
+            Analysis, 
+            pk=pk, 
+            user=request.user, 
+            is_unlocked=True
+        )
+        
+        try:
+            logger.info(f"PDF export requested for analysis {pk} by user {request.user.id}")
+            
+            # Generiere PDF
+            response = export_analysis_pdf(analysis)
+            
+            logger.info(f"PDF export successful for analysis {pk}")
+            return response
+            
+        except Exception as e:
+            logger.error(f"PDF export failed for analysis {pk}: {str(e)}")
+            messages.error(request, 'PDF-Export ist fehlgeschlagen. Bitte versuche es später erneut.')
+            return redirect('analyses:detail', pk=pk)
+
+
+class TrendsView(LoginRequiredMixin, DetailView):
+    """
+    Zeigt Trend-Analyse für User Scores über Zeit.
+    """
+    model = Analysis
+    template_name = 'analyses/trends.html'
+    context_object_name = 'analysis'
+    
+    def get_queryset(self):
+        return Analysis.objects.filter(user=self.request.user)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Hole Trend-Daten
+        trend_data = TrendAnalysisService.get_user_score_trend(self.request.user, days=90)
+        trend_stats = TrendAnalysisService.get_trend_statistics(self.request.user)
+        comparison = TrendAnalysisService.compare_with_previous_analysis(self.object)
+        
+        context['trend_data'] = trend_data
+        context['trend_stats'] = trend_stats
+        context['comparison'] = comparison
+        
+        # Category Trends
+        context['category_trends'] = {
+            'TRUST': TrendAnalysisService.get_category_trends(self.request.user, 'TRUST'),
+            'BEHAVIOR': TrendAnalysisService.get_category_trends(self.request.user, 'BEHAVIOR'),
+            'VALUES': TrendAnalysisService.get_category_trends(self.request.user, 'VALUES'),
+            'DYNAMICS': TrendAnalysisService.get_category_trends(self.request.user, 'DYNAMICS'),
+        }
+        
+        return context
