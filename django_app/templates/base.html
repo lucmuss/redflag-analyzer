@@ -96,10 +96,28 @@
                            class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
                             💬 Feedback
                         </a>
+                        <a href="{% url 'feedback:list' %}" 
+                           class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
+                            📋 Mein Feedback
+                        </a>
                         <a href="{% url 'accounts:badges' %}" 
                            class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
                             🏆 Badges
                         </a>
+                        <a href="{% url 'referrals:dashboard' %}" 
+                           class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
+                            🎁 Empfehlungen
+                        </a>
+                        <a href="{% url 'subscriptions:premium' %}" 
+                           class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
+                            💎 Premium
+                        </a>
+                        {% if user.is_staff %}
+                        <a href="{% url 'blog:admin_dashboard' %}" 
+                           class="text-purple-600 hover:text-purple-700 px-3 py-2 rounded-md text-sm font-medium border border-purple-600">
+                            ⚙️ Blog Admin
+                        </a>
+                        {% endif %}
                         <a href="{% url 'accounts:profile_edit' %}" 
                            class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
                             👤 Mein Profil
@@ -108,6 +126,10 @@
                            class="flex items-center text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
                             <span class="mr-2">💳</span>
                             <span>{{ user.credits }} Credits</span>
+                        </a>
+                        <a href="{% url 'accounts:credit_purchase' %}" 
+                           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            💰 Credits kaufen
                         </a>
                         <a href="{% url 'account_logout' %}" 
                            class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-md text-sm font-medium">
@@ -178,9 +200,31 @@
                         <span class="font-medium">Badges</span>
                     </a>
                     
+                    <a href="{% url 'referrals:dashboard' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
+                        <span class="text-2xl mr-3">🎁</span>
+                        <span class="font-medium">Empfehlungen</span>
+                    </a>
+                    
+                    <a href="{% url 'subscriptions:premium' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
+                        <span class="text-2xl mr-3">💎</span>
+                        <span class="font-medium">Premium</span>
+                    </a>
+                    
+                    {% if user.is_staff %}
+                    <a href="{% url 'blog:admin_dashboard' %}" class="flex items-center px-4 py-3 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg transition border border-purple-300">
+                        <span class="text-2xl mr-3">⚙️</span>
+                        <span class="font-medium">Blog Admin</span>
+                    </a>
+                    {% endif %}
+                    
                     <a href="{% url 'feedback:create' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
                         <span class="text-2xl mr-3">💬</span>
-                        <span class="font-medium">Feedback</span>
+                        <span class="font-medium">Feedback erstellen</span>
+                    </a>
+                    
+                    <a href="{% url 'feedback:list' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
+                        <span class="text-2xl mr-3">📋</span>
+                        <span class="font-medium">Mein Feedback</span>
                     </a>
                     
                     <a href="{% url 'accounts:profile' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
@@ -189,6 +233,11 @@
                         </svg>
                         <span class="font-medium">Profil</span>
                         <span class="ml-auto bg-red-flag text-white text-xs px-2 py-1 rounded-full">{{ user.credits }} Credits</span>
+                    </a>
+                    
+                    <a href="{% url 'accounts:credit_purchase' %}" class="flex items-center px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-medium">
+                        <span class="text-2xl mr-3">💰</span>
+                        <span>Credits kaufen</span>
                     </a>
                     
                     <div class="border-t border-gray-200 my-4"></div>

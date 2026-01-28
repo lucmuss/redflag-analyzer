@@ -34,6 +34,7 @@
         - Keine komplexe Client-Logik, SEO-freundlich, Progressive Enhancement
     -->
     <form hx-post="{% url 'questionnaire:submit' %}" 
+          hx-swap="none"
           hx-indicator=".htmx-indicator"
           class="space-y-6">
         {% csrf_token %}

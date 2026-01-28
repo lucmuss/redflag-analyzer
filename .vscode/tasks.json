@@ -1,0 +1,56 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        // --- Kill Port 8000 (ohne sudo) ---
+        {
+            "label": "killPort8000",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "pids=$(lsof -t -i:8000) && [ -n \"$pids\" ] && kill -9 $pids 2>/dev/null || true"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": false,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Kills user-owned processes on port 8000 (no sudo)"
+        },
+
+        // --- Activate Venv ---
+        {
+            "label": "activateVenv",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "source ${workspaceFolder}/django_app/venv/bin/activate"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "isBackground": true
+        },
+
+        // --- Compound Task: Kill + Activate (wie SO-Beispiel) ---
+        {
+            "label": "djangoStart",
+            "dependsOrder": "sequence",
+            "dependsOn": ["killPort8000", "activateVenv"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Prepares Django: Kills port + activates venv"
+        }
+    ]
+}

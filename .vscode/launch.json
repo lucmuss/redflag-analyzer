@@ -1,0 +1,111 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        // --- Backend: Django Server Debuggen ---
+        {
+            "name": "Django Run Server",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/django_app/manage.py",
+            "args": [
+                "runserver",
+                "0.0.0.0:8000"
+            ],
+            "django": true,
+            "justMyCode": false,
+            "env": {
+                "DJANGO_SETTINGS_MODULE": "redflag_project.settings"
+            },
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/django_app",
+            "stopOnEntry": false,
+            "preLaunchTask": "djangoStart"  // Compound-Task: Kill + Venv
+        },
+
+        // --- Frontend: HTMX mit Firefox ---
+        {
+            "name": "Launch RedFlag Frontend (HTMX)",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:8000/",
+            "webRoot": "${workspaceFolder}/django_app/templates/",
+            "runtimeExecutable": "C:\\\\Program Files\\\\Mozilla Firefox\\\\firefox.exe",
+            "runtimeArgs": [
+                "--start-debugger-server",
+                "127.0.0.1:9222",
+                "--no-remote",
+                "--headless=false",
+                "--disable-extensions",
+                "--disable-web-security"
+            ],
+            "firefoxExtendedDebugging": true,
+            "port": 9222,
+            "host": "127.0.0.1"
+        },
+
+        // --- Attach zu Firefox ---
+        {
+            "name": "Attach to Firefox (HTMX)",
+            "type": "firefox",
+            "request": "attach",
+            "runtimeExecutable": "C:\\\\Program Files\\\\Mozilla Firefox\\\\firefox.exe",
+            "port": 9222,
+            "host": "127.0.0.1",
+            "reAttach": true,
+            "pathMappings": [
+                {
+                    "url": "http://localhost:8000",
+                    "path": "${workspaceFolder}/django_app"
+                }
+            ]
+        },
+
+        // --- Launch Admin ---
+        {
+            "name": "Launch localhost (Admin)",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:8000/admin/",
+            "webRoot": "${workspaceFolder}/django_app",
+            "runtimeExecutable": "C:\\\\Program Files\\\\Mozilla Firefox\\\\firefox.exe",
+            "runtimeArgs": [
+                "--start-debugger-server",
+                "127.0.0.1:9222",
+                "--no-remote"
+            ],
+            "firefoxExtendedDebugging": true,
+            "port": 9222
+        },
+
+        // --- Attach Python ---
+        {
+            "name": "Attach to Django",
+            "type": "python",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/django_app",
+                    "remoteRoot": "."
+                }
+            ],
+            "justMyCode": false
+        },
+
+        // --- Python: Current File (einfach) ---
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/django_app",
+            "preLaunchTask": "activateVenv"
+        }
+    ]
+}
