@@ -40,8 +40,8 @@ def blog_detail(request, slug):
     )
     
     # View Counter erhöhen
-    post.view_count += 1
-    post.save(update_fields=['view_count'])
+    post.views_count += 1
+    post.save(update_fields=['views_count'])
     
     # Related Posts (gleiche Kategorie)
     related_posts = BlogPost.objects.filter(

@@ -1,134 +1,161 @@
 {% extends 'base.html' %}
 
-{% block title %}Datenschutzerklärung - RedFlag Analyzer{% endblock %}
+{% block title %}Datenschutzerklärung - {{ BUSINESS.name }}{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <h1 class="text-4xl font-bold text-gray-900 mb-8">Datenschutzerklärung</h1>
     
-    <div class="prose prose-lg max-w-none">
-        <p class="lead">
-            Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Diese Datenschutzerklärung informiert Sie über die Verarbeitung personenbezogener Daten bei der Nutzung dieser Website.
+    <div class="prose prose-lg max-w-none space-y-8">
+        <p class="text-xl text-gray-700 leading-relaxed">
+            Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Diese Datenschutzerklärung informiert Sie über die Verarbeitung personenbezogener Daten bei der Nutzung von {{ BUSINESS.name }}.
         </p>
 
-        <h2>1. Verantwortlicher</h2>
-        <p>
-            Verantwortlich für die Datenverarbeitung ist:<br>
-            [Name/Firma]<br>
-            [Adresse]<br>
-            E-Mail: [datenschutz@beispiel.de]
-        </p>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Verantwortlicher</h2>
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <p class="mb-2"><strong>{{ BUSINESS.name }}</strong></p>
+                <p class="mb-2">{{ BUSINESS.owner }}</p>
+                <p class="mb-2">{{ BUSINESS.street }}</p>
+                <p class="mb-4">{{ BUSINESS.zip }} {{ BUSINESS.city }}</p>
+                <p>
+                    <strong>E-Mail:</strong> 
+                    <a href="mailto:{{ BUSINESS.email }}" class="text-indigo-600 hover:text-indigo-800">{{ BUSINESS.email }}</a>
+                </p>
+            </div>
+        </section>
 
-        <h2>2. Erhebung und Speicherung personenbezogener Daten</h2>
-        <h3>2.1 Beim Besuch der Website</h3>
-        <p>
-            Beim Aufrufen unserer Website werden durch den Browser automatisch Informationen an unseren Server gesendet:
-        </p>
-        <ul>
-            <li>IP-Adresse</li>
-            <li>Datum und Uhrzeit der Anfrage</li>
-            <li>Browsertyp und Browserversion</li>
-            <li>Verwendetes Betriebssystem</li>
-            <li>Referrer URL</li>
-        </ul>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Erhebung und Speicherung personenbezogener Daten</h2>
+            
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">2.1 Beim Besuch der Website</h3>
+            <p class="text-gray-700">
+                Beim Aufrufen unserer Website werden durch den Browser automatisch Informationen an unseren Server gesendet:
+            </p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-1">
+                <li>IP-Adresse (anonymisiert)</li>
+                <li>Datum und Uhrzeit der Anfrage</li>
+                <li>Browsertyp und Browserversion</li>
+                <li>Verwendetes Betriebssystem</li>
+                <li>Referrer URL</li>
+            </ul>
+            <p class="text-gray-700 mt-3">
+                Diese Daten werden zur Gewährleistung der technischen Sicherheit und zur Fehlerdiagnose benötigt. Sie werden nach spätestens 7 Tagen automatisch gelöscht.
+            </p>
 
-        <h3>2.2 Bei der Registrierung</h3>
-        <p>
-            Bei der Erstellung eines Benutzerkontos erheben wir:
-        </p>
-        <ul>
-            <li>E-Mail-Adresse (verpflichtend)</li>
-            <li>Geschlecht (optional)</li>
-            <li>Alter (optional)</li>
-            <li>Beziehungsstatus (optional)</li>
-        </ul>
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">2.2 Bei der Registrierung</h3>
+            <p class="text-gray-700">Bei der Erstellung eines Benutzerkontos erheben wir:</p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-1">
+                <li><strong>E-Mail-Adresse</strong> (verpflichtend) - für Login und Kommunikation</li>
+                <li><strong>Passwort</strong> (mit Argon2-Verschlüsselung gespeichert)</li>
+                <li>Geschlecht (optional)</li>
+                <li>Alter (optional)</li>
+                <li>Beziehungsstatus (optional)</li>
+            </ul>
 
-        <h3>2.3 Bei der Nutzung des Fragebogens</h3>
-        <p>
-            Ihre Antworten im Fragebogen werden gespeichert und zur Berechnung Ihrer Analyse verwendet.
-            Diese Daten werden verschlüsselt in unserer PostgreSQL-Datenbank gespeichert.
-        </p>
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">2.3 Bei der Nutzung des Fragebogens</h3>
+            <p class="text-gray-700">
+                Ihre Antworten im Red Flag Fragebogen werden gespeichert und zur Berechnung Ihrer personalisierten Analyse verwendet.
+                Diese Daten werden verschlüsselt in unserer PostgreSQL-Datenbank gespeichert und sind nur für Sie sichtbar.
+            </p>
+        </section>
 
-        <h2>3. Einsatz von Cookies</h2>
-        <p>
-            Wir setzen Cookies ein, um die Funktionalität unserer Website zu gewährleisten.
-            Cookies sind kleine Textdateien, die auf Ihrem Computer gespeichert werden.
-        </p>
-        <h3>Notwendige Cookies:</h3>
-        <ul>
-            <li>Session-Cookies für die Anmeldung</li>
-            <li>CSRF-Tokens für Sicherheit</li>
-        </ul>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. Einsatz von Cookies</h2>
+            <p class="text-gray-700">
+                Wir setzen Cookies ein, um die Funktionalität unserer Website zu gewährleisten.
+                Cookies sind kleine Textdateien, die auf Ihrem Gerät gespeichert werden.
+            </p>
+            <h3 class="text-xl font-semibold text-gray-800 mt-4 mb-2">Notwendige Cookies</h3>
+            <ul class="list-disc pl-6 text-gray-700 space-y-1">
+                <li>Session-Cookies für die Anmeldung</li>
+                <li>CSRF-Tokens für Sicherheit</li>
+                <li>Spracheinstellungen</li>
+            </ul>
+        </section>
 
-        <h3>Analyse-Cookies (optional):</h3>
-        <ul>
-            <li>Google Analytics (nur mit Ihrer Einwilligung)</li>
-            <li>Hotjar (nur mit Ihrer Einwilligung)</li>
-        </ul>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. Weitergabe von Daten</h2>
+            <p class="text-gray-700">
+                Ihre personenbezogenen Daten werden grundsätzlich nicht an Dritte weitergegeben. Ausnahmen gelten nur, wenn:
+            </p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-1">
+                <li>Sie ausdrücklich eingewilligt haben</li>
+                <li>Dies gesetzlich vorgeschrieben ist</li>
+                <li>Dies zur Durchsetzung unserer Rechte erforderlich ist</li>
+            </ul>
+        </section>
 
-        <h2>4. Weitergabe von Daten</h2>
-        <p>
-            Wir geben Ihre personenbezogenen Daten nur weiter, wenn:
-        </p>
-        <ul>
-            <li>Sie ausdrücklich eingewilligt haben</li>
-            <li>Dies gesetzlich vorgeschrieben ist</li>
-            <li>Dies zur Durchsetzung unserer Rechte erforderlich ist</li>
-        </ul>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. Ihre Rechte (DSGVO)</h2>
+            <div class="bg-indigo-50 p-6 rounded-lg">
+                <p class="text-gray-800 mb-3"><strong>Sie haben folgende Rechte:</strong></p>
+                <ul class="list-disc pl-6 text-gray-800 space-y-2">
+                    <li><strong>Auskunft (Art. 15 DSGVO):</strong> Sie können Auskunft über Ihre gespeicherten Daten verlangen</li>
+                    <li><strong>Berichtigung (Art. 16 DSGVO):</strong> Fehlerhafte Daten können korrigiert werden</li>
+                    <li><strong>Löschung (Art. 17 DSGVO):</strong> Sie können die Löschung Ihrer Daten verlangen ("Recht auf Vergessenwerden")</li>
+                    <li><strong>Einschränkung (Art. 18 DSGVO):</strong> Sie können die Verarbeitung einschränken lassen</li>
+                    <li><strong>Datenportabilität (Art. 20 DSGVO):</strong> Sie können Ihre Daten in strukturierter Form erhalten</li>
+                    <li><strong>Widerspruch (Art. 21 DSGVO):</strong> Sie können der Datenverarbeitung widersprechen</li>
+                </ul>
+                <p class="mt-4 text-gray-800">
+                    Zur Ausübung Ihrer Rechte wenden Sie sich bitte an: 
+                    <a href="mailto:{{ BUSINESS.support_email }}" class="text-indigo-600 hover:text-indigo-800">{{ BUSINESS.support_email }}</a>
+                </p>
+            </div>
+        </section>
 
-        <h2>5. Ihre Rechte</h2>
-        <p>Sie haben folgende Rechte:</p>
-        <ul>
-            <li><strong>Auskunft:</strong> Sie können Auskunft über Ihre gespeicherten Daten verlangen</li>
-            <li><strong>Berichtigung:</strong> Fehlerhafte Daten können korrigiert werden</li>
-            <li><strong>Löschung:</strong> Sie können die Löschung Ihrer Daten verlangen</li>
-            <li><strong>Einschränkung:</strong> Sie können die Verarbeitung einschränken lassen</li>
-            <li><strong>Datenportabilität:</strong> Sie können Ihre Daten in strukturierter Form erhalten</li>
-            <li><strong>Widerspruch:</strong> Sie können der Datenverarbeitung widersprechen</li>
-        </ul>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. Speicherdauer</h2>
+            <p class="text-gray-700">
+                Wir speichern personenbezogene Daten nur so lange, wie dies für den jeweiligen Zweck erforderlich ist:
+            </p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-1">
+                <li><strong>Benutzerkonto:</strong> Solange das Konto aktiv ist</li>
+                <li><strong>Analysen:</strong> Bis zur Löschung durch den Nutzer</li>
+                <li><strong>Logdaten:</strong> Maximal 7 Tage</li>
+                <li><strong>Newsletter-Anmeldungen:</strong> Bis zur Abmeldung</li>
+            </ul>
+        </section>
 
-        <h2>6. Google Analytics</h2>
-        <p>
-            Diese Website nutzt Google Analytics (nur mit Ihrer Einwilligung).
-            Google Analytics verwendet Cookies zur Analyse der Websitenutzung.
-            IP-Adressen werden anonymisiert (IP-Masking).
-        </p>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. Datensicherheit</h2>
+            <p class="text-gray-700 mb-3">
+                Wir setzen umfassende technische und organisatorische Sicherheitsmaßnahmen ein:
+            </p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-1">
+                <li>SSL/TLS-Verschlüsselung für die Datenübertragung</li>
+                <li>Argon2-Passwort-Hashing (State-of-the-Art)</li>
+                <li>Verschlüsselte Datenbank-Speicherung</li>
+                <li>Regelmäßige Sicherheitsupdates</li>
+                <li>Zugriffsbeschränkungen und Authentifizierung</li>
+                <li>Backup-Systeme</li>
+            </ul>
+        </section>
 
-        <h2>7. Hotjar</h2>
-        <p>
-            Wir nutzen Hotjar (nur mit Einwilligung) zur Analyse des Nutzerverhaltens.
-            Hotjar erfasst Mausbewegungen, Klicks und Scrollverhalten zur Verbesserung der Nutzererfahrung.
-        </p>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. Kontakt & Beschwerderecht</h2>
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <p class="text-gray-800 mb-3">
+                    <strong>Bei Fragen zum Datenschutz:</strong><br>
+                    E-Mail: <a href="mailto:{{ BUSINESS.email }}" class="text-indigo-600 hover:text-indigo-800">{{ BUSINESS.email }}</a>
+                </p>
+                <p class="text-gray-800">
+                    <strong>Beschwerderecht:</strong><br>
+                    Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren, wenn Sie der Ansicht sind, dass die Verarbeitung Ihrer Daten gegen Datenschutzrecht verstößt.
+                </p>
+            </div>
+        </section>
 
-        <h2>8. Speicherdauer</h2>
-        <p>
-            Wir speichern personenbezogene Daten nur so lange, wie dies für den jeweiligen Zweck erforderlich ist oder gesetzliche Aufbewahrungsfristen bestehen.
-        </p>
-
-        <h2>9. Sicherheit</h2>
-        <p>
-            Wir setzen technische und organisatorische Sicherheitsmaßnahmen ein, um Ihre Daten zu schützen:
-        </p>
-        <ul>
-            <li>SSL/TLS-Verschlüsselung</li>
-            <li>Argon2-Passwort-Hashing</li>
-            <li>Verschlüsselte Datenbank</li>
-            <li>Regelmäßige Sicherheitsupdates</li>
-        </ul>
-
-        <h2>10. Kontakt</h2>
-        <p>
-            Bei Fragen zum Datenschutz wenden Sie sich bitte an:<br>
-            E-Mail: [datenschutz@beispiel.de]
-        </p>
-
-        <p class="mt-8 text-sm text-gray-500">
-            Stand: {{ "now"|date:"d.m.Y" }}
-        </p>
+        <div class="mt-12 pt-8 border-t border-gray-200">
+            <p class="text-sm text-gray-500">
+                <strong>Stand:</strong> {{ "now"|date:"d.m.Y" }}
+            </p>
+        </div>
     </div>
 
     <div class="mt-8">
-        <a href="{% url 'questionnaire:home' %}" class="text-red-500 hover:text-red-600">
+        <a href="{% url 'questionnaire:home' %}" class="text-red-500 hover:text-red-600 font-medium">
             ← Zurück zur Startseite
         </a>
     </div>

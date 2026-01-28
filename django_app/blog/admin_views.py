@@ -86,7 +86,7 @@ class BlogPostCreateView(StaffRequiredMixin, CreateView):
     model = BlogPost
     template_name = 'blog/admin/post_form.html'
     fields = ['title', 'slug', 'category', 'excerpt', 'content_markdown', 'featured_image', 
-              'status', 'is_featured', 'allow_comments', 'meta_description', 'meta_keywords']
+              'video_url', 'podcast_url', 'status', 'author_name', 'meta_title', 'meta_description', 'meta_keywords']
     success_url = reverse_lazy('blog:admin_posts')
     
     def form_valid(self, form):
@@ -100,7 +100,7 @@ class BlogPostUpdateView(StaffRequiredMixin, UpdateView):
     model = BlogPost
     template_name = 'blog/admin/post_form.html'
     fields = ['title', 'slug', 'category', 'excerpt', 'content_markdown', 'featured_image', 
-              'status', 'is_featured', 'allow_comments', 'meta_description', 'meta_keywords']
+              'video_url', 'podcast_url', 'status', 'author_name', 'meta_title', 'meta_description', 'meta_keywords']
     success_url = reverse_lazy('blog:admin_posts')
     
     def form_valid(self, form):
@@ -127,7 +127,7 @@ class CategoryListView(StaffRequiredMixin, ListView):
     context_object_name = 'categories'
     
     def get_queryset(self):
-        return BlogCategory.objects.annotate(post_count=Count('blog_posts'))
+        return BlogCategory.objects.annotate(post_count=Count('posts'))
 
 
 class SubscriberListView(StaffRequiredMixin, ListView):
@@ -155,3 +155,15 @@ class SubscriberListView(StaffRequiredMixin, ListView):
         context['total_active'] = EmailSubscriber.objects.filter(is_subscribed=True).count()
         context['total_inactive'] = EmailSubscriber.objects.filter(is_subscribed=False).count()
         return context
+
+
+class SubscriberDeleteView(StaffRequiredMixin, DeleteView):
+    """Email Subscriber löschen"""
+    model = EmailSubscriber
+    template_name = 'blog/admin/subscriber_confirm_delete.html'
+    success_url = reverse_lazy('blog:admin_subscribers')
+    
+    def delete(self, request, *args, **kwargs):
+        subscriber = self.get_object()
+        messages.success(request, f'✓ Subscriber "{subscriber.email}" wurde gelöscht.')
+        return super().delete(request, *args, **kwargs)

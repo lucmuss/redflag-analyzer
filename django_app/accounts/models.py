@@ -5,6 +5,7 @@ Fat Models: Geschäftslogik in den Models
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
+from redflag_project.config import Config
 
 
 class User(AbstractUser):
@@ -15,7 +16,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True, db_index=True)
     is_verified = models.BooleanField(default=False)
     credits = models.IntegerField(
-        default=1, 
+        default=Config.FREE_CREDITS_ON_SIGNUP, 
         validators=[MinValueValidator(0)]
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -260,7 +261,7 @@ class UserBadge(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     icon = models.CharField(max_length=10, default='🏆')
-    points = models.IntegerField(default=0)
+    points = models.IntegerField(default=Config.BADGE_DEFAULT_POINTS)
     earned_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:

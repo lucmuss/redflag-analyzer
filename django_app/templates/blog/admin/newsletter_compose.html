@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Newsletter erstellen - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">📧 Newsletter erstellen</h1>
+        <a href="{% url 'blog:admin_dashboard' %}" class="text-indigo-600 hover:text-indigo-800">
+            ← Dashboard
+        </a>
+    </div>
+
+    <!-- Info Box -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+        <div class="flex items-start">
+            <div class="text-3xl mr-4">💡</div>
+            <div>
+                <h3 class="font-semibold text-blue-900 mb-2">Newsletter-Hinweise</h3>
+                <ul class="text-sm text-blue-800 space-y-1">
+                    <li>• Verwende <strong>Markdown</strong> für Formatierung (z.B. **fett**, ## Überschrift)</li>
+                    <li>• Versende zuerst eine <strong>Test-E-Mail</strong> an dich selbst</li>
+                    <li>• Der Newsletter wird an <strong>{{ total_subscribers }} aktive Subscriber</strong> gesendet</li>
+                    <li>• Nutze das einheitliche E-Mail-Template für professionelles Design</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter Form -->
+    <form method="post" class="bg-white rounded-lg shadow-md p-8">
+        {% csrf_token %}
+        
+        <div class="space-y-6">
+            <!-- Betreff -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    {{ form.subject.label }}
+                </label>
+                {{ form.subject }}
+                {% if form.subject.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.subject.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Content (Markdown Editor) -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    {{ form.content_markdown.label }}
+                </label>
+                {{ form.content_markdown }}
+                {% if form.content_markdown.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.content_markdown.errors.0 }}</p>
+                {% endif %}
+                <p class="text-xs text-gray-500 mt-2">
+                    Markdown Syntax: **fett**, *kursiv*, [Link](url), ## Überschrift
+                </p>
+            </div>
+
+            <!-- Test Email -->
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <label class="block text-sm font-medium text-yellow-900 mb-2">
+                    {{ form.preview_email.label }}
+                </label>
+                {{ form.preview_email }}
+                <p class="text-xs text-yellow-700 mt-2">
+                    Gib deine E-Mail ein, um eine Test-Version zu erhalten, bevor du den Newsletter versendest.
+                </p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-8 flex gap-4">
+            <button type="submit" name="preview" 
+                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium">
+                📤 Test-E-Mail senden
+            </button>
+            <button type="submit" name="send_all" 
+                    onclick="return confirm('Newsletter wirklich an {{ total_subscribers }} Subscriber senden?')"
+                    class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium">
+                📨 An alle versenden ({{ total_subscribers }})
+            </button>
+        </div>
+    </form>
+
+    <!-- Markdown Cheatsheet -->
+    <div class="mt-8 bg-gray-50 rounded-lg p-6">
+        <h3 class="font-semibold text-gray-900 mb-4">📝 Markdown Cheatsheet</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+                <p class="font-mono text-gray-700"># Überschrift 1</p>
+                <p class="font-mono text-gray-700">## Überschrift 2</p>
+                <p class="font-mono text-gray-700">**Fetter Text**</p>
+                <p class="font-mono text-gray-700">*Kursiver Text*</p>
+            </div>
+            <div>
+                <p class="font-mono text-gray-700">[Link](https://example.com)</p>
+                <p class="font-mono text-gray-700">- Listenpunkt</p>
+                <p class="font-mono text-gray-700">1. Nummerierte Liste</p>
+                <p class="font-mono text-gray-700">`Code`</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

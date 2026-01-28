@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Blog Post Bearbeiten{% else %}Neuer Blog Post{% endif %} - Admin{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="mb-6">
+        <a href="{% url 'blog:admin_posts' %}" class="text-indigo-600 hover:text-indigo-800">
+            ← Zurück zur Übersicht
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">
+            {% if form.instance.pk %}Blog Post Bearbeiten{% else %}Neuer Blog Post{% endif %}
+        </h1>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p class="text-red-800 font-medium mb-2">⚠️ Fehler im Formular:</p>
+                <ul class="list-disc list-inside text-red-700 text-sm space-y-1">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Titel -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Titel *</label>
+                    {{ form.title }}
+                    <p class="text-xs text-gray-500 mt-1">Der Haupttitel des Blog Posts</p>
+                </div>
+
+                <!-- Slug -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Slug (URL) *</label>
+                    {{ form.slug }}
+                    <p class="text-xs text-gray-500 mt-1">z.B. mein-blog-post (wird automatisch aus Titel generiert)</p>
+                </div>
+
+                <!-- Kategorie -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kategorie</label>
+                    {{ form.category }}
+                </div>
+
+                <!-- Status -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
+                    {{ form.status }}
+                </div>
+            </div>
+
+            <!-- Excerpt -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Kurzbeschreibung (Excerpt)</label>
+                {{ form.excerpt }}
+                <p class="text-xs text-gray-500 mt-1">Wird in Vorschau-Karten angezeigt (max. 300 Zeichen)</p>
+            </div>
+
+            <!-- Content Markdown -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Inhalt (Markdown) *</label>
+                {{ form.content_markdown }}
+                <p class="text-xs text-gray-500 mt-1">Unterstützt Markdown-Formatierung</p>
+            </div>
+
+            <!-- Featured Image -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Titelbild</label>
+                {{ form.featured_image }}
+                {% if form.instance.featured_image %}
+                    <div class="mt-2">
+                        <img src="{{ form.instance.featured_image.url }}" alt="Current" class="h-32 rounded border">
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Multimedia -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Video URL</label>
+                    {{ form.video_url }}
+                    <p class="text-xs text-gray-500 mt-1">YouTube/Vimeo Embed URL</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Podcast URL</label>
+                    {{ form.podcast_url }}
+                    <p class="text-xs text-gray-500 mt-1">Spotify/Apple Podcast URL</p>
+                </div>
+            </div>
+
+            <!-- Autor Name -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Autor Name</label>
+                {{ form.author_name }}
+                <p class="text-xs text-gray-500 mt-1">Öffentlich angezeigter Autor-Name (falls abweichend)</p>
+            </div>
+
+            <!-- SEO Meta -->
+            <div class="border-t pt-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">🔍 SEO Einstellungen</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Meta Title</label>
+                        {{ form.meta_title }}
+                        <p class="text-xs text-gray-500 mt-1">SEO-Titel (max. 60 Zeichen empfohlen)</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Meta Description</label>
+                        {{ form.meta_description }}
+                        <p class="text-xs text-gray-500 mt-1">SEO-Beschreibung (max. 160 Zeichen empfohlen)</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Meta Keywords</label>
+                        {{ form.meta_keywords }}
+                        <p class="text-xs text-gray-500 mt-1">Komma-getrennte Keywords</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex gap-4 pt-6 border-t">
+                <button type="submit" class="flex-1 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 font-medium transition">
+                    ✓ Speichern
+                </button>
+                <a href="{% url 'blog:admin_posts' %}" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition">
+                    Abbrechen
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Add CSS classes to Django form fields
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('input[type="text"], input[type="url"], input[type="file"], textarea, select').forEach(el => {
+            el.classList.add('w-full', 'px-4', 'py-2', 'border', 'border-gray-300', 'rounded-lg', 'focus:ring-2', 'focus:ring-indigo-500', 'focus:border-transparent');
+        });
+        document.querySelectorAll('textarea').forEach(el => {
+            el.classList.add('min-h-[200px]');
+        });
+        const contentField = document.querySelector('textarea[name="content_markdown"]');
+        if (contentField) {
+            contentField.classList.add('min-h-[400px]', 'font-mono', 'text-sm');
+        }
+    });
+</script>
+{% endblock %}

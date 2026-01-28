@@ -21,6 +21,26 @@
             "detail": "Kills user-owned processes on port 8000 (no sudo)"
         },
 
+        // --- Install Requirements ---
+        {
+            "label": "installRequirements",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "source ${workspaceFolder}/django_app/venv/bin/activate && pip install -r ${workspaceFolder}/django_app/requirements.txt"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Installs Python dependencies from requirements.txt"
+        },
+
         // --- Activate Venv ---
         {
             "label": "activateVenv",
@@ -41,16 +61,77 @@
             "isBackground": true
         },
 
-        // --- Compound Task: Kill + Activate (wie SO-Beispiel) ---
+        // --- Make Migrations ---
+        {
+            "label": "makeMigrations",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "cd ${workspaceFolder}/django_app && source venv/bin/activate && python manage.py makemigrations"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Creates new database migrations"
+        },
+
+        // --- Run Migrations ---
+        {
+            "label": "migrate",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "cd ${workspaceFolder}/django_app && source venv/bin/activate && python manage.py migrate"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Applies database migrations"
+        },
+
+        // --- Run Django Server ---
+        {
+            "label": "runServer",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "cd ${workspaceFolder}/django_app && source venv/bin/activate && python manage.py runserver"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "isBackground": true,
+            "detail": "Starts Django development server"
+        },
+
+        // --- Compound Task: Full Django Startup ---
         {
             "label": "djangoStart",
             "dependsOrder": "sequence",
-            "dependsOn": ["killPort8000", "activateVenv"],
+            "dependsOn": ["killPort8000", "installRequirements", "makeMigrations", "migrate", "runServer"],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "Prepares Django: Kills port + activates venv"
+            "detail": "Full Django startup: Kill port ’ Install deps ’ Make migrations ’ Migrate ’ Run server"
         }
     ]
 }

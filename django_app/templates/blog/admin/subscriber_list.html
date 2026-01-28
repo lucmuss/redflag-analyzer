@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Subscriber - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Email Subscriber</h1>
+        <a href="{% url 'blog:admin_dashboard' %}" class="text-indigo-600 hover:text-indigo-800">
+            ← Dashboard
+        </a>
+    </div>
+
+    <!-- Statistiken -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="text-sm text-gray-600 mb-1">Gesamt</div>
+            <div class="text-3xl font-bold text-gray-900">{{ total_active|add:total_inactive }}</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="text-sm text-gray-600 mb-1">Aktiv</div>
+            <div class="text-3xl font-bold text-green-600">{{ total_active }}</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="text-sm text-gray-600 mb-1">Inaktiv</div>
+            <div class="text-3xl font-bold text-gray-400">{{ total_inactive }}</div>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <form method="get" class="flex gap-4 items-center">
+            <label class="text-sm font-medium text-gray-700">Filter:</label>
+            <div class="flex gap-2">
+                <a href="?" class="px-4 py-2 rounded-lg {% if not status_filter %}bg-indigo-600 text-white{% else %}border border-gray-300 text-gray-700 hover:bg-gray-50{% endif %}">
+                    Alle
+                </a>
+                <a href="?status=active" class="px-4 py-2 rounded-lg {% if status_filter == 'active' %}bg-green-600 text-white{% else %}border border-gray-300 text-gray-700 hover:bg-gray-50{% endif %}">
+                    Aktiv
+                </a>
+                <a href="?status=inactive" class="px-4 py-2 rounded-lg {% if status_filter == 'inactive' %}bg-gray-600 text-white{% else %}border border-gray-300 text-gray-700 hover:bg-gray-50{% endif %}">
+                    Inaktiv
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Subscriber Liste -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Angemeldet</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">IP Adresse</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quelle</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aktionen</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for subscriber in subscribers %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                        <div class="font-medium text-gray-900">{{ subscriber.email }}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if subscriber.is_subscribed %}
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">✓ Aktiv</span>
+                        {% else %}
+                            <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded">✗ Inaktiv</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-600">
+                        {{ subscriber.subscribed_at|date:"d.m.Y H:i" }}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-600 font-mono">
+                        {{ subscriber.ip_address|default:"-" }}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-600">
+                        {% if subscriber.source %}
+                            <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded">{{ subscriber.source }}</span>
+                        {% else %}
+                            <span class="text-gray-400">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <a href="{% url 'blog:admin_subscriber_delete' subscriber.pk %}" 
+                           class="text-red-600 hover:text-red-800 text-sm font-medium">
+                            🗑️ Löschen
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                        Keine Subscriber gefunden.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="mt-6 flex justify-center">
+        <nav class="flex gap-2">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+                   class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">« Erste</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+                   class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">‹ Zurück</a>
+            {% endif %}
+            
+            <span class="px-4 py-2 bg-indigo-600 text-white rounded-lg">
+                Seite {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+                   class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Weiter ›</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+                   class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Letzte »</a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+
+    <!-- Export Info -->
+    <div class="mt-8 bg-indigo-50 rounded-lg p-6 border border-indigo-200">
+        <h3 class="font-semibold text-indigo-900 mb-2">📊 Newsletter Export</h3>
+        <p class="text-sm text-indigo-800 mb-3">
+            Du kannst die Email-Liste über das Django Admin Panel als CSV exportieren.
+        </p>
+        <a href="{% url 'admin:blog_emailsubscriber_changelist' %}" target="_blank"
+           class="inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm">
+            → Zum Django Admin
+        </a>
+    </div>
+</div>
+{% endblock %}

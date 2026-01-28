@@ -23,9 +23,11 @@
 ## TESTACCOUNT FÜR GUI-TESTS
 - Email: `os.getenv('TEST_USER_EMAIL')` aus django_app/.env
 - Password: `os.getenv('TEST_USER_PASSWORD')` aus django_app/.env
-- Nutze diesen Account für alle Browser-Tests
-- Login-Flow: Browser öffnen → Login-Seite → Credentials eingeben → Einloggen
-- Testdaten: Credits, Analysen, alle Features verfügbar
+- **AUTO-LOGIN:** Vor jedem Browser-Test diese URL aufrufen: `http://127.0.0.1:8000/accounts/dev-login/`
+  - Loggt automatisch Test-User ein (nur DEBUG=True)
+  - Danach zu Test-URL navigieren - User ist bereits eingeloggt
+  - Erspart manuellen Login-Flow
+- Testdaten: Credits, Analysen, alle Features verfügbar (is_staff=True, is_superuser=True)
 
 ## ANTWORT-FORMAT
 Nur diese Struktur:

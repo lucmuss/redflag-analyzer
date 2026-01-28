@@ -1,56 +1,83 @@
 {% extends 'base.html' %}
 
-{% block title %}Impressum - RedFlag Analyzer{% endblock %}
+{% block title %}Impressum - {{ BUSINESS.name }}{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <h1 class="text-4xl font-bold text-gray-900 mb-8">Impressum</h1>
     
-    <div class="prose prose-lg max-w-none">
-        <h2>Angaben gemäß § 5 TMG</h2>
-        <p>
-            [Betreibername]<br>
-            [Straße und Hausnummer]<br>
-            [PLZ und Ort]<br>
-            [Land]
-        </p>
-
-        <h2>Kontakt</h2>
-        <p>
-            E-Mail: [ihre-email@beispiel.de]<br>
-            Telefon: [+49 (0) XXX XXXXXXX]
-        </p>
-
-        <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
-        <p>
-            [Name]<br>
-            [Anschrift]
-        </p>
-
-        <h2>Haftungsausschluss</h2>
+    <div class="prose prose-lg max-w-none space-y-8">
         
-        <h3>Haftung für Inhalte</h3>
-        <p>
-            Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
-        </p>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">Angaben gemäß § 5 TMG</h2>
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <p class="mb-2"><strong>{{ BUSINESS.name }}</strong></p>
+                <p class="mb-2">{{ BUSINESS.legal_form }}</p>
+                <p class="mb-2">Inhaber: {{ BUSINESS.owner }}</p>
+                <p class="mb-2">{{ BUSINESS.street }}</p>
+                <p>{{ BUSINESS.zip }} {{ BUSINESS.city }}, {{ BUSINESS.country }}</p>
+            </div>
+        </section>
 
-        <h3>Haftung für Links</h3>
-        <p>
-            Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.
-        </p>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">Kontakt</h2>
+            <div class="bg-indigo-50 p-6 rounded-lg">
+                <p class="mb-2">
+                    <strong>E-Mail:</strong> 
+                    <a href="mailto:{{ BUSINESS.email }}" class="text-indigo-600 hover:text-indigo-800">{{ BUSINESS.email }}</a>
+                </p>
+                <p class="mb-2"><strong>Telefon:</strong> {{ BUSINESS.phone }}</p>
+                <p>
+                    <strong>Support:</strong> 
+                    <a href="mailto:{{ BUSINESS.support_email }}" class="text-indigo-600 hover:text-indigo-800">{{ BUSINESS.support_email }}</a>
+                </p>
+            </div>
+        </section>
 
-        <h3>Urheberrecht</h3>
-        <p>
-            Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
-        </p>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
+            <p>{{ BUSINESS.owner }}<br>
+            {{ BUSINESS.street }}<br>
+            {{ BUSINESS.zip }} {{ BUSINESS.city }}</p>
+        </section>
 
-        <p class="mt-8 text-sm text-gray-500">
-            Stand: {{ "now"|date:"d.m.Y" }}
-        </p>
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">Haftungsausschluss</h2>
+            
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">Haftung für Inhalte</h3>
+            <p class="text-gray-700 leading-relaxed">
+                Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
+            </p>
+            <p class="text-gray-700 leading-relaxed mt-3">
+                Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.
+            </p>
+
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">Haftung für Links</h3>
+            <p class="text-gray-700 leading-relaxed">
+                Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.
+            </p>
+            <p class="text-gray-700 leading-relaxed mt-3">
+                Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.
+            </p>
+
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">Urheberrecht</h3>
+            <p class="text-gray-700 leading-relaxed">
+                Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
+            </p>
+            <p class="text-gray-700 leading-relaxed mt-3">
+                Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.
+            </p>
+        </section>
+
+        <div class="mt-12 pt-8 border-t border-gray-200">
+            <p class="text-sm text-gray-500">
+                <strong>Stand:</strong> {{ "now"|date:"d.m.Y" }}
+            </p>
+        </div>
     </div>
 
     <div class="mt-8">
-        <a href="{% url 'questionnaire:home' %}" class="text-red-500 hover:text-red-600">
+        <a href="{% url 'questionnaire:home' %}" class="text-red-500 hover:text-red-600 font-medium">
             ← Zurück zur Startseite
         </a>
     </div>

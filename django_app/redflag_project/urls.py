@@ -15,14 +15,17 @@ urlpatterns = [
     # Authentication (Django Allauth)
     path('accounts/', include('allauth.urls')),
     
+    # Custom Accounts (Profile, Credits, Dev-Login)
+    path('accounts/', include('accounts.urls')),
+    
     # App URLs
     path('', include('questionnaire.urls')),
     path('analyses/', include('analyses.urls')),
-    path('profile/', include('accounts.urls')),
     path('feedback/', include('feedback.urls')),
     path('subscriptions/', include('subscriptions.urls')),
     path('referrals/', include('referrals.urls')),
     path('blog/', include('blog.urls')),
+    path('rankings/', include('rankings.urls')),
     path('', include('legal.urls')),
 ]
 

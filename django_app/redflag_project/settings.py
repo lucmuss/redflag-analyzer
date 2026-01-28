@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'analytics',
     'blog',
     'legal',
+    'rankings',
 ]
 
 MIDDLEWARE = [
@@ -80,6 +81,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'analytics.context_processors.analytics_settings',
+                'legal.context_processors.business_info',
             ],
         },
     },
@@ -215,8 +217,8 @@ else:
     DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@redflag-analyzer.com')
 
 # PWA Settings
-PWA_APP_NAME = 'RedFlag Analyzer'
-PWA_APP_DESCRIPTION = 'Analysiere Red Flags in Beziehungen'
+PWA_APP_NAME = os.getenv('PWA_APP_NAME', 'RedFlag Analyzer')
+PWA_APP_DESCRIPTION = os.getenv('PWA_APP_DESCRIPTION', 'Analysiere Red Flags in Beziehungen')
 PWA_APP_THEME_COLOR = '#EF4444'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'

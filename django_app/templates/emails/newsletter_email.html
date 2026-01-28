@@ -1,0 +1,16 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2 style="color: #1f2937; font-size: 24px; margin-bottom: 20px;">{{ subject }}</h2>
+
+<div style="color: #374151; line-height: 1.6;">
+    {{ content_html|safe }}
+</div>
+
+<div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+    <p style="color: #6b7280; font-size: 12px; margin: 0;">
+        Du erhältst diese E-Mail, weil du den Newsletter von {{ BUSINESS.name }} abonniert hast.<br>
+        <a href="#" style="color: #ef4444; text-decoration: none;">Newsletter abbestellen</a>
+    </p>
+</div>
+{% endblock %}

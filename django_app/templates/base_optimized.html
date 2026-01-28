@@ -27,31 +27,6 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
     
-    {% if ga_enabled %}
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ analytics_settings.google_analytics_id }}"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '{{ analytics_settings.google_analytics_id }}');
-    </script>
-    {% endif %}
-    
-    {% if hotjar_enabled %}
-    <!-- Hotjar Tracking Code -->
-    <script>
-        (function(h,o,t,j,a,r){
-            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-            h._hjSettings={hjid:{{ analytics_settings.hotjar_id }},hjsv:6};
-            a=o.getElementsByTagName('head')[0];
-            r=o.createElement('script');r.async=1;
-            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-            a.appendChild(r);
-        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-    </script>
-    {% endif %}
-    
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
@@ -95,10 +70,6 @@
                         <a href="{% url 'analyses:list' %}" 
                            class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
                             📊 Meine Analysen
-                        </a>
-                        <a href="{% url 'rankings:leaderboard' %}" 
-                           class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
-                            🏆 Rankings
                         </a>
                         
                         <!-- Credits Badge -->
@@ -216,10 +187,6 @@
                         <a href="{% url 'analyses:list' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
                             <span class="text-2xl mr-3">📊</span>
                             <span class="font-medium">Meine Analysen</span>
-                        </a>
-                        <a href="{% url 'rankings:leaderboard' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
-                            <span class="text-2xl mr-3">🏆</span>
-                            <span class="font-medium">Rankings</span>
                         </a>
                     </div>
                     

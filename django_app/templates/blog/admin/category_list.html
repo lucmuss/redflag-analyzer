@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kategorien - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-5xl">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Blog Kategorien</h1>
+        <div class="flex gap-4">
+            <a href="{% url 'blog:admin_category_create' %}" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">
+                ➕ Neue Kategorie
+            </a>
+            <a href="{% url 'blog:admin_dashboard' %}" class="text-indigo-600 hover:text-indigo-800">
+                ← Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Kategorien Liste -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for category in categories %}
+        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 hover:shadow-md transition">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    {% if category.icon %}
+                        <span class="text-3xl">{{ category.icon }}</span>
+                    {% else %}
+                        <span class="text-3xl">📁</span>
+                    {% endif %}
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900">{{ category.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ category.slug }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    {% if category.is_active %}
+                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">Aktiv</span>
+                    {% else %}
+                        <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded">Inaktiv</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if category.description %}
+            <p class="text-gray-600 text-sm mb-4">{{ category.description }}</p>
+            {% endif %}
+
+            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                <div class="text-sm text-gray-600">
+                    <span class="font-medium">{{ category.post_count }}</span> 
+                    {% if category.post_count == 1 %}Post{% else %}Posts{% endif %}
+                </div>
+                <div class="flex gap-2 text-sm">
+                    <a href="{% url 'blog:category' category.slug %}" target="_blank" 
+                       class="text-indigo-600 hover:text-indigo-900">Ansehen</a>
+                    <span class="text-gray-300">|</span>
+                    <a href="{% url 'blog:admin_category_edit' category.pk %}" 
+                       class="text-blue-600 hover:text-blue-900">Bearbeiten</a>
+                    <span class="text-gray-300">|</span>
+                    <a href="{% url 'blog:admin_category_delete' category.pk %}" 
+                       class="text-red-600 hover:text-red-900">Löschen</a>
+                </div>
+            </div>
+
+            {% if category.meta_description %}
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <p class="text-xs text-gray-500">
+                    <strong>SEO:</strong> {{ category.meta_description|truncatechars:100 }}
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="md:col-span-2 bg-gray-50 rounded-lg p-8 text-center">
+            <p class="text-gray-500">Keine Kategorien vorhanden.</p>
+            <a href="{% url 'admin:blog_blogcategory_add' %}" 
+               class="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">
+                Erste Kategorie erstellen
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Kategorie-Typen Info -->
+    <div class="mt-8 bg-blue-50 rounded-lg p-6 border border-blue-200">
+        <h3 class="font-semibold text-blue-900 mb-2">📌 Kategorie-Typen</h3>
+        <div class="text-sm text-blue-800 space-y-1">
+            <p><strong>Beziehungs-Tipps:</strong> Praktische Ratschläge für gesunde Beziehungen</p>
+            <p><strong>Red Flags:</strong> Warnsignale und wie man sie erkennt</p>
+            <p><strong>Dating:</strong> Tipps für die Partnersuche und erste Dates</p>
+            <p><strong>Persönlichkeits-Entwicklung:</strong> Selbstreflexion und Wachstum</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
