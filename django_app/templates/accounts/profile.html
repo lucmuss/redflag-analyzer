@@ -49,7 +49,7 @@
                             {% if user.first_name or user.last_name %}
                                 {{ user.first_name }} {{ user.last_name }}
                             {% else %}
-                                <span class="text-gray-400">Nicht angegeben</span>
+                                <span class="text-gray-500">Nicht angegeben</span>
                             {% endif %}
                         </p>
                     </div>
@@ -81,7 +81,7 @@
                             {% if user.profile.city %}
                                 {{ user.profile.city }}{% if user.profile.country %}, {{ user.profile.country }}{% endif %}
                             {% else %}
-                                <span class="text-gray-400">Nicht angegeben</span>
+                                <span class="text-gray-500">Nicht angegeben</span>
                             {% endif %}
                         </p>
                     </div>
@@ -99,7 +99,7 @@
                             {% if user.profile.age %}
                                 {{ user.profile.age }} Jahre
                             {% else %}
-                                <span class="text-gray-400">Nicht angegeben</span>
+                                <span class="text-gray-500">Nicht angegeben</span>
                             {% endif %}
                         </p>
                     </div>
@@ -114,7 +114,7 @@
                             {% elif user.profile.gender == 'other' %}
                                 🌈 Divers
                             {% else %}
-                                <span class="text-gray-400">Nicht angegeben</span>
+                                <span class="text-gray-500">Nicht angegeben</span>
                             {% endif %}
                         </p>
                     </div>
@@ -133,7 +133,7 @@
                             {% elif user.profile.relationship_status == 'complicated' %}
                                 🤔 Es ist kompliziert
                             {% else %}
-                                <span class="text-gray-400">Nicht angegeben</span>
+                                <span class="text-gray-500">Nicht angegeben</span>
                             {% endif %}
                         </p>
                     </div>
@@ -144,7 +144,7 @@
                             {% if user.profile.education %}
                                 🎓 {{ user.profile.get_education_display }}
                             {% else %}
-                                <span class="text-gray-400">Nicht angegeben</span>
+                                <span class="text-gray-500">Nicht angegeben</span>
                             {% endif %}
                         </p>
                     </div>

@@ -21,11 +21,16 @@
         }
     </script>
     
+    <!-- Heroicons via unpkg -->
+    <script src="https://unpkg.com/heroicons@2.0.18/24/outline/index.js" type="module"></script>
+    
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
     
     {% if ga_enabled %}
     <!-- Google Analytics -->
@@ -100,6 +105,10 @@
                            class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
                             🏆 Rankings
                         </a>
+                        <a href="{% url 'community:post_list' %}" 
+                           class="text-gray-700 hover:text-red-flag px-3 py-2 rounded-md text-sm font-medium">
+                            💬 Community
+                        </a>
                         
                         <!-- Credits Badge -->
                         <a href="{% url 'accounts:credit_purchase' %}" 
@@ -139,6 +148,14 @@
                                 <a href="{% url 'questionnaire:importance' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-flag">
                                     <span class="mr-3">⚖️</span>
                                     <span>Fragen gewichten</span>
+                                </a>
+                                <a href="{% url 'social:my_shares' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-flag">
+                                    <span class="mr-3">🔗</span>
+                                    <span>Meine Shares</span>
+                                </a>
+                                <a href="{% url 'accounts:streak_dashboard' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-flag">
+                                    <span class="mr-3">🔥</span>
+                                    <span>Streaks</span>
                                 </a>
                                 <div class="border-t border-gray-200 my-2"></div>
                                 <a href="{% url 'feedback:create' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-flag">
@@ -221,6 +238,10 @@
                             <span class="text-2xl mr-3">🏆</span>
                             <span class="font-medium">Rankings</span>
                         </a>
+                        <a href="{% url 'community:post_list' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
+                            <span class="text-2xl mr-3">💬</span>
+                            <span class="font-medium">Community</span>
+                        </a>
                     </div>
                     
                     <!-- Account Section -->
@@ -233,6 +254,14 @@
                         <a href="{% url 'accounts:badges' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
                             <span class="text-2xl mr-3">🏆</span>
                             <span class="font-medium">Badges</span>
+                        </a>
+                        <a href="{% url 'social:my_shares' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
+                            <span class="text-2xl mr-3">🔗</span>
+                            <span class="font-medium">Meine Shares</span>
+                        </a>
+                        <a href="{% url 'accounts:streak_dashboard' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
+                            <span class="text-2xl mr-3">🔥</span>
+                            <span class="font-medium">Streaks</span>
                         </a>
                         <a href="{% url 'questionnaire:importance' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-flag rounded-lg transition">
                             <span class="text-2xl mr-3">⚖️</span>

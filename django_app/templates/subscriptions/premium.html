@@ -58,8 +58,77 @@
             {% endif %}
         </div>
 
-        <!-- Feature Comparison -->
-        <div class="grid md:grid-cols-2 gap-8 mb-12">
+        <!-- Feature Comparison - Mobile: Tabelle zum direkten Vergleich -->
+        
+        <!-- Mobile Comparison Table (< md) -->
+        <div class="md:hidden bg-white rounded-xl shadow-lg overflow-hidden mb-12">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b">
+                        <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Feature</th>
+                        <th class="py-3 px-4 text-center text-sm font-semibold text-gray-700">Free</th>
+                        <th class="py-3 px-4 text-center text-sm font-semibold text-yellow-700 bg-yellow-50">Premium</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    <tr>
+                        <td class="py-3 px-4 text-sm text-gray-700">Preis</td>
+                        <td class="py-3 px-4 text-center font-bold text-gray-900">€0</td>
+                        <td class="py-3 px-4 text-center font-bold text-yellow-700 bg-yellow-50">€20/Jahr</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-sm text-gray-700">Analysen</td>
+                        <td class="py-3 px-4 text-center text-gray-700">3</td>
+                        <td class="py-3 px-4 text-center text-yellow-700 bg-yellow-50 font-semibold">Unbegrenzt</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-sm text-gray-700">Basis-Scores</td>
+                        <td class="py-3 px-4 text-center text-green-600">✓</td>
+                        <td class="py-3 px-4 text-center text-green-600 bg-yellow-50">✓</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-sm text-gray-700">Kategorie-Übersicht</td>
+                        <td class="py-3 px-4 text-center text-green-600">✓</td>
+                        <td class="py-3 px-4 text-center text-green-600 bg-yellow-50">✓</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-sm text-gray-700">Percentile-Ranking</td>
+                        <td class="py-3 px-4 text-center text-gray-500">✗</td>
+                        <td class="py-3 px-4 text-center text-green-600 bg-yellow-50">✓</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-sm text-gray-700">Altersgruppen-Vergleich</td>
+                        <td class="py-3 px-4 text-center text-gray-500">✗</td>
+                        <td class="py-3 px-4 text-center text-green-600 bg-yellow-50">✓</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-sm text-gray-700">Regional Statistics</td>
+                        <td class="py-3 px-4 text-center text-gray-500">✗</td>
+                        <td class="py-3 px-4 text-center text-green-600 bg-yellow-50">✓</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-sm text-gray-700">PDF-Export</td>
+                        <td class="py-3 px-4 text-center text-gray-500">✗</td>
+                        <td class="py-3 px-4 text-center text-green-600 bg-yellow-50">✓</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-sm text-gray-700">Priority Support</td>
+                        <td class="py-3 px-4 text-center text-gray-500">✗</td>
+                        <td class="py-3 px-4 text-center text-green-600 bg-yellow-50">✓</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% if not is_premium %}
+            <div class="p-4 bg-yellow-50 border-t border-yellow-200">
+                <a href="{% url 'subscriptions:upgrade' %}" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-center py-3 rounded-lg font-bold transition">
+                    Jetzt Premium werden
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Desktop Cards (>= md) -->
+        <div class="hidden md:grid md:grid-cols-2 gap-8 mb-12">
             <!-- Free Tier -->
             <div class="bg-white rounded-xl shadow-lg p-8 border-2 border-gray-200">
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">Free</h3>
@@ -80,19 +149,19 @@
                     </li>
                     <li class="flex items-start">
                         <span class="text-red-500 mr-2">✗</span>
-                        <span class="text-gray-400">Percentile-Ranking</span>
+                        <span class="text-gray-500">Percentile-Ranking</span>
                     </li>
                     <li class="flex items-start">
                         <span class="text-red-500 mr-2">✗</span>
-                        <span class="text-gray-400">Altersgruppen-Vergleich</span>
+                        <span class="text-gray-500">Altersgruppen-Vergleich</span>
                     </li>
                     <li class="flex items-start">
                         <span class="text-red-500 mr-2">✗</span>
-                        <span class="text-gray-400">Regional Statistics</span>
+                        <span class="text-gray-500">Regional Statistics</span>
                     </li>
                     <li class="flex items-start">
                         <span class="text-red-500 mr-2">✗</span>
-                        <span class="text-gray-400">PDF-Export</span>
+                        <span class="text-gray-500">PDF-Export</span>
                     </li>
                 </ul>
             </div>

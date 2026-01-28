@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Community{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-12">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">💬 Community</h1>
+        <a href="{% url 'community:create_post' %}" class="bg-red-flag hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium">
+            + Neuer Post
+        </a>
+    </div>
+    
+    <div class="space-y-4">
+        {% for post in posts %}
+        <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+            <div class="flex gap-4">
+                <!-- Vote Controls - Touch-optimiert (min. 44px) -->
+                <div class="flex flex-col items-center space-y-1">
+                    <form method="post" action="{% url 'community:vote_post' post.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="vote_type" value="up">
+                        <button type="submit" 
+                                class="w-11 h-11 flex items-center justify-center rounded-lg bg-gray-100 text-gray-500 
+                                       hover:bg-green-100 hover:text-green-600 active:bg-green-200 active:scale-95 
+                                       transition-all duration-150 text-xl font-bold"
+                                title="Upvote">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+                            </svg>
+                        </button>
+                    </form>
+                    <span class="text-lg font-bold text-gray-700 py-1">{{ post.vote_count|default:0 }}</span>
+                    <form method="post" action="{% url 'community:vote_post' post.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="vote_type" value="down">
+                        <button type="submit" 
+                                class="w-11 h-11 flex items-center justify-center rounded-lg bg-gray-100 text-gray-500 
+                                       hover:bg-red-100 hover:text-red-600 active:bg-red-200 active:scale-95 
+                                       transition-all duration-150 text-xl font-bold"
+                                title="Downvote">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="flex-1">
+                    <a href="{% url 'community:post_detail' post.id %}" class="block">
+                        <h2 class="text-xl font-bold text-gray-900 hover:text-red-flag mb-2">{{ post.title }}</h2>
+                        <p class="text-gray-600 mb-3">{{ post.content|truncatewords:30 }}</p>
+                    </a>
+                    
+                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ post.get_category_display }}</span>
+                        <span>👤 {{ post.author.email|truncatechars:20 }}</span>
+                        <span>💬 {{ post.comment_count|default:0 }} Kommentare</span>
+                        <span>📅 {{ post.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="bg-gray-50 p-8 rounded-lg text-center">
+            <p class="text-gray-600 mb-4">Noch keine Posts vorhanden.</p>
+            <a href="{% url 'community:create_post' %}" class="text-red-flag hover:underline font-medium">
+                Sei der Erste und erstelle einen Post!
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

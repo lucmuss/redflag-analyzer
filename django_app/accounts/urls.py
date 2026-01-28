@@ -5,6 +5,7 @@ from django.urls import path
 from . import views
 from . import credit_views
 from . import test_helpers
+from . import streak_views
 from .views import ProfileView, ProfileEditView, AccountDeleteView, BadgesView
 from .credit_views import CreditPurchaseView, purchase_credits
 
@@ -20,4 +21,7 @@ urlpatterns = [
     path('badges/', BadgesView.as_view(), name='badges'),
     path('credits/buy/', CreditPurchaseView.as_view(), name='credit_purchase'),
     path('credits/purchase/<int:package_id>/', purchase_credits, name='purchase_credits'),
+    path('streak/', streak_views.streak_dashboard, name='streak_dashboard'),
+    path('streak/freeze/', streak_views.use_streak_freeze, name='streak_freeze'),
+    path('streak/leaderboard/', streak_views.streak_leaderboard, name='streak_leaderboard'),
 ]

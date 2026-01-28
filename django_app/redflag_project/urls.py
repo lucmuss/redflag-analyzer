@@ -26,6 +26,8 @@ urlpatterns = [
     path('referrals/', include('referrals.urls')),
     path('blog/', include('blog.urls')),
     path('rankings/', include('rankings.urls')),
+    path('social/', include('social.urls')),
+    path('community/', include('community.urls')),
     path('', include('legal.urls')),
 ]
 

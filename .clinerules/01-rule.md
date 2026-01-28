@@ -14,6 +14,44 @@
 - HTMX für Frontend-Interaktionen, kein JavaScript
 - Tailwind CSS für Styling
 
+## FEATURE-VOLLSTÄNDIGKEIT (KRITISCH!)
+Jedes Feature muss 100% komplett sein:
+1. **Backend:** Model → Migration → Admin → View → URL
+2. **Frontend:** Template → Navigation-Link (Desktop + Mobile)
+3. **Integration:** URL in redflag_project/urls.py registriert
+4. **Security:** Secrets in .env/.env.example, NIE im Code
+5. **Testing:** Manuelle Tests mit Browser (dev-login verwenden)
+
+**KEINE LOSEN ENDEN:**
+- Jede View braucht Template
+- Jedes Template braucht URL
+- Jede URL braucht Navigation-Link
+- Jede neue App in INSTALLED_APPS + urls.py
+
+## TEMPLATE-STANDARDS
+- **Basis:** {% extends 'base.html' %}
+- **Styling:** Tailwind CSS (text-red-flag, bg-red-50, etc.)
+- **Responsiveness:** Mobile-first (hidden md:flex, etc.)
+- **Icons:** Emojis verwenden (🔥, 📊, 💬, etc.)
+- **Forms:** HTMX für alle Submissions (hx-post, hx-swap)
+- **Messages:** Django Messages Framework verwenden
+
+## CODE-QUALITÄT
+- **DRY:** Keine Code-Duplikation
+- **Indexes:** DB-Felder mit vielen Queries indizieren (db_index=True)
+- **Queries:** Annotate/Prefetch für Performance
+- **Security:** Rate Limiting (@login_required, @ratelimit)
+- **DSGVO:** Auto-Delete für sensitive Daten (expires_at)
+
+## FINALE PRÜFUNG VOR ABSCHLUSS
+Vor attempt_completion IMMER prüfen:
+- [ ] Alle Models haben Migrations
+- [ ] Alle Views haben Templates
+- [ ] Alle URLs registriert + Navigation-Links
+- [ ] Alle Secrets in .env
+- [ ] Admin-Interfaces vorhanden
+- [ ] Browser-Tests erfolgreich
+
 ## PROJEKT-KONTEXT
 - Working Dir: django_app/
 - Venv: django_app/venv/

@@ -1,71 +1,65 @@
-"""
-Admin Interface für Users und Profiles
-"""
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, UserProfile, BannedIP, BannedEmail, UserBadge
+from django.contrib.auth import get_user_model
+from .models import UserProfile, UserBadge
+from .streak_models import UserStreak, EmailNotification
+
+User = get_user_model()
 
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
     verbose_name_plural = 'Profile'
-    fk_name = 'user'
 
 
-@admin.register(User)
+class UserBadgeInline(admin.TabularInline):
+    model = UserBadge
+    extra = 0
+    readonly_fields = ('badge_key', 'title', 'earned_at')
+
+
 class UserAdmin(BaseUserAdmin):
-    inlines = [UserProfileInline]
-    list_display = ['email', 'is_verified', 'credits', 'is_staff', 'created_at']
-    list_filter = ['is_staff', 'is_verified', 'created_at']
-    search_fields = ['email']
-    ordering = ['-created_at']
+    inlines = (UserProfileInline, UserBadgeInline)
+    list_display = ('email', 'username', 'is_staff', 'credits', 'is_banned')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'profile__is_banned')
     
-    fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_verified')}),
-        ('Credits', {'fields': ('credits',)}),
-        ('Important dates', {'fields': ('last_login', 'created_at')}),
-    )
-    
-    readonly_fields = ['created_at']
-    
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'credits'),
-        }),
-    )
+    def is_banned(self, obj):
+        return obj.profile.is_banned if hasattr(obj, 'profile') else False
+    is_banned.boolean = True
 
 
-@admin.register(BannedIP)
-class BannedIPAdmin(admin.ModelAdmin):
-    list_display = ['ip_address', 'reason', 'banned_by', 'banned_at']
-    list_filter = ['banned_at']
-    search_fields = ['ip_address', 'reason']
-    ordering = ['-banned_at']
-    readonly_fields = ['banned_at']
+admin.site.register(User, UserAdmin)
 
 
-@admin.register(BannedEmail)
-class BannedEmailAdmin(admin.ModelAdmin):
-    list_display = ['email', 'reason', 'banned_by', 'banned_at']
-    list_filter = ['banned_at']
-    search_fields = ['email', 'reason']
-    ordering = ['-banned_at']
-    readonly_fields = ['banned_at']
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'relationship_status', 'is_banned', 'created_at')
+    list_filter = ('is_banned', 'referral_source', 'relationship_status')
+    search_fields = ('user__email', 'user__username')
+    readonly_fields = ('created_at', 'updated_at')
 
 
 @admin.register(UserBadge)
 class UserBadgeAdmin(admin.ModelAdmin):
-    list_display = ['user', 'title', 'icon', 'points', 'earned_at']
-    list_filter = ['badge_key', 'earned_at']
-    search_fields = ['user__email', 'title', 'badge_key']
-    ordering = ['-earned_at']
-    readonly_fields = ['earned_at']
-    
-    fieldsets = (
-        ('Badge Info', {'fields': ('user', 'badge_key', 'name', 'title', 'icon')}),
-        ('Details', {'fields': ('description', 'points')}),
-        ('Timestamps', {'fields': ('earned_at',)}),
-    )
+    list_display = ('user', 'badge_key', 'title', 'earned_at')
+    list_filter = ('badge_key', 'earned_at')
+    search_fields = ('user__email',)
+
+
+@admin.register(UserStreak)
+class UserStreakAdmin(admin.ModelAdmin):
+    list_display = ('user', 'current_streak', 'longest_streak', 'last_active', 'streak_frozen')
+    list_filter = ('streak_frozen', 'last_active')
+    search_fields = ('user__email',)
+    readonly_fields = ('created_at', 'updated_at')
+    ordering = ['-current_streak']
+
+
+@admin.register(EmailNotification)
+class EmailNotificationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'notification_type', 'subject', 'sent_at', 'opened', 'clicked')
+    list_filter = ('notification_type', 'opened', 'clicked', 'sent_at')
+    search_fields = ('user__email', 'subject')
+    readonly_fields = ('sent_at',)
+    date_hierarchy = 'sent_at'

@@ -118,7 +118,7 @@
                                 {{ question.get_display_number }}) {{ question.text_de }}
                             </label>
                             
-                            <!-- Radio Buttons inkl. "Keine Angabe" Option -->
+                            <!-- Radio Buttons inkl. "Keine Angabe" Option - Touch-optimiert (min. 44px) -->
                             <div class="flex items-center space-x-2">
                                 <!-- Keine Angabe (Neutral = 3) -->
                                 <label class="flex-1">
@@ -127,10 +127,12 @@
                                            value="3"
                                            class="hidden peer"
                                            required>
-                                    <div class="cursor-pointer text-center py-2 px-2 rounded-md border-2 border-gray-300 
-                                                peer-checked:border-gray-500 peer-checked:bg-gray-500 peer-checked:text-white
-                                                hover:border-gray-400 transition text-xs">
-                                        K.A.
+                                    <div class="cursor-pointer text-center py-3 px-2 min-h-[44px] flex items-center justify-center rounded-md border-2 border-gray-300 
+                                                peer-checked:border-gray-600 peer-checked:bg-gray-600 peer-checked:text-white
+                                                hover:border-gray-400 active:scale-95 transition text-xs font-medium"
+                                         title="Keine Angabe - Frage wird neutral bewertet">
+                                        <span class="hidden sm:inline">Weiß nicht</span>
+                                        <span class="sm:hidden">?</span>
                                     </div>
                                 </label>
                                 
@@ -142,21 +144,24 @@
                                                value="{{ value }}"
                                                class="hidden peer"
                                                required>
-                                        <div class="cursor-pointer text-center py-2 px-3 rounded-md border-2 border-gray-300 
+                                        <div class="cursor-pointer text-center py-3 px-3 min-h-[44px] flex items-center justify-center rounded-md border-2 border-gray-300 
                                                     peer-checked:border-red-flag peer-checked:bg-red-flag peer-checked:text-white
-                                                    hover:border-red-flag transition">
+                                                    hover:border-red-flag active:scale-95 transition font-medium">
                                             {{ value }}
                                         </div>
                                     </label>
                                 {% endfor %}
                             </div>
-                            <div class="flex text-xs text-gray-500 mt-1">
-                                <span class="flex-1 text-center font-bold text-gray-400">K.A.</span>
-                                <span class="flex-1 text-left font-bold ml-1">Trifft nicht zu</span>
+                            <div class="flex text-xs text-gray-600 mt-2">
+                                <span class="flex-1 text-center font-semibold text-gray-500" title="Keine Angabe">
+                                    <span class="hidden sm:inline">Neutral</span>
+                                    <span class="sm:hidden">?</span>
+                                </span>
+                                <span class="flex-1 text-left font-semibold ml-1">Nie</span>
                                 <span class="flex-1"></span>
                                 <span class="flex-1"></span>
                                 <span class="flex-1"></span>
-                                <span class="flex-1 text-right font-bold mr-1">Trifft zu</span>
+                                <span class="flex-1 text-right font-semibold mr-1">Immer</span>
                             </div>
                         </div>
                     {% endfor %}

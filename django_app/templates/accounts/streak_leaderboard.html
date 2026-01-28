@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Streak Leaderboard{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">🏆 Streak Leaderboard</h1>
+    
+    {% if user_rank %}
+    <div class="bg-blue-50 p-4 rounded-lg mb-6 text-center">
+        <p class="text-blue-900 font-medium">Dein Rang: #{{ user_rank }}</p>
+    </div>
+    {% endif %}
+    
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rang</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Current Streak</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Longest Streak</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for streak in top_streaks %}
+                <tr {% if streak.user == request.user %}class="bg-blue-50"{% endif %}>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        #{{ forloop.counter }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ streak.user.email|truncatechars:20 }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        🔥 {{ streak.current_streak }} Wochen
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ streak.longest_streak }} Wochen
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

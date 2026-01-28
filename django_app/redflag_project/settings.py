@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'blog',
     'legal',
     'rankings',
+    'social',
+    'community',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'django_ratelimit.middleware.RatelimitMiddleware',  # Rate Limiting
 ]
 
 ROOT_URLCONF = 'redflag_project.urls'
@@ -226,16 +229,17 @@ PWA_APP_SCOPE = '/'
 PWA_APP_ORIENTATION = 'portrait'
 PWA_APP_START_URL = '/'
 PWA_APP_ICONS = [
-    {
-        'src': '/static/icons/icon-192.png',
-        'sizes': '192x192',
-        'type': 'image/png'
-    },
-    {
-        'src': '/static/icons/icon-512.png',
-        'sizes': '512x512',
-        'type': 'image/png'
-    }
+    {'src': '/static/icons/icon-72x72.png', 'sizes': '72x72', 'type': 'image/png'},
+    {'src': '/static/icons/icon-96x96.png', 'sizes': '96x96', 'type': 'image/png'},
+    {'src': '/static/icons/icon-128x128.png', 'sizes': '128x128', 'type': 'image/png'},
+    {'src': '/static/icons/icon-144x144.png', 'sizes': '144x144', 'type': 'image/png'},
+    {'src': '/static/icons/icon-152x152.png', 'sizes': '152x152', 'type': 'image/png'},
+    {'src': '/static/icons/icon-192x192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any maskable'},
+    {'src': '/static/icons/icon-384x384.png', 'sizes': '384x384', 'type': 'image/png'},
+    {'src': '/static/icons/icon-512x512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any maskable'}
+]
+PWA_APP_SPLASH_SCREEN = [
+    {'src': '/static/icons/icon-512x512.png', 'media': '(device-width: 375px) and (device-height: 812px)'}
 ]
 
 # Security Settings für Production
@@ -347,3 +351,30 @@ LOGGING = {
 # Erstelle logs Verzeichnis wenn nicht vorhanden
 import os
 os.makedirs(BASE_DIR / 'logs', exist_ok=True)
+
+# Sentry Error Tracking (Production)
+SENTRY_DSN = os.getenv('SENTRY_DSN')
+if SENTRY_DSN and not DEBUG:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=0.1,
+        send_default_pii=False,
+        environment='production' if not DEBUG else 'development',
+    )
+
+# Rate Limiting Settings
+RATELIMIT_ENABLE = True
+RATELIMIT_USE_CACHE = 'default'
+RATELIMIT_VIEW = 'django_ratelimit.views.ratelimited'
+
+# Caching (Redis für Production, InMemory für Development)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache' if DEBUG else 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/1'),
+    }
+}

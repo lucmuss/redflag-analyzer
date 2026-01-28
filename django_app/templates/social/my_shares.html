@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Meine Shares{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">🔗 Meine Shares</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-blue-50 p-6 rounded-lg">
+            <div class="text-3xl font-bold text-blue-600">{{ total_views }}</div>
+            <div class="text-sm text-gray-600">Total Views</div>
+        </div>
+        <div class="bg-green-50 p-6 rounded-lg">
+            <div class="text-3xl font-bold text-green-600">{{ total_clicks }}</div>
+            <div class="text-sm text-gray-600">Total Clicks</div>
+        </div>
+        <div class="bg-purple-50 p-6 rounded-lg">
+            <div class="text-3xl font-bold text-purple-600">{{ total_conversions }}</div>
+            <div class="text-sm text-gray-600">Total Conversions</div>
+        </div>
+        <div class="bg-orange-50 p-6 rounded-lg">
+            <div class="text-3xl font-bold text-orange-600">{{ avg_viral_coefficient }}</div>
+            <div class="text-sm text-gray-600">Avg. Viral K</div>
+        </div>
+    </div>
+    
+    <div class="space-y-4">
+        {% for share in shares %}
+        <div class="bg-white p-6 rounded-lg shadow">
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                        {{ share.analysis.partner_name|default:"Analyse" }} - Score: {{ share.analysis.score_total|floatformat:1 }}
+                    </h3>
+                    <div class="flex space-x-6 text-sm text-gray-600">
+                        <span>👁️ {{ share.views_count }} Views</span>
+                        <span>🖱️ {{ share.clicks_count }} Clicks</span>
+                        <span>✅ {{ share.conversions_count }} Conversions</span>
+                    </div>
+                    <p class="mt-2 text-xs text-gray-500">
+                        Geteilt am {{ share.created_at|date:"d.m.Y H:i" }} | Platform: {{ share.get_shared_platform_display }}
+                    </p>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="copyToClipboard('{{ share.share_url }}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        📋 Link kopieren
+                    </button>
+                    <a href="{% url 'social:share_detail' share.id %}" class="text-green-600 hover:text-green-800 text-sm font-medium">
+                        👁️ Ansehen
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="bg-gray-50 p-8 rounded-lg text-center">
+            <p class="text-gray-600 mb-4">Du hast noch keine Analysen geteilt.</p>
+            <a href="{% url 'analyses:list' %}" class="text-red-flag hover:underline">
+                Zu deinen Analysen →
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Link kopiert!');
+    });
+}
+</script>
+{% endblock %}
