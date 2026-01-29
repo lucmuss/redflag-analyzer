@@ -31,6 +31,9 @@ END
 echo "Seeding questions..."
 python manage.py seed_questions || echo "Warning: Seeding failed, continuing..."
 
+echo "Seeding test users..."
+python manage.py seed_test_users || echo "Warning: Test user seeding failed, continuing..."
+
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
