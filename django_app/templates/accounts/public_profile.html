@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil von {{ profile_user.first_name|default:profile_user.email }} - RedFlag Analyzer{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-8 mb-6">
+        <div class="flex items-start justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-20 h-20 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                    {{ profile_user.first_name.0|default:profile_user.email.0|upper }}
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">
+                        {{ profile_user.first_name|default:"Anonymer User" }}
+                    </h1>
+                    <p class="text-gray-600">
+                        Mitglied seit {{ profile_user.created_at|date:"F Y" }}
+                    </p>
+                </div>
+            </div>
+            
+            {% if user == profile_user %}
+            <a href="{% url 'accounts:profile_edit' %}" 
+               class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition">
+                ✏️ Bearbeiten
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Statistiken -->
+    <div class="grid md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Analysen</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ total_analyses }}</p>
+                </div>
+                <div class="text-4xl">📊</div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Ø Red Flag Score</p>
+                    <p class="text-3xl font-bold text-red-flag">{{ avg_score }}%</p>
+                </div>
+                <div class="text-4xl">⚠️</div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Badges</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ badge_count }}</p>
+                </div>
+                <div class="text-4xl">🏆</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profilinformationen -->
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">📋 Profilinformationen</h2>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            {% if profile.gender %}
+            <div>
+                <p class="text-sm font-medium text-gray-600 mb-1">Geschlecht</p>
+                <p class="text-lg text-gray-900">
+                    {% if profile.gender == 'male' %}Männlich
+                    {% elif profile.gender == 'female' %}Weiblich
+                    {% else %}Divers
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+            
+            {% if profile.age %}
+            <div>
+                <p class="text-sm font-medium text-gray-600 mb-1">Alter</p>
+                <p class="text-lg text-gray-900">{{ profile.age }} Jahre</p>
+            </div>
+            {% endif %}
+            
+            {% if profile.country %}
+            <div>
+                <p class="text-sm font-medium text-gray-600 mb-1">Land</p>
+                <p class="text-lg text-gray-900">{{ profile.country }}</p>
+            </div>
+            {% endif %}
+            
+            {% if profile.city %}
+            <div>
+                <p class="text-sm font-medium text-gray-600 mb-1">Stadt</p>
+                <p class="text-lg text-gray-900">{{ profile.city }}</p>
+            </div>
+            {% endif %}
+            
+            {% if profile.relationship_status %}
+            <div>
+                <p class="text-sm font-medium text-gray-600 mb-1">Beziehungsstatus</p>
+                <p class="text-lg text-gray-900">{{ profile.get_relationship_status_display }}</p>
+            </div>
+            {% endif %}
+            
+            {% if total_points %}
+            <div>
+                <p class="text-sm font-medium text-gray-600 mb-1">Badge Punkte</p>
+                <p class="text-lg text-gray-900">{{ total_points }} Punkte</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

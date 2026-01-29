@@ -47,18 +47,20 @@
                     
                     {% if analysis.is_unlocked %}
                         <!-- Preview der Ergebnisse -->
-                        <div class="mb-4 space-y-2">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Gesamt-Score:</span>
-                                <span class="font-semibold text-red-flag">{{ analysis.score_total|floatformat:1 }}/5.0</span>
+                        <div class="mb-4">
+                            <!-- Großer Gesamt-Score -->
+                            <div class="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg p-4 text-center mb-3">
+                                <div class="text-sm font-medium mb-1">Red Flag Score</div>
+                                <div class="text-4xl font-bold">{{ analysis.score_total|floatformat:1 }}</div>
+                                <div class="text-red-100 text-sm">von 5.0</div>
                             </div>
                             
                             {% if analysis.category_scores %}
-                                <div class="text-xs text-gray-500">
+                                <div class="text-xs text-gray-500 space-y-1">
                                     {% for category, score in analysis.category_scores.items %}
                                         <div class="flex justify-between">
                                             <span>{{ category }}:</span>
-                                            <span>{{ score|floatformat:1 }}</span>
+                                            <span class="font-medium">{{ score|floatformat:1 }}</span>
                                         </div>
                                     {% endfor %}
                                 </div>

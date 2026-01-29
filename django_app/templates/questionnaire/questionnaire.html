@@ -3,384 +3,216 @@
 {% block title %}Fragebogen - RedFlag Analyzer{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">RedFlag Fragebogen</h1>
-        <p class="text-gray-600">
-            Bewerte jede Aussage von 1 (trifft nicht zu) bis 5 (trifft voll zu).
-            Du hast aktuell <span class="font-bold text-red-flag">{{ user_credits }} Credits</span>.
-        </p>
-    </div>
-
-    <!-- Progress Bar (Sticky) -->
-    <div class="sticky top-16 z-40 mb-8 bg-white rounded-lg shadow-md p-6" role="region" aria-label="Fragebogen Fortschritt">
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Progress Bar -->
+    <div class="mb-8 bg-white rounded-lg shadow-md p-6">
         <div class="flex justify-between items-center mb-2">
             <span class="text-sm font-semibold text-gray-700">Fortschritt</span>
-            <span class="text-sm font-bold text-red-flag" id="progress-text" aria-live="polite">0%</span>
+            <span class="text-sm font-bold text-red-flag">{{ progress_percentage }}%</span>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Fragebogen Fortschritt">
-            <div id="progress-bar" class="bg-gradient-to-r from-red-400 to-red-600 h-4 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div class="bg-gradient-to-r from-red-400 to-red-600 h-4 rounded-full transition-all duration-300 ease-out" style="width: {{ progress_percentage }}%"></div>
         </div>
         <p class="text-xs text-gray-500 mt-2">
-            <span id="answered-count" aria-live="polite">0</span> von <span id="total-count">{{ total_questions|default:0 }}</span> Fragen beantwortet
+            Frage {{ current_index }} von {{ total_questions }} | {{ answered_count }} beantwortet
         </p>
     </div>
 
-    <!-- 
-        HTMX-FORM mit hx-post
-        ARCHITEKTUR-VORTEIL vs. Flutter:
-        - Flutter: State Management (Provider/Riverpod), API-Layer, JSON-Serialization
-        - HTMX: Simple Form POST, Server berechnet, returned HTML-Fragment
-        - Keine komplexe Client-Logik, SEO-freundlich, Progressive Enhancement
-    -->
-    <form hx-post="{% url 'questionnaire:submit' %}" 
-          hx-swap="none"
-          hx-indicator=".htmx-indicator"
-          class="space-y-6">
+    {% if current_question %}
+    <form method="post" class="bg-white rounded-lg shadow-md p-8">
         {% csrf_token %}
+        <input type="hidden" name="current_index" value="{{ current_index }}">
+        <input type="hidden" name="question_key" value="{{ current_question.key }}">
         
-        <!-- Partner-Informationen (Optional) -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-bold mb-4">📝 Partner-Informationen (Optional)</h2>
-            <p class="text-gray-600 text-sm mb-4">
-                Um die Analyse persönlicher zu gestalten, kannst du optional Informationen über die Person angeben.
-                Diese Daten bleiben anonym und werden nur für deine Analyse verwendet.
-            </p>
-            
+        <!-- Partner-Info nur bei erster Frage -->
+        {% if current_index == 1 %}
+        <div class="mb-8 p-6 bg-blue-50 rounded-lg">
+            <h3 class="text-lg font-bold mb-4">📝 Partner-Informationen (Optional)</h3>
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Name/Spitzname (optional)
+                        Name/Spitzname <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" 
-                           name="partner_name" 
-                           placeholder="z.B. Sarah, Meine Ex, etc."
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent">
-                    <p class="text-xs text-gray-500 mt-1">Du kannst einen Spitznamen verwenden für mehr Anonymität</p>
+                    <input type="text" id="partner_name" name="partner_name" value="{{ partner_data.partner_name|default:'' }}"
+                           placeholder="z.B. Sarah" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag">
+                    <p class="text-xs text-gray-500 mt-1">Erforderlich für personalisierte Analyse</p>
                 </div>
-                
                 <div class="grid md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Alter (optional)
-                        </label>
-                        <input type="number" 
-                               name="partner_age" 
-                               min="18" 
-                               max="120"
-                               placeholder="z.B. 25"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Alter</label>
+                        <input type="number" id="partner_age" name="partner_age" value="{{ partner_data.partner_age|default:'' }}"
+                               min="18" max="100" placeholder="z.B. 25"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag">
+                        <p class="text-xs text-red-500 mt-1 hidden" id="age-error">Alter muss zwischen 18 und 100 liegen</p>
                     </div>
-                    
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Herkunftsland (optional)
-                        </label>
-                        <select name="partner_country" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag focus:border-transparent">
-                            <option value="">Bitte wählen</option>
-                            <option value="Deutschland">🇩🇪 Deutschland</option>
-                            <option value="Österreich">🇦🇹 Österreich</option>
-                            <option value="Schweiz">🇨🇭 Schweiz</option>
-                            <option value="Liechtenstein">🇱🇮 Liechtenstein</option>
-                            <option value="Luxemburg">🇱🇺 Luxemburg</option>
-                            <option value="Belgien">🇧🇪 Belgien</option>
-                            <option value="Niederlande">🇳🇱 Niederlande</option>
-                            <option value="Frankreich">🇫🇷 Frankreich</option>
-                            <option value="Italien">🇮🇹 Italien</option>
-                            <option value="Spanien">🇪🇸 Spanien</option>
-                            <option value="Großbritannien">🇬🇧 Großbritannien</option>
-                            <option value="USA">🇺🇸 USA</option>
-                            <option value="Anderes Land">🌍 Anderes Land</option>
-                        </select>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Land</label>
+                        <input type="text" name="partner_country" value="{{ partner_data.partner_country|default:'' }}"
+                               list="countries-list" placeholder="Land suchen..."
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-flag">
+                        {% include 'partials/countries_datalist.html' with datalist_id='countries-list' %}
                     </div>
                 </div>
             </div>
+        </div>
+        {% endif %}
+        
+        <!-- Kategorie Badge -->
+        <div class="mb-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                {% if current_question.category == 'TRUST' %}bg-blue-100 text-blue-800
+                {% elif current_question.category == 'BEHAVIOR' %}bg-purple-100 text-purple-800
+                {% elif current_question.category == 'VALUES' %}bg-green-100 text-green-800
+                {% elif current_question.category == 'DYNAMICS' %}bg-orange-100 text-orange-800
+                {% endif %}">
+                {% if current_question.category == 'TRUST' %}🤝 Vertrauen
+                {% elif current_question.category == 'BEHAVIOR' %}🎭 Verhalten
+                {% elif current_question.category == 'VALUES' %}💎 Werte
+                {% elif current_question.category == 'DYNAMICS' %}⚡ Dynamik
+                {% endif %}
+            </span>
         </div>
         
-        {% for category, questions in questions_by_category.items %}
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold mb-4 flex items-center">
-                    {% if category == 'TRUST' %}
-                        <span class="mr-2">🤝</span> Vertrauen
-                    {% elif category == 'BEHAVIOR' %}
-                        <span class="mr-2">🎭</span> Verhalten
-                    {% elif category == 'VALUES' %}
-                        <span class="mr-2">💎</span> Werte
-                    {% elif category == 'DYNAMICS' %}
-                        <span class="mr-2">⚡</span> Dynamik
+        <!-- Frage -->
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">
+            {{ current_question.text_de }}
+        </h2>
+        
+        <!-- Antwort-Optionen -->
+        <div class="space-y-3 mb-8">
+            {% for value in "12345" %}
+            <label class="answer-option flex items-center p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition
+                          {% if current_answer == value|add:0 %}border-red-flag bg-red-50{% else %}border-gray-300{% endif %}">
+                <input type="radio" name="answer" value="{{ value }}" 
+                       {% if current_answer == value|add:0 %}checked{% endif %}
+                       class="w-5 h-5 text-red-flag focus:ring-red-flag">
+                <span class="ml-4 text-lg font-medium">
+                    {% if value == "1" %}1 - Trifft nicht zu
+                    {% elif value == "2" %}2 - Trifft eher nicht zu
+                    {% elif value == "3" %}3 - Weiß nicht / Neutral
+                    {% elif value == "4" %}4 - Trifft eher zu
+                    {% elif value == "5" %}5 - Trifft voll zu
                     {% endif %}
-                </h2>
-                
-                <div class="space-y-16">
-                    {% for question in questions %}
-                        <div class="border-b border-gray-200 pb-12 last:border-0">
-                            <label class="block text-gray-900 text-lg font-bold mb-4">
-                                {{ question.get_display_number }}) {{ question.text_de }}
-                            </label>
-                            
-                            <!-- Radio Buttons inkl. "Keine Angabe" Option - Touch-optimiert (min. 44px) -->
-                            <div class="flex items-center space-x-2">
-                                <!-- Keine Angabe (Neutral = 3) -->
-                                <label class="flex-1">
-                                    <input type="radio" 
-                                           name="q_{{ question.key }}" 
-                                           value="3"
-                                           class="hidden peer"
-                                           required>
-                                    <div class="cursor-pointer text-center py-3 px-2 min-h-[44px] flex items-center justify-center rounded-md border-2 border-gray-300 
-                                                peer-checked:border-gray-600 peer-checked:bg-gray-600 peer-checked:text-white
-                                                hover:border-gray-400 active:scale-95 transition text-xs font-medium"
-                                         title="Keine Angabe - Frage wird neutral bewertet">
-                                        <span class="hidden sm:inline">Weiß nicht</span>
-                                        <span class="sm:hidden">?</span>
-                                    </div>
-                                </label>
-                                
-                                <!-- Werte 1-5 -->
-                                {% for value in "12345" %}
-                                    <label class="flex-1">
-                                        <input type="radio" 
-                                               name="q_{{ question.key }}" 
-                                               value="{{ value }}"
-                                               class="hidden peer"
-                                               required>
-                                        <div class="cursor-pointer text-center py-3 px-3 min-h-[44px] flex items-center justify-center rounded-md border-2 border-gray-300 
-                                                    peer-checked:border-red-flag peer-checked:bg-red-flag peer-checked:text-white
-                                                    hover:border-red-flag active:scale-95 transition font-medium">
-                                            {{ value }}
-                                        </div>
-                                    </label>
-                                {% endfor %}
-                            </div>
-                            <div class="flex text-xs text-gray-600 mt-2">
-                                <span class="flex-1 text-center font-semibold text-gray-500" title="Keine Angabe">
-                                    <span class="hidden sm:inline">Neutral</span>
-                                    <span class="sm:hidden">?</span>
-                                </span>
-                                <span class="flex-1 text-left font-semibold ml-1">Nie</span>
-                                <span class="flex-1"></span>
-                                <span class="flex-1"></span>
-                                <span class="flex-1"></span>
-                                <span class="flex-1 text-right font-semibold mr-1">Immer</span>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endfor %}
-
-        <!-- Submit Button mit HTMX Loading State -->
-        <div class="flex justify-center">
-            <button type="submit" 
-                    class="bg-red-flag hover:bg-red-600 text-white font-bold py-4 px-12 rounded-lg shadow-lg 
-                           transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
-                Analyse erstellen
+                </span>
+            </label>
+            {% endfor %}
+        </div>
+        
+        <!-- Navigation -->
+        <div class="flex justify-between items-center pt-6 border-t">
+            {% if has_previous %}
+            <button type="submit" name="action" value="previous"
+                    class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition">
+                ← Zurück
             </button>
+            {% else %}
+            <div></div>
+            {% endif %}
+            
+            {% if has_next %}
+            <button type="submit" name="action" value="next"
+                    class="px-8 py-3 bg-red-flag hover:bg-red-600 text-white font-bold rounded-lg transition transform hover:scale-105">
+                Weiter →
+            </button>
+            {% else %}
+            <button type="submit" name="action" value="submit"
+                    class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition transform hover:scale-105">
+                Analyse erstellen ✓
+            </button>
+            {% endif %}
         </div>
     </form>
-
-    <!-- Info Box -->
+    {% else %}
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+        <p class="text-yellow-800">Keine Fragen verfügbar.</p>
+    </div>
+    {% endif %}
+    
+    <!-- Info -->
     <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 class="font-bold text-blue-900 mb-2">ℹ️ Info</h3>
+        <h3 class="font-bold text-blue-900 mb-2">💡 Tipp</h3>
         <p class="text-blue-800 text-sm">
-            Nach dem Absenden wird deine Analyse erstellt. Du kannst sie dann mit 1 Credit entsperren, 
-            um detaillierte Ergebnisse und Top Red Flags zu sehen.
+            Deine Antworten werden automatisch gespeichert. Nach Auswahl einer Antwort geht es automatisch weiter.
         </p>
     </div>
 </div>
 
-{% block extra_js %}
 <script>
-    // Auto-Save & Progress Tracking für Fragebogen
-    (function() {
-        const STORAGE_KEY = 'redflag_questionnaire_progress';
-        const form = document.querySelector('form');
-        const progressBar = document.getElementById('progress-bar');
-        const progressText = document.getElementById('progress-text');
-        const answeredCount = document.getElementById('answered-count');
-        const totalCountEl = document.getElementById('total-count');
-        
-        // Zähle alle Fragen
-        const allQuestions = document.querySelectorAll('input[type="radio"]');
-        const questionNames = new Set();
-        allQuestions.forEach(input => questionNames.add(input.name));
-        const totalQuestions = questionNames.size;
-        
-        // Update total count in UI
-        if (totalCountEl) {
-            totalCountEl.textContent = totalQuestions;
+// Validierung für Partner-Informationen
+function validatePartnerInfo() {
+    const nameInput = document.getElementById('partner_name');
+    const ageInput = document.getElementById('partner_age');
+    const ageError = document.getElementById('age-error');
+    
+    if (!nameInput) return true; // Nicht auf erster Seite
+    
+    // Name muss ausgefüllt sein
+    if (!nameInput.value.trim()) {
+        nameInput.focus();
+        alert('⚠️ Bitte gib einen Namen oder Spitznamen ein.');
+        return false;
+    }
+    
+    // Alter validieren (nur wenn ausgefüllt)
+    if (ageInput.value) {
+        const age = parseInt(ageInput.value);
+        if (age < 18 || age > 100) {
+            ageError.classList.remove('hidden');
+            ageInput.focus();
+            return false;
+        } else {
+            ageError.classList.add('hidden');
+        }
+    }
+    
+    return true;
+}
+
+// Form-Submit abfangen
+document.querySelector('form')?.addEventListener('submit', function(e) {
+    if (!validatePartnerInfo()) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// Auto-Submit bei Antwort-Auswahl
+document.querySelectorAll('.answer-option input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        // Validierung vor Auto-Submit
+        if (!validatePartnerInfo()) {
+            this.checked = false;
+            return;
         }
         
-        // Update Progress Bar
-        function updateProgress() {
-            const answered = new Set();
-            allQuestions.forEach(input => {
-                if (input.checked) {
-                    answered.add(input.name);
-                }
-            });
-            
-            const count = answered.size;
-            const percentage = totalQuestions > 0 ? Math.round((count / totalQuestions) * 100) : 0;
-            
-            // Update UI
-            if (progressBar) progressBar.style.width = percentage + '%';
-            if (progressText) progressText.textContent = percentage + '%';
-            if (answeredCount) answeredCount.textContent = count;
-            
-            return { count, percentage };
+        // Kurze Verzögerung für visuelles Feedback
+        setTimeout(() => {
+            // Submit das Form mit "next" action
+            const form = this.closest('form');
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = {% if has_next %}'next'{% else %}'submit'{% endif %};
+            form.appendChild(actionInput);
+            form.submit();
+        }, 300);
+    });
+});
+
+// Echtzeit-Validierung für Alter
+document.getElementById('partner_age')?.addEventListener('input', function() {
+    const ageError = document.getElementById('age-error');
+    if (this.value) {
+        const age = parseInt(this.value);
+        if (age < 18 || age > 100) {
+            ageError.classList.remove('hidden');
+        } else {
+            ageError.classList.add('hidden');
         }
-        
-        // Auto-Save zu LocalStorage
-        function saveProgress() {
-            const formData = {};
-            allQuestions.forEach(input => {
-                if (input.checked) {
-                    formData[input.name] = input.value;
-                }
-            });
-            
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                    data: formData,
-                    timestamp: new Date().toISOString()
-                }));
-                console.log('✓ Fortschritt gespeichert');
-            } catch (e) {
-                console.warn('LocalStorage nicht verfügbar:', e);
-            }
-        }
-        
-        // Restore Progress beim Laden
-        function restoreProgress() {
-            try {
-                // Prüfe ob kürzlich erfolgreich submitted wurde
-                const lastSubmit = localStorage.getItem('redflag_last_submit');
-                if (lastSubmit) {
-                    const submitTime = new Date(lastSubmit);
-                    const now = new Date();
-                    const minutesSinceSubmit = (now - submitTime) / (1000 * 60);
-                    
-                    // Wenn Submit < 5 Minuten her, lösche Fortschritt und zeige leeren Fragebogen
-                    if (minutesSinceSubmit < 5) {
-                        localStorage.removeItem(STORAGE_KEY);
-                        localStorage.removeItem('redflag_last_submit');
-                        console.log('✓ Fragebogen zurückgesetzt nach erfolgreichem Submit');
-                        return;
-                    }
-                }
-                
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (!saved) return;
-                
-                const { data, timestamp } = JSON.parse(saved);
-                
-                // Nur wiederherstellen wenn < 24h alt
-                const savedTime = new Date(timestamp);
-                const now = new Date();
-                const hoursDiff = (now - savedTime) / (1000 * 60 * 60);
-                
-                if (hoursDiff > 24) {
-                    localStorage.removeItem(STORAGE_KEY);
-                    return;
-                }
-                
-                // Restore Values
-                let restored = 0;
-                Object.keys(data).forEach(name => {
-                    const input = document.querySelector(`input[name="${name}"][value="${data[name]}"]`);
-                    if (input) {
-                        input.checked = true;
-                        restored++;
-                    }
-                });
-                
-                if (restored > 0) {
-                    updateProgress();
-                    console.log(`✓ ${restored} Antworten wiederhergestellt`);
-                    
-                    // Show notification
-                    showNotification(`Fortschritt wiederhergestellt: ${restored} Antworten`);
-                }
-            } catch (e) {
-                console.warn('Fehler beim Wiederherstellen:', e);
-            }
-        }
-        
-        // Show Notification
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
-            notification.textContent = '💾 ' + message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.classList.add('animate-fade-out');
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-        
-        // Make radio buttons deselectable
-        let lastSelected = {};
-        
-        allQuestions.forEach(input => {
-            input.addEventListener('click', function(e) {
-                const questionName = this.name;
-                
-                // Wenn derselbe Button nochmal geklickt wird, abwählen
-                if (lastSelected[questionName] === this) {
-                    this.checked = false;
-                    lastSelected[questionName] = null;
-                    updateProgress();
-                    saveProgress();
-                } else {
-                    lastSelected[questionName] = this;
-                }
-            });
-            
-            input.addEventListener('change', function() {
-                updateProgress();
-                saveProgress();
-            });
-        });
-        
-        // Clear storage SOFORT beim Submit-Klick
-        document.body.addEventListener('htmx:beforeRequest', function(evt) {
-            if (evt.detail.elt === form) {
-                console.log('Sende Fragebogen...');
-                // Lösche SOFORT den gespeicherten Fortschritt
-                localStorage.removeItem(STORAGE_KEY);
-                localStorage.removeItem('redflag_last_submit');
-                console.log('✓ LocalStorage gelöscht beim Submit');
-            }
-        });
-        
-        document.body.addEventListener('htmx:afterRequest', function(evt) {
-            if (evt.detail.successful && evt.detail.elt === form) {
-                console.log('✓ Fragebogen erfolgreich gesendet');
-            }
-        });
-        
-        // Initialize
-        restoreProgress();
-        updateProgress();
-        
-        // Add CSS animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fade-in {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            @keyframes fade-out {
-                from { opacity: 1; }
-                to { opacity: 0; }
-            }
-            .animate-fade-in { animation: fade-in 0.3s ease-out; }
-            .animate-fade-out { animation: fade-out 0.3s ease-out; }
-        `;
-        document.head.appendChild(style);
-    })();
+    } else {
+        ageError.classList.add('hidden');
+    }
+});
 </script>
-{% endblock %}
 {% endblock %}

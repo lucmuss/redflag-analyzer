@@ -6,7 +6,7 @@ from . import views
 from . import credit_views
 from . import test_helpers
 from . import streak_views
-from .views import ProfileView, ProfileEditView, AccountDeleteView, BadgesView
+from .views import ProfileView, ProfileEditView, AccountDeleteView, BadgesView, PublicProfileView
 from .credit_views import CreditPurchaseView, purchase_credits
 
 app_name = 'accounts'
@@ -17,6 +17,7 @@ urlpatterns = [
     
     path('profile/', ProfileView.as_view(), name='profile'),
     path('profile/edit/', ProfileEditView.as_view(), name='profile_edit'),
+    path('profile/<int:user_id>/', PublicProfileView.as_view(), name='public_profile'),
     path('delete/', AccountDeleteView.as_view(), name='delete'),
     path('badges/', BadgesView.as_view(), name='badges'),
     path('credits/buy/', CreditPurchaseView.as_view(), name='credit_purchase'),

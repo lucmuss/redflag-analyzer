@@ -66,9 +66,22 @@
         <div class="space-y-6">
             {% for comment in comments %}
             <div class="border-l-4 border-gray-200 pl-4 py-2">
-                <div class="flex items-center space-x-3 mb-2">
-                    <span class="font-medium text-gray-900">{{ comment.author.email|truncatechars:20 }}</span>
-                    <span class="text-xs text-gray-500">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-3">
+                        <span class="font-medium text-gray-900">{{ comment.author.email|truncatechars:20 }}</span>
+                        <span class="text-xs text-gray-500">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    
+                    {% if user.is_staff or user.is_superuser %}
+                    <form method="post" action="{% url 'community:delete_comment' comment.id %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                onclick="return confirm('Kommentar wirklich löschen?')"
+                                class="text-red-600 hover:text-red-800 text-xs font-medium px-2 py-1 rounded hover:bg-red-50 transition">
+                            🗑️ Löschen
+                        </button>
+                    </form>
+                    {% endif %}
                 </div>
                 <p class="text-gray-700 whitespace-pre-wrap">{{ comment.content }}</p>
             </div>

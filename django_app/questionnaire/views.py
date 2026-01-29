@@ -52,28 +52,128 @@ class OnboardingView(TemplateView):
     template_name = 'questionnaire/onboarding.html'
 
 
-class QuestionnaireView(LoginRequiredMixin, ListView):
+class QuestionnaireView(LoginRequiredMixin, TemplateView):
     """
-    Fragebogen-View mit HTMX-Support.
-    
-    ARCHITEKTUR-VORTEIL:
-    - Statt React State Management -> Server rendert HTML-Fragmente
-    - Keine komplexe Client-Side Logik nötig
-    - SEO-freundlich, kein JS-Bundle
+    Single-Question Fragebogen-View.
+    Zeigt eine Frage zur Zeit mit Vor/Zurück Navigation.
     """
-    model = Question
     template_name = 'questionnaire/questionnaire.html'
-    context_object_name = 'questions'
     
-    def get_queryset(self):
-        return Question.objects.filter(is_active=True).select_related()
+    def get(self, request):
+        # Hole aktuelle Fragen-Index aus Query-Parameter
+        current_index = int(request.GET.get('q', 1))
+        
+        # Hole alle aktiven Fragen
+        questions = list(Question.objects.filter(is_active=True).order_by('id'))
+        total_questions = len(questions)
+        
+        # Validiere Index
+        if current_index < 1:
+            current_index = 1
+        elif current_index > total_questions:
+            current_index = total_questions
+        
+        # Hole aktuelle Frage (Index ist 1-basiert)
+        current_question = questions[current_index - 1] if questions else None
+        
+        # Hole gespeicherte Antworten aus Session
+        responses = request.session.get('questionnaire_responses', {})
+        partner_data = request.session.get('questionnaire_partner', {})
+        
+        context = {
+            'current_question': current_question,
+            'current_index': current_index,
+            'total_questions': total_questions,
+            'progress_percentage': int((current_index / total_questions * 100)) if total_questions > 0 else 0,
+            'has_previous': current_index > 1,
+            'has_next': current_index < total_questions,
+            'current_answer': responses.get(current_question.key) if current_question else None,
+            'partner_data': partner_data,
+            'user_credits': request.user.credits,
+            'answered_count': len(responses),
+        }
+        
+        return render(request, self.template_name, context)
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Gruppiere Fragen nach Kategorie für bessere UX
-        context['questions_by_category'] = Question.get_active_by_category()
-        context['user_credits'] = self.request.user.credits
-        return context
+    def post(self, request):
+        # Speichere Antwort in Session
+        current_index = int(request.POST.get('current_index', 1))
+        answer = request.POST.get('answer')
+        question_key = request.POST.get('question_key')
+        
+        # Hole oder initialisiere Session-Daten
+        responses = request.session.get('questionnaire_responses', {})
+        
+        if answer and question_key:
+            responses[question_key] = int(answer)
+            request.session['questionnaire_responses'] = responses
+        
+        # Speichere Partner-Daten wenn auf erster Seite
+        if current_index == 1:
+            partner_data = {
+                'partner_name': request.POST.get('partner_name', '').strip() or None,
+                'partner_age': int(request.POST.get('partner_age')) if request.POST.get('partner_age') else None,
+                'partner_country': request.POST.get('partner_country', '').strip() or None,
+            }
+            request.session['questionnaire_partner'] = partner_data
+        
+        # Navigation
+        action = request.POST.get('action', 'next')
+        
+        if action == 'next':
+            next_index = current_index + 1
+        elif action == 'previous':
+            next_index = current_index - 1
+        elif action == 'submit':
+            # Finale Submission
+            return self._submit_questionnaire(request)
+        else:
+            next_index = current_index
+        
+        return redirect(f'{request.path}?q={next_index}')
+    
+    def _submit_questionnaire(self, request):
+        """Erstelle finale Analyse aus Session-Daten"""
+        responses_dict = request.session.get('questionnaire_responses', {})
+        partner_data = request.session.get('questionnaire_partner', {})
+        
+        if not responses_dict:
+            messages.error(request, 'Bitte beantworte mindestens eine Frage.')
+            return redirect('questionnaire:questionnaire')
+        
+        # Konvertiere zu Liste-Format für ScoreCalculator
+        responses = [{'key': key, 'value': value} for key, value in responses_dict.items()]
+        
+        # Berechne Scores
+        calculator = ScoreCalculator(responses)
+        score_total = calculator.calculate_total_score()
+        category_scores_dict = calculator.calculate_category_scores()
+        
+        # Erstelle Analysis
+        analysis = Analysis.objects.create(
+            user=request.user,
+            partner_name=partner_data.get('partner_name'),
+            partner_age=partner_data.get('partner_age'),
+            partner_country=partner_data.get('partner_country'),
+            responses=responses,
+            score_total=score_total,
+            is_unlocked=False
+        )
+        
+        # Erstelle Category Scores
+        for category, score in category_scores_dict.items():
+            CategoryScore.objects.create(
+                analysis=analysis,
+                category=category,
+                score=score
+            )
+        
+        # Clear Session
+        request.session.pop('questionnaire_responses', None)
+        request.session.pop('questionnaire_partner', None)
+        
+        messages.success(request, 'Analyse erfolgreich erstellt!')
+        return redirect('analyses:detail', pk=analysis.id)
 
 
 class PartnerInfoView(LoginRequiredMixin, TemplateView):
@@ -171,36 +271,119 @@ class QuestionnaireSubmitView(LoginRequiredMixin, View):
         return redirect('analyses:detail', pk=analysis.id)
 
 
-class ImportanceQuestionnaireView(LoginRequiredMixin, ListView):
+class ImportanceQuestionnaireView(LoginRequiredMixin, TemplateView):
     """
-    Importance Questionnaire View.
-    User bewertet die Wichtigkeit jeder Frage auf einer Skala von 1-5.
-    Diese Bewertungen werden als dynamische Gewichte für Score-Berechnungen verwendet.
+    Single-Question Importance Questionnaire View.
+    Zeigt eine Frage zur Zeit mit Vor/Zurück Navigation.
     """
-    model = Question
     template_name = 'questionnaire/importance_questionnaire.html'
-    context_object_name = 'questions'
     
-    def get_queryset(self):
-        return Question.objects.filter(is_active=True).select_related()
+    def get(self, request):
+        # Hole aktuelle Fragen-Index
+        current_index = int(request.GET.get('q', 1))
+        
+        # Hole alle aktiven Fragen
+        questions = list(Question.objects.filter(is_active=True).order_by('id'))
+        total_questions = len(questions)
+        
+        # Validiere Index
+        if current_index < 1:
+            current_index = 1
+        elif current_index > total_questions:
+            current_index = total_questions
+        
+        # Hole aktuelle Frage
+        current_question = questions[current_index - 1] if questions else None
+        
+        # Hole gespeicherte Bewertungen aus Session
+        importance_ratings = request.session.get('importance_ratings', {})
+        
+        # Hole existierende DB-Werte falls vorhanden
+        existing_weights = WeightResponse.get_user_weights(request.user)
+        
+        # Verwende Session-Wert oder DB-Wert
+        current_importance = importance_ratings.get(current_question.key) if current_question else None
+        if current_importance is None and current_question:
+            current_importance = existing_weights.get(current_question.key)
+        
+        context = {
+            'current_question': current_question,
+            'current_index': current_index,
+            'total_questions': total_questions,
+            'progress_percentage': int((current_index / total_questions * 100)) if total_questions > 0 else 0,
+            'has_previous': current_index > 1,
+            'has_next': current_index < total_questions,
+            'current_importance': current_importance,
+            'answered_count': len(importance_ratings),
+        }
+        
+        return render(request, self.template_name, context)
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['questions_by_category'] = Question.get_active_by_category()
+    def post(self, request):
+        # Speichere Wichtigkeit in Session
+        current_index = int(request.POST.get('current_index', 1))
+        importance = request.POST.get('importance')
+        question_key = request.POST.get('question_key')
         
-        # Hole bestehende Gewichtungen des Users (falls vorhanden)
-        existing_weights = WeightResponse.get_user_weights(self.request.user)
-        context['existing_weights'] = existing_weights
-        context['has_completed'] = WeightResponse.has_completed_importance_questionnaire(self.request.user)
+        # Hole oder initialisiere Session-Daten
+        importance_ratings = request.session.get('importance_ratings', {})
         
-        # Erklärung für Nutzer
-        context['importance_explanation'] = """
-        Personalisiere deine Analyse! Bewerte, wie wichtig dir jede Frage ist.
-        Fragen, die du als wichtiger bewertest, haben mehr Einfluss auf deinen Score.
-        So erhältst du eine Analyse, die perfekt auf deine Prioritäten abgestimmt ist.
-        """
+        if importance and question_key:
+            importance_ratings[question_key] = int(importance)
+            request.session['importance_ratings'] = importance_ratings
         
-        return context
+        # Navigation
+        action = request.POST.get('action', 'next')
+        
+        if action == 'next':
+            next_index = current_index + 1
+        elif action == 'previous':
+            next_index = current_index - 1
+        elif action == 'submit':
+            # Finale Submission
+            return self._submit_importance(request)
+        else:
+            next_index = current_index
+        
+        return redirect(f'{request.path}?q={next_index}')
+    
+    def _submit_importance(self, request):
+        """Speichere Wichtigkeits-Bewertungen in DB"""
+        importance_ratings = request.session.get('importance_ratings', {})
+        
+        if not importance_ratings:
+            messages.error(request, 'Bitte bewerte mindestens eine Frage.')
+            return redirect('questionnaire:importance')
+        
+        # Hole alle aktiven Questions
+        questions = {q.key: q for q in Question.objects.filter(is_active=True)}
+        
+        # Erstelle oder aktualisiere WeightResponses
+        created_count = 0
+        updated_count = 0
+        
+        for question_key, importance in importance_ratings.items():
+            question = questions.get(question_key)
+            if question:
+                weight_response, created = WeightResponse.objects.update_or_create(
+                    user=request.user,
+                    question=question,
+                    defaults={'importance': importance}
+                )
+                if created:
+                    created_count += 1
+                else:
+                    updated_count += 1
+        
+        # Clear Session
+        request.session.pop('importance_ratings', None)
+        
+        messages.success(
+            request, 
+            f'Deine Bewertungen wurden gespeichert! ({created_count} neu, {updated_count} aktualisiert)'
+        )
+        
+        return redirect('questionnaire:home')
 
 
 class ImportanceQuestionnaireSubmitView(LoginRequiredMixin, View):

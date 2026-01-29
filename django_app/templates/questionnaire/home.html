@@ -17,7 +17,7 @@
                 <span><strong>{{ total_analyses|default:0 }}</strong> Analysen erstellt</span>
             </div>
             <div class="flex items-center gap-2">
-                <span class="text-2xl">📊</span>
+                <span class="text-2xl">⚠️</span>
                 <span><strong>{{ average_redflag_score|default:"0.00" }}/5</strong> Ø Red Flag Score</span>
             </div>
             <div class="flex items-center gap-2">
@@ -75,27 +75,38 @@
 
     <!-- Features -->
     <div class="mt-20 grid md:grid-cols-3 gap-8">
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <div class="text-4xl mb-4">📊</div>
+        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
+            <div class="text-4xl mb-4">📋</div>
             <h3 class="text-xl font-bold mb-2">{{ total_questions }} Fragen</h3>
-            <p class="text-gray-600">
-                Umfassender Fragebogen in 4 Kategorien: Trust, Behavior, Values & Dynamics
+            <p class="text-gray-600 leading-relaxed">
+                Unser umfassender wissenschaftlicher Fragebogen deckt 4 Kern-Kategorien ab: 
+                <strong>Vertrauen</strong> (zwischenmenschliche Bindungen), 
+                <strong>Verhalten</strong> (Handlungsmuster), 
+                <strong>Werte</strong> (Lebensausrichtung) und 
+                <strong>Dynamik</strong> (Beziehungsmuster). 
+                Jede Frage wurde sorgfältig entwickelt, um relevante Red Flags zu identifizieren.
             </p>
         </div>
         
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
             <div class="text-4xl mb-4">🎯</div>
             <h3 class="text-xl font-bold mb-2">Präzise Analyse</h3>
-            <p class="text-gray-600">
-                Gewichtete Score-Berechnung mit Category-Breakdown und Top Red Flags
+            <p class="text-gray-600 leading-relaxed">
+                Unsere gewichtete Score-Berechnung nutzt statistische Z-Score-Standardisierung für 
+                objektive Ergebnisse. Du erhältst einen detaillierten Category-Breakdown, 
+                identifizierte Top Red Flags mit Impact-Bewertung und verständliche Visualisierungen. 
+                Die Analyse berücksichtigt Nuancen statt binärer Ja/Nein-Bewertungen.
             </p>
         </div>
         
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
             <div class="text-4xl mb-4">🔒</div>
-            <h3 class="text-xl font-bold mb-2">Datenschutz</h3>
-            <p class="text-gray-600">
-                Deine Daten bleiben privat. PostgreSQL-verschlüsselt und DSGVO-konform
+            <h3 class="text-xl font-bold mb-2">Datenschutz & Sicherheit</h3>
+            <p class="text-gray-600 leading-relaxed">
+                Deine Daten bleiben absolut privat und werden verschlüsselt in einer 
+                PostgreSQL-Datenbank gespeichert. Wir sind DSGVO-konform, nutzen keine Tracker 
+                und verkaufen keine Daten. Du behältst volle Kontrolle: Analysen können jederzeit 
+                gelöscht werden. Optional bleibst du anonym.
             </p>
         </div>
     </div>

@@ -4,33 +4,12 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Header mit Email Subscription -->
+    <!-- Header -->
     <div class="text-center mb-12">
         <h1 class="text-4xl font-bold text-gray-900 mb-4">📝 RedFlag Blog</h1>
-        <p class="text-xl text-gray-600 mb-8">
+        <p class="text-xl text-gray-600">
             Beziehungswissen, Expertentipps & Success Stories
         </p>
-        
-        <!-- Email Subscription Form (HTMX) -->
-        <form hx-post="{% url 'blog:subscribe' %}" 
-              hx-target="#subscription-message" 
-              hx-swap="innerHTML"
-              class="max-w-md mx-auto">
-            {% csrf_token %}
-            <input type="hidden" name="source" value="blog_header">
-            <div class="flex gap-2">
-                <input type="email" 
-                       name="email" 
-                       placeholder="Deine E-Mail für Updates..." 
-                       required
-                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
-                <button type="submit" 
-                        class="bg-red-flag hover:bg-red-600 text-white font-bold px-6 py-3 rounded-lg transition">
-                    Abonnieren
-                </button>
-            </div>
-            <div id="subscription-message"></div>
-        </form>
     </div>
 
     <!-- Search Bar -->
@@ -110,6 +89,34 @@
             <p class="text-gray-500 text-lg">Noch keine Blog-Posts veröffentlicht.</p>
         </div>
         {% endfor %}
+    </div>
+    
+    <!-- Email Subscription Form (HTMX) -->
+    <div class="mt-16 text-center">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">📧 Newsletter abonnieren</h2>
+        <p class="text-lg text-gray-600 mb-8">
+            Beziehungswissen, Expertentipps & Success Stories direkt in dein Postfach
+        </p>
+        
+        <form hx-post="{% url 'blog:subscribe' %}" 
+              hx-target="#subscription-message" 
+              hx-swap="innerHTML"
+              class="max-w-md mx-auto">
+            {% csrf_token %}
+            <input type="hidden" name="source" value="blog_footer">
+            <div class="flex gap-2">
+                <input type="email" 
+                       name="email" 
+                       placeholder="Deine E-Mail für Updates..." 
+                       required
+                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                <button type="submit" 
+                        class="bg-red-flag hover:bg-red-600 text-white font-bold px-6 py-3 rounded-lg transition">
+                    Abonnieren
+                </button>
+            </div>
+            <div id="subscription-message" class="mt-4"></div>
+        </form>
     </div>
 </div>
 {% endblock %}

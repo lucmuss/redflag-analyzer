@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.db.models import Avg
 from .models import User, UserProfile
 from .badges import (
     get_user_badges, 
@@ -121,5 +122,42 @@ class BadgesView(LoginRequiredMixin, TemplateView):
         context['progress'] = get_user_badge_progress(self.request.user)
         context['all_badges'] = BadgeDefinition.all_badges()
         context['earned_badge_keys'] = set(b.badge_key for b in context['earned_badges'])
+        
+        return context
+
+
+class PublicProfileView(TemplateView):
+    """
+    Öffentliches User-Profil für Rankings & Community.
+    Zeigt anonymisierte Profil-Daten und Statistiken.
+    """
+    template_name = 'accounts/public_profile.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from django.shortcuts import get_object_or_404
+        from analyses.models import Analysis
+        
+        user_id = kwargs.get('user_id')
+        user = get_object_or_404(User, id=user_id)
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        
+        # Statistiken
+        analyses = Analysis.objects.filter(user=user)
+        total_analyses = analyses.count()
+        avg_score = analyses.aggregate(Avg('score_total'))['score_total__avg']
+        
+        # Badge Count
+        badge_count = user.badges.count()
+        total_points = sum(badge.points for badge in user.badges.all())
+        
+        context.update({
+            'profile_user': user,
+            'profile': profile,
+            'total_analyses': total_analyses,
+            'avg_score': round(avg_score, 2) if avg_score else 0,
+            'badge_count': badge_count,
+            'total_points': total_points,
+        })
         
         return context

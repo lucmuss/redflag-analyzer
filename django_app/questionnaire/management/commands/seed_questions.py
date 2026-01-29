@@ -27,10 +27,10 @@ class Command(BaseCommand):
         updated_count = 0
         
         for q_data in questions_data:
-            # Mapping von initial_weight zu default_weight
+            # Mapping von initial_weight zu calculated_weight
             defaults = {
                 'category': q_data['category'],
-                'default_weight': q_data.get('initial_weight', 3),
+                'calculated_weight': q_data.get('initial_weight', 3.0),
                 'text_de': q_data['text_de'],
                 'text_en': q_data['text_en'],
                 'is_active': True

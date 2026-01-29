@@ -51,27 +51,14 @@ class CustomSignupForm(SignupForm):
         help_text='Du musst mindestens 18 Jahre alt sein'
     )
     
-    country = forms.ChoiceField(
+    country = forms.CharField(
         required=True,
         label='Land',
-        choices=[
-            ('', '--- Wähle dein Land ---'),
-            ('DE', 'Deutschland'),
-            ('AT', 'Österreich'),
-            ('CH', 'Schweiz'),
-            ('US', 'USA'),
-            ('GB', 'Großbritannien'),
-            ('FR', 'Frankreich'),
-            ('IT', 'Italien'),
-            ('ES', 'Spanien'),
-            ('NL', 'Niederlande'),
-            ('BE', 'Belgien'),
-            ('PL', 'Polen'),
-            ('CZ', 'Tschechien'),
-            ('OTHER', 'Sonstiges'),
-        ],
-        widget=forms.Select(attrs={
-            'class': 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-flag focus:border-red-flag sm:text-sm'
+        max_length=2,
+        widget=forms.TextInput(attrs={
+            'class': 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-flag focus:border-red-flag sm:text-sm',
+            'list': 'signup-countries-list',
+            'placeholder': 'Land suchen...'
         })
     )
     

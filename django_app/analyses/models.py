@@ -114,17 +114,14 @@ class Analysis(models.Model):
             # Verwende kompakten Text falls vorhanden, sonst normalen Text
             if question:
                 text = question.text_short_de if question.text_short_de else question.text_de
-                number = question.get_display_number()
             else:
                 text = key.replace('_', ' ').title()
-                number = 0
             
             impact = value * weight
             max_possible = 5 * weight  # Maximum möglich: 5 × Gewicht
             red_flags.append({
                 'key': key,
                 'text': text,
-                'number': number,
                 'value': value,
                 'weight': weight,
                 'impact': impact,

@@ -38,11 +38,11 @@
         {% endif %}
     </div>
     
-    <!-- Available Badges (Noch nicht verdient) -->
+    <!-- Available Badges (Noch nicht verdient) - Nur anzeigen wenn es unverdiente gibt -->
+    {% if all_badges and earned_badge_keys|length < all_badges|length %}
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-2xl font-bold mb-4">Noch verfügbare Badges</h2>
         
-        {% if all_badges %}
         <div class="grid md:grid-cols-2 gap-4">
             {% for badge_def in all_badges %}
             {% if badge_def.key not in earned_badge_keys %}
@@ -62,10 +62,8 @@
             {% endif %}
             {% endfor %}
         </div>
-        {% else %}
-        <p class="text-gray-500">Alle Badges wurden verdient! 🎉</p>
-        {% endif %}
     </div>
+    {% endif %}
     
     <!-- Back Button -->
     <div class="mt-8">
