@@ -14,4 +14,5 @@ urlpatterns = [
     path('<int:pk>/share/<str:format>/', views.GenerateShareImageView.as_view(), name='share_image'),
     path('<int:pk>/export/pdf/', views.ExportAnalysisPDFView.as_view(), name='export_pdf'),
     path('<int:pk>/trends/', views.TrendsView.as_view(), name='trends'),
+    path('<int:pk>/load-more-flags/', views.LoadMoreRedFlagsView.as_view(), name='load_more_flags'),
 ]

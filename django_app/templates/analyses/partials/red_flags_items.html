@@ -1,0 +1,50 @@
+{% load custom_filters %}
+<!-- HTMX Partial: Red Flag Items zum Nachladen -->
+{% for flag in flags %}
+    <div class="flex items-center justify-between p-4 {{ flag.impact|impact_bg_class }} border rounded-lg hover:shadow-md transition">
+        <div class="flex-1">
+            <div class="flex items-start gap-2">
+                <span class="text-xs {{ flag.impact|impact_badge_class }} px-2 py-1 rounded font-bold">
+                    #{{ offset|add:forloop.counter }}
+                </span>
+                <div class="flex-1">
+                    <div class="font-semibold text-gray-900">
+                        {{ flag.text }}
+                    </div>
+                    <div class="text-xs text-gray-600 mt-1">
+                        Deine Bewertung: <span class="font-bold">{{ flag.value }}/5</span> × 
+                        Gewichtung: <span class="font-bold">{{ flag.weight|floatformat:2 }}</span> = 
+                        Impact: <span class="font-bold text-red-600">{{ flag.impact|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-right ml-4">
+            <div class="text-3xl font-bold text-red-flag">{{ flag.impact|floatformat:1 }}</div>
+            <div class="text-xs text-gray-500">Impact</div>
+            <div class="w-16 bg-gray-200 rounded-full h-1.5 mt-2">
+                {% widthratio flag.value 5 100 as flag_percentage %}
+                <div class="bg-red-flag h-full rounded-full" style="width: {{ flag_percentage }}%"></div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<!-- Update "Mehr laden" Button oder entfernen wenn keine weiteren Flags -->
+<script>
+    {% if has_more %}
+        // Update Button mit neuem Offset
+        const button = document.querySelector('#load-more-container button');
+        if (button) {
+            const nextOffset = {{ next_offset }};
+            button.setAttribute('hx-get', '{% url "analyses:load_more_flags" pk=analysis_id %}?offset=' + nextOffset);
+            button.querySelector('span:not(.htmx-indicator)').textContent = `Weitere Red Flags laden (${nextOffset + 1}-${nextOffset + 10})`;
+        }
+    {% else %}
+        // Entferne Button - keine weiteren Flags
+        const container = document.getElementById('load-more-container');
+        if (container) {
+            container.innerHTML = '<p class="text-center text-gray-500 text-sm">Alle Red Flags angezeigt</p>';
+        }
+    {% endif %}
+</script>

@@ -138,3 +138,53 @@ def score_text_color(score):
         return "text-orange-700"
     else:
         return "text-red-700"
+
+
+@register.filter
+def impact_bg_class(impact):
+    """
+    Gibt dezente Hintergrundfarbe für Red Flag Impact zurück.
+    
+    Impact-Kategorien (subtiler als Score-Farben):
+    - 0-8: Niedrig (Grau)
+    - 8-12: Mittel (Hellgelb)
+    - 12-16: Hoch (Hellorange)
+    - 16+: Kritisch (Hellrot)
+    
+    Usage: <div class="{{ flag.impact|impact_bg_class }}">
+    """
+    try:
+        impact = float(impact)
+    except (TypeError, ValueError):
+        return "bg-gray-50 border-gray-200"
+    
+    if impact < 8:
+        return "bg-gray-50 border-gray-200"
+    elif impact < 12:
+        return "bg-yellow-50 border-yellow-200"
+    elif impact < 16:
+        return "bg-orange-50 border-orange-300"
+    else:
+        return "bg-red-50 border-red-300"
+
+
+@register.filter
+def impact_badge_class(impact):
+    """
+    Gibt Badge-Farbe für Impact-Level zurück.
+    
+    Usage: <span class="{{ flag.impact|impact_badge_class }}">
+    """
+    try:
+        impact = float(impact)
+    except (TypeError, ValueError):
+        return "bg-gray-100 text-gray-700"
+    
+    if impact < 8:
+        return "bg-gray-100 text-gray-700"
+    elif impact < 12:
+        return "bg-yellow-100 text-yellow-800"
+    elif impact < 16:
+        return "bg-orange-100 text-orange-800"
+    else:
+        return "bg-red-100 text-red-800"

@@ -199,6 +199,38 @@ class ExportAnalysisPDFView(LoginRequiredMixin, View):
             return redirect('analyses:detail', pk=pk)
 
 
+class LoadMoreRedFlagsView(LoginRequiredMixin, View):
+    """
+    HTMX-Endpoint zum Nachladen weiterer Red Flags.
+    Pagination für Top Red Flags.
+    """
+    
+    def get(self, request, pk):
+        analysis = get_object_or_404(Analysis, pk=pk, user=request.user, is_unlocked=True)
+        
+        # Hole Offset aus Query-Parameter (default: 10)
+        offset = int(request.GET.get('offset', 10))
+        limit = 10
+        
+        # Hole Red Flags mit Offset + Limit
+        all_flags = analysis.get_top_red_flags(limit=offset + limit)
+        flags = all_flags[offset:offset + limit]
+        
+        # Prüfe ob weitere Flags vorhanden
+        has_more = len(all_flags) > offset + limit
+        next_offset = offset + limit
+        
+        context = {
+            'flags': flags,
+            'offset': offset,
+            'has_more': has_more,
+            'next_offset': next_offset,
+            'analysis_id': analysis.id,
+        }
+        
+        return render(request, 'analyses/partials/red_flags_items.html', context)
+
+
 class TrendsView(LoginRequiredMixin, DetailView):
     """
     Zeigt Trend-Analyse für User Scores über Zeit.
