@@ -1,17 +1,23 @@
 {% load custom_filters %}
 <!-- HTMX Partial: Unlocked Analysis Content -->
 <div class="space-y-6">
-    <!-- Total Score Card -->
-    <div class="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg shadow-lg p-8 text-center">
+    <!-- Total Score Card mit dynamischer Farbkodierung -->
+    {% with category=analysis.score_total|score_category %}
+    <div class="bg-gradient-to-r {{ analysis.score_total|score_color_class }} text-white rounded-lg shadow-lg p-8 text-center">
         <h2 class="text-xl font-semibold mb-2">Gesamt Red Flag Score</h2>
         <div class="text-6xl font-bold mb-2">{{ analysis.score_total }}</div>
-        <p class="text-red-100">von 5.00 Punkten</p>
+        <p class="text-white/90 mb-1">von 5.00 Punkten</p>
+        <div class="bg-white/30 rounded-lg px-4 py-2 inline-block">
+            <div class="text-sm font-semibold">{{ category.emoji }} {{ category.label }}</div>
+            <div class="text-xs opacity-90">{{ category.description }}</div>
+        </div>
         <div class="mt-4 bg-white/20 rounded-full h-3 overflow-hidden">
             {% widthratio analysis.score_total 5 100 as percentage %}
             <div class="bg-white h-full rounded-full transition-all duration-500" 
                  style="width: {{ percentage }}%"></div>
         </div>
     </div>
+    {% endwith %}
 
     <!-- Share Section -->
     <div class="bg-white rounded-lg shadow-md p-6">
@@ -213,13 +219,14 @@
     }
     </script>
 
-    <!-- Category Scores -->
+    <!-- Category Scores mit Farbkodierung -->
     <div class="bg-white rounded-lg shadow-md p-6">
         <h3 class="text-2xl font-bold mb-4">📊 Scores pro Kategorie</h3>
         <p class="text-gray-600 text-sm mb-4">Jede Kategorie wird separat bewertet (0-5 Skala)</p>
         <div class="grid md:grid-cols-2 gap-4">
             {% for cat_score in category_scores %}
-                <div class="border border-gray-200 rounded-lg p-4">
+                {% with category=cat_score.score|score_category %}
+                <div class="bg-gradient-to-r {{ cat_score.score|score_color_class }} text-white rounded-lg p-4 shadow-md">
                     <div class="flex justify-between items-center mb-2">
                         <span class="font-semibold">
                             {% if cat_score.category == 'TRUST' %}
@@ -232,21 +239,25 @@
                                 ⚡ Dynamik
                             {% endif %}
                         </span>
-                        <span class="text-2xl font-bold text-red-flag">{{ cat_score.score }}/5</span>
+                        <span class="text-3xl font-bold">{{ cat_score.score }}/5</span>
                     </div>
-                    <div class="bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div class="text-xs mb-2 bg-white/20 rounded px-2 py-1 inline-block">
+                        {{ category.emoji }} {{ category.label }}
+                    </div>
+                    <div class="bg-white/20 rounded-full h-2 overflow-hidden">
                         {% widthratio cat_score.score 5 100 as cat_percentage %}
-                        <div class="bg-red-flag h-full rounded-full transition-all duration-500" 
+                        <div class="bg-white h-full rounded-full transition-all duration-500" 
                              style="width: {{ cat_percentage }}%"></div>
                     </div>
                 </div>
+                {% endwith %}
             {% endfor %}
         </div>
     </div>
 
     <!-- Top Red Flags -->
     <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-2xl font-bold mb-4">🚩 Top 7 Red Flags in deiner Beziehung</h3>
+        <h3 class="text-2xl font-bold mb-4">🚩 Top 10 Red Flags in deiner Beziehung</h3>
         
         <div class="space-y-3">
             {% for flag in top_red_flags %}

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
 {% block title %}Meine Analysen - RedFlag Analyzer{% endblock %}
 
@@ -46,14 +47,19 @@
                     </div>
                     
                     {% if analysis.is_unlocked %}
-                        <!-- Preview der Ergebnisse -->
+                        <!-- Preview der Ergebnisse mit dynamischer Farbkodierung -->
                         <div class="mb-4">
                             <!-- Großer Gesamt-Score -->
-                            <div class="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg p-4 text-center mb-3">
+                            {% with category=analysis.score_total|score_category %}
+                            <div class="bg-gradient-to-r {{ analysis.score_total|score_color_class }} text-white rounded-lg p-4 text-center mb-3">
                                 <div class="text-sm font-medium mb-1">Red Flag Score</div>
                                 <div class="text-4xl font-bold">{{ analysis.score_total|floatformat:1 }}</div>
-                                <div class="text-red-100 text-sm">von 5.0</div>
+                                <div class="text-white/80 text-xs mb-1">von 5.0</div>
+                                <div class="text-xs bg-white/20 rounded px-2 py-1 inline-block">
+                                    {{ category.emoji }} {{ category.label }}
+                                </div>
                             </div>
+                            {% endwith %}
                             
                             {% if analysis.category_scores %}
                                 <div class="text-xs text-gray-500 space-y-1">

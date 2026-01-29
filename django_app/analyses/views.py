@@ -68,7 +68,7 @@ class AnalysisDetailView(LoginRequiredMixin, DetailView):
             # Hole Category Scores (optimiert mit prefetch)
             context['category_scores'] = analysis.category_scores.all()
             # Hole Top Red Flags (Business Logic im Model)
-            context['top_red_flags'] = analysis.get_top_red_flags(limit=7)
+            context['top_red_flags'] = analysis.get_top_red_flags(limit=10)
             
             # Compare with Average
             context['comparison'] = StatisticsService.compare_with_average(analysis)
@@ -111,7 +111,7 @@ class UnlockAnalysisView(LoginRequiredMixin, View):
                 context = {
                     'analysis': analysis,
                     'category_scores': analysis.category_scores.all(),
-                    'top_red_flags': analysis.get_top_red_flags(limit=5),
+                    'top_red_flags': analysis.get_top_red_flags(limit=10),
                     'user_credits': request.user.credits,
                 }
                 return render(request, 'analyses/partials/unlocked_content.html', context)
