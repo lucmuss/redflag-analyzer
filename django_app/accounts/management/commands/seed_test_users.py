@@ -1,8 +1,9 @@
 """
 Management Command zum Seeden der Test-User mit Bewertungen aus JSON
-Verwendung: python manage.py seed_test_users [--dry-run]
+Verwendung: python manage.py seed_test_users [--dry-run] [--limit=N]
 """
 import json
+import os
 from pathlib import Path
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
@@ -13,7 +14,7 @@ User = get_user_model()
 
 
 class Command(BaseCommand):
-    help = 'Seed Test Users from seed_data/test_users_import_final.json'
+    help = 'Seed Test Users from seed_data/users.json'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -21,12 +22,18 @@ class Command(BaseCommand):
             action='store_true',
             help='Show what would be done without actually doing it',
         )
+        parser.add_argument(
+            '--limit',
+            type=int,
+            default=int(os.environ.get('SEED_TEST_USERS_LIMIT', 24)),
+            help=f'Maximum number of users to seed (default: {int(os.environ.get("SEED_TEST_USERS_LIMIT", 24))})',
+        )
 
-    def handle(self, *args, **dry_run=None, **options):
+    def handle(self, *args, **options):
         dry_run = options.get('dry_run', False)
 
         # Pfad zur JSON-Datei
-        json_path = Path('/app/seed_data/test_users_import_final.json')
+        json_path = Path('/app/seed_data/users.json')
 
         if not json_path.exists():
             self.stdout.write(self.style.ERROR(f'JSON file not found at {json_path}'))
@@ -36,6 +43,12 @@ class Command(BaseCommand):
             users_data = json.load(f)
 
         self.stdout.write(self.style.WARNING(f'Found {len(users_data)} test users in JSON'))
+
+        # Limitiere die Anzahl der zu importierenden User
+        limit = options.get('limit', 24)
+        if limit < len(users_data):
+            users_data = users_data[:limit]
+            self.stdout.write(self.style.WARNING(f'🔢 Limiting to first {limit} users'))
 
         if dry_run:
             self.stdout.write(self.style.WARNING('🔍 DRY RUN MODE - No changes will be made'))
