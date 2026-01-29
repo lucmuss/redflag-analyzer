@@ -1,32 +1,49 @@
-# Render.com deployment configuration
+# Render.com deployment configuration for Django + PostgreSQL
 services:
-  # Backend API
+  # Django Web Service
   - type: web
-    name: redflag-analyzer-api
+    name: redflag-analyzer-web
     env: docker
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    dockerfilePath: ./django_app/Dockerfile
+    dockerContext: ./
     plan: starter
     region: frankfurt
     branch: main
-    healthCheckPath: /health
+    healthCheckPath: /
     envVars:
-      - key: MONGODB_URL
-        sync: false  # Set manually in Render dashboard
+      - key: DATABASE_URL
+        sync: false  # PostgreSQL connection string, set in Render dashboard
       - key: SECRET_KEY
         generateValue: true
       - key: ENVIRONMENT
         value: production
-      - key: ALLOWED_ORIGINS
-        value: https://redflag-analyzer.vercel.app,https://redflag-analyzer.com
-    
-  # MongoDB Database (optional - use MongoDB Atlas instead for production)
-  # - type: pserv
-  #   name: redflag-analyzer-mongodb
-  #   env: docker
-  #   dockerCommand: mongod --bind_ip_all
-  #   plan: starter
-  #   disk:
-  #     name: mongodb-data
-  #     mountPath: /data/db
-  #     sizeGB: 10
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        sync: false  # https://your-app-name.onrender.com
+      - key: SEED_TEST_USERS_LIMIT
+        value: 5  # Limit seed users in production
+      - key: EMAIL_BACKEND
+        value: django.core.mail.backends.smtp.EmailBackend
+      - key: EMAIL_HOST
+        sync: false  # SMTP provider
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false  # Set a secure password, not the default 'admin123'
+
+  # PostgreSQL Database
+  - type: pserv
+    name: redflag-analyzer-db
+    env: docker
+    dockerCommand: postgres -c listen_addresses='*'
+    plan: starter
+    region: frankfurt
+    disk:
+      name: postgres-data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1

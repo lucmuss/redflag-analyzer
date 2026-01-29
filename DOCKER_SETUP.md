@@ -48,6 +48,30 @@ docker-compose down -v
 docker-compose up --build
 ```
 
+## Test-Users importieren
+
+Die Anwendung beinhaltet Seed-Data für Test-User mit Bewertungsprofilen:
+
+```bash
+# Alle 24 Test-User importieren (für vollständiges Training)
+docker-compose exec web python manage.py seed_test_users
+
+# Nur begrenzte Anzahl importieren (schneller für Entwicklung)
+docker-compose exec web python manage.py seed_test_users --limit=3
+
+# Dry-Run um zu sehen was gemacht würde
+docker-compose exec web python manage.py seed_test_users --dry-run
+```
+
+**Konfiguration:** Die Anzahl der zu importierenden Test-User kann über die ENV-Variable `SEED_TEST_USERS_LIMIT` gesteuert werden:
+
+```bash
+# In django_app/.env.docker
+SEED_TEST_USERS_LIMIT=3
+```
+
+Die Seed-Data-Datei liegt unter `seed_data/users.json` und enthält Bewertungen für alle Fragen des Fragebogens.
+
 ## Konfiguration
 
 Alle Einstellungen in `django_app/.env.docker` anpassen.

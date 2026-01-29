@@ -32,8 +32,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         dry_run = options.get('dry_run', False)
 
-        # Pfad zur JSON-Datei
-        json_path = Path('/app/seed_data/users.json')
+        # Pfad zur JSON-Datei (prüfe verschiedene Orte)
+        possible_paths = [
+            Path('/app/users.json'),  # Für Render deployment
+            Path('/app/seed_data/users.json'),  # Für lokal/docker-compose
+        ]
+        json_path = None
+        for path in possible_paths:
+            if path.exists():
+                json_path = path
+                break
 
         if not json_path.exists():
             self.stdout.write(self.style.ERROR(f'JSON file not found at {json_path}'))
