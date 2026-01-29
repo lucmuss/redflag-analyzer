@@ -1,49 +1,66 @@
 version: '3.8'
 
 services:
-  # MongoDB Database
-  mongodb:
-    image: mongo:latest
-    container_name: redflag-mongodb
-    ports:
-      - "27017:27017"
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: redflag-db
     volumes:
-      - mongodb_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
     environment:
-      MONGO_INITDB_DATABASE: redflag_analyzer
+      POSTGRES_DB: ${DB_NAME:-redflag_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5433:5432"
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - redflag-network
 
-  # Backend API
-  backend:
+  # Django Web App
+  web:
     build:
-      context: ./backend
+      context: ./django_app
       dockerfile: Dockerfile
-    container_name: redflag-backend
-    ports:
-      - "8000:8000"
-    environment:
-      - MONGODB_URL=mongodb://mongodb:27017/redflag_analyzer
-      - SECRET_KEY=dev-secret-key-change-in-production
-      - ENVIRONMENT=development
-      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080
-    depends_on:
-      mongodb:
-        condition: service_healthy
+    container_name: redflag-web
     volumes:
-      - ./backend:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      - ./django_app:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    env_file:
+      - ./django_app/.env.docker
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - redflag-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: redflag-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - web
     networks:
       - redflag-network
 
 volumes:
-  mongodb_data:
-    driver: local
+  postgres_data:
+  static_volume:
+  media_volume:
 
 networks:
   redflag-network:
