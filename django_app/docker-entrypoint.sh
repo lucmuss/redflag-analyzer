@@ -28,6 +28,9 @@ else:
     print(f'Superuser {email} already exists')
 END
 
+echo "Seeding questions..."
+python manage.py seed_questions || echo "Warning: Seeding failed, continuing..."
+
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 

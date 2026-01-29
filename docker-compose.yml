@@ -29,6 +29,7 @@ services:
     container_name: redflag-web
     volumes:
       - ./django_app:/app
+      - ./seed_data:/app/seed_data
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     env_file:

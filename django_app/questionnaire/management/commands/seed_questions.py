@@ -12,9 +12,9 @@ class Command(BaseCommand):
     help = 'Seed Questions from seed_data/questions.json'
 
     def handle(self, *args, **options):
-        # Pfad zur JSON-Datei (im Root-Verzeichnis des Projekts)
-        # Von seed_questions.py: commands/ -> management/ -> questionnaire/ -> django_app/ -> redflag-analyzer/
-        json_path = Path(__file__).resolve().parent.parent.parent.parent.parent / 'seed_data' / 'questions.json'
+        # Pfad zur JSON-Datei (innerhalb des Docker-Containers gemountet)
+        # Seit Docker-Compose mount: ./seed_data:/app/seed_data
+        json_path = Path('/app/seed_data/questions.json')
         
         if not json_path.exists():
             self.stdout.write(self.style.ERROR(f'JSON file not found at {json_path}'))
