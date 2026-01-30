@@ -34,13 +34,17 @@ class Command(BaseCommand):
 
         # Pfad zur JSON-Datei (prüfe verschiedene Orte)
         possible_paths = [
+            Path('seed_data/users.json'),  # Container: In /app/seed_data/
+            Path('../seed_data/users.json'),  # Lokal: Relatativ zu django_app/
+            Path('users.json'),  # Im aktuellen Verzeichnis (für lokale Entwicklung)
+            Path('/app/seed_data/users.json'),  # Für Docker deployment
             Path('/app/users.json'),  # Für Render deployment
-            Path('/app/seed_data/users.json'),  # Für lokal/docker-compose
         ]
         json_path = None
         for path in possible_paths:
             if path.exists():
                 json_path = path
+                self.stdout.write(self.style.SUCCESS(f'Using seed file: {json_path}'))
                 break
 
         if not json_path.exists():
@@ -63,9 +67,8 @@ class Command(BaseCommand):
 
         # Sammle Statistiken
         created_users = 0
-        updated_users = 0
+        skipped_users = 0
         created_weight_responses = 0
-        updated_weight_responses = 0
 
         for user_data in users_data:
             email = user_data['email']
@@ -76,31 +79,26 @@ class Command(BaseCommand):
                 continue
 
             try:
-                # Erstelle oder aktualisiere User
-                user, user_created = User.objects.update_or_create(
+                # Prüfe ob User bereits existiert
+                if User.objects.filter(email=email).exists():
+                    self.stdout.write(self.style.WARNING(f'⏭ Skipped existing user: {email}'))
+                    continue
+
+                # Erstelle neuen User
+                user = User.objects.create_user(
                     email=email,
-                    defaults={
-                        'username': email.split('@')[0],
-                        'first_name': user_data.get('first_name', ''),
-                        'last_name': user_data.get('last_name', ''),
-                        'is_staff': user_data.get('is_staff', False),
-                        'is_active': user_data.get('is_active', True),
-                    }
+                    username=email.split('@')[0],
+                    first_name=user_data.get('first_name', ''),
+                    last_name=user_data.get('last_name', ''),
+                    password=password,
+                    is_staff=user_data.get('is_staff', False),
+                    is_active=user_data.get('is_active', True),
                 )
 
-                # Setze Passwort falls nötig
-                if user_created or not user.has_usable_password():
-                    user.set_password(password)
-                    user.save()
+                created_users += 1
+                self.stdout.write(self.style.SUCCESS(f'✓ Created user: {email}'))
 
-                if user_created:
-                    created_users += 1
-                    self.stdout.write(self.style.SUCCESS(f'✓ Created user: {email}'))
-                else:
-                    updated_users += 1
-                    self.stdout.write(self.style.WARNING(f'↻ Updated user: {email}'))
-
-                # Erstelle oder aktualisiere UserProfile
+                # Erstelle UserProfile
                 profile_defaults = {}
                 if user_data.get('birth_date'):
                     from datetime import datetime
@@ -114,9 +112,9 @@ class Command(BaseCommand):
                     profile_defaults['gender'] = user_data['gender']
 
                 if profile_defaults:
-                    UserProfile.objects.update_or_create(
+                    UserProfile.objects.create(
                         user=user,
-                        defaults=profile_defaults
+                        **profile_defaults
                     )
 
                 # Verarbeite ratings_answers (WeightResponse)
@@ -124,16 +122,12 @@ class Command(BaseCommand):
                 for question_key, importance in ratings_answers.items():
                     try:
                         question = Question.objects.get(key=question_key, is_active=True)
-                        weight_response, created = WeightResponse.objects.update_or_create(
+                        WeightResponse.objects.create(
                             user=user,
                             question=question,
-                            defaults={'importance': importance}
+                            importance=importance
                         )
-
-                        if created:
-                            created_weight_responses += 1
-                        else:
-                            updated_weight_responses += 1
+                        created_weight_responses += 1
 
                     except Question.DoesNotExist:
                         self.stdout.write(self.style.WARNING(f'⚠ Question not found: {question_key}'))
@@ -146,10 +140,10 @@ class Command(BaseCommand):
                 f'\n✅ Seeding complete!'
             ))
             self.stdout.write(self.style.SUCCESS(
-                f'Users: Created {created_users}, Updated {updated_users}'
+                f'Users: Created {created_users}'
             ))
             self.stdout.write(self.style.SUCCESS(
-                f'Weight Responses: Created {created_weight_responses}, Updated {updated_weight_responses}'
+                f'Weight Responses: Created {created_weight_responses}'
             ))
 
             # Finale Statistiken

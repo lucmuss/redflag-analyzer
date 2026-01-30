@@ -1,34 +1,13 @@
 {
     "version": "2.0.0",
     "tasks": [
-        // --- Kill Port 8000 (ohne sudo) ---
         {
-            "label": "killPort8000",
+            "label": "dockerComposeUp",
             "type": "shell",
-            "command": "/bin/bash",
+            "command": "docker-compose",
             "args": [
-                "-c",
-                "pids=$(lsof -t -i:8000) && [ -n \"$pids\" ] && kill -9 $pids 2>/dev/null || true"
-            ],
-            "group": "build",
-            "presentation": {
-                "echo": false,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared"
-            },
-            "problemMatcher": [],
-            "detail": "Kills user-owned processes on port 8000 (no sudo)"
-        },
-
-        // --- Install Requirements ---
-        {
-            "label": "installRequirements",
-            "type": "shell",
-            "command": "/bin/bash",
-            "args": [
-                "-c",
-                "source ${workspaceFolder}/django_app/venv/bin/activate && pip install -r ${workspaceFolder}/django_app/requirements.txt"
+                "up",
+                "-d"
             ],
             "group": "build",
             "presentation": {
@@ -38,17 +17,14 @@
                 "panel": "shared"
             },
             "problemMatcher": [],
-            "detail": "Installs Python dependencies from requirements.txt"
+            "detail": "Starts all Docker services in detached mode"
         },
-
-        // --- Activate Venv ---
         {
-            "label": "activateVenv",
+            "label": "dockerComposeDown",
             "type": "shell",
-            "command": "/bin/bash",
+            "command": "docker-compose",
             "args": [
-                "-c",
-                "source ${workspaceFolder}/django_app/venv/bin/activate"
+                "down"
             ],
             "group": "build",
             "presentation": {
@@ -58,17 +34,16 @@
                 "panel": "shared"
             },
             "problemMatcher": [],
-            "isBackground": true
+            "detail": "Stops and removes all Docker containers"
         },
-
-        // --- Make Migrations ---
         {
-            "label": "makeMigrations",
+            "label": "dockerComposeLogs",
             "type": "shell",
-            "command": "/bin/bash",
+            "command": "docker-compose",
             "args": [
-                "-c",
-                "cd ${workspaceFolder}/django_app && source venv/bin/activate && python manage.py makemigrations"
+                "logs",
+                "-f",
+                "web"
             ],
             "group": "build",
             "presentation": {
@@ -78,17 +53,18 @@
                 "panel": "shared"
             },
             "problemMatcher": [],
-            "detail": "Creates new database migrations"
+            "detail": "Follows logs from the Django web container"
         },
-
-        // --- Run Migrations ---
         {
-            "label": "migrate",
+            "label": "makeMigrationsDocker",
             "type": "shell",
-            "command": "/bin/bash",
+            "command": "docker-compose",
             "args": [
-                "-c",
-                "cd ${workspaceFolder}/django_app && source venv/bin/activate && python manage.py migrate"
+                "exec",
+                "web",
+                "python",
+                "manage.py",
+                "makemigrations"
             ],
             "group": "build",
             "presentation": {
@@ -98,17 +74,18 @@
                 "panel": "shared"
             },
             "problemMatcher": [],
-            "detail": "Applies database migrations"
+            "detail": "Creates new database migrations in Docker"
         },
-
-        // --- Run Django Server ---
         {
-            "label": "runServer",
+            "label": "migrateDocker",
             "type": "shell",
-            "command": "/bin/bash",
+            "command": "docker-compose",
             "args": [
-                "-c",
-                "cd ${workspaceFolder}/django_app && source venv/bin/activate && python manage.py runserver"
+                "exec",
+                "web",
+                "python",
+                "manage.py",
+                "migrate"
             ],
             "group": "build",
             "presentation": {
@@ -118,20 +95,102 @@
                 "panel": "shared"
             },
             "problemMatcher": [],
-            "isBackground": true,
-            "detail": "Starts Django development server"
+            "detail": "Applies database migrations in Docker"
         },
-
-        // --- Compound Task: Full Django Startup ---
         {
-            "label": "djangoStart",
+            "label": "createSuperuser",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "exec",
+                "web",
+                "python",
+                "manage.py",
+                "createsuperuser"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Creates Django superuser in Docker"
+        },
+        {
+            "label": "collectStatic",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "exec",
+                "web",
+                "python",
+                "manage.py",
+                "collectstatic",
+                "--noinput"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Collects static files in Docker"
+        },
+        {
+            "label": "seedTestUsers",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "exec",
+                "web",
+                "python",
+                "manage.py",
+                "seed_test_users"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Seeds test users from JSON in Docker"
+        },
+        {
+            "label": "djangoShell",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "exec",
+                "web",
+                "python",
+                "manage.py",
+                "shell"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Opens Django shell in Docker"
+        },
+        {
+            "label": "dockerStart",
             "dependsOrder": "sequence",
-            "dependsOn": ["killPort8000", "installRequirements", "makeMigrations", "migrate", "runServer"],
+            "dependsOn": ["dockerComposeUp"],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "Full Django startup: Kill port ’ Install deps ’ Make migrations ’ Migrate ’ Run server"
+            "detail": "Starts all Docker services (full application)"
         }
     ]
 }

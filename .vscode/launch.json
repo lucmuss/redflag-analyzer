@@ -1,34 +1,13 @@
 {
     "version": "0.2.0",
     "configurations": [
-        // --- Backend: Django Server Debuggen ---
+        // --- Frontend: HTMX mit Firefox (Docker) ---
         {
-            "name": "Django Run Server",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/django_app/manage.py",
-            "args": [
-                "runserver",
-                "0.0.0.0:8000"
-            ],
-            "django": true,
-            "justMyCode": false,
-            "env": {
-                "DJANGO_SETTINGS_MODULE": "redflag_project.settings"
-            },
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/django_app",
-            "stopOnEntry": false,
-            "preLaunchTask": "djangoStart"  // Compound-Task: Kill + Venv
-        },
-
-        // --- Frontend: HTMX mit Firefox ---
-        {
-            "name": "Launch RedFlag Frontend (HTMX)",
+            "name": "Launch RedFlag Frontend (Docker)",
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
-            "url": "http://localhost:8000/",
+            "url": "http://localhost/",
             "webRoot": "${workspaceFolder}/django_app/templates/",
             "runtimeExecutable": "C:\\\\Program Files\\\\Mozilla Firefox\\\\firefox.exe",
             "runtimeArgs": [
@@ -41,12 +20,13 @@
             ],
             "firefoxExtendedDebugging": true,
             "port": 9222,
-            "host": "127.0.0.1"
+            "host": "127.0.0.1",
+            "preLaunchTask": "dockerStart"
         },
 
-        // --- Attach zu Firefox ---
+        // --- Attach zu Firefox (Docker) ---
         {
-            "name": "Attach to Firefox (HTMX)",
+            "name": "Attach to Firefox (Docker)",
             "type": "firefox",
             "request": "attach",
             "runtimeExecutable": "C:\\\\Program Files\\\\Mozilla Firefox\\\\firefox.exe",
@@ -55,19 +35,19 @@
             "reAttach": true,
             "pathMappings": [
                 {
-                    "url": "http://localhost:8000",
+                    "url": "http://localhost",
                     "path": "${workspaceFolder}/django_app"
                 }
             ]
         },
 
-        // --- Launch Admin ---
+        // --- Launch Admin (Docker) ---
         {
-            "name": "Launch localhost (Admin)",
+            "name": "Launch Admin (Docker)",
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
-            "url": "http://localhost:8000/admin/",
+            "url": "http://localhost/admin/",
             "webRoot": "${workspaceFolder}/django_app",
             "runtimeExecutable": "C:\\\\Program Files\\\\Mozilla Firefox\\\\firefox.exe",
             "runtimeArgs": [
@@ -76,36 +56,27 @@
                 "--no-remote"
             ],
             "firefoxExtendedDebugging": true,
-            "port": 9222
+            "port": 9222,
+            "preLaunchTask": "dockerStart"
         },
 
-        // --- Attach Python ---
+        // --- Launch Test User Login ---
         {
-            "name": "Attach to Django",
-            "type": "python",
-            "request": "attach",
-            "connect": {
-                "host": "localhost",
-                "port": 5678
-            },
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/django_app",
-                    "remoteRoot": "."
-                }
-            ],
-            "justMyCode": false
-        },
-
-        // --- Python: Current File (einfach) ---
-        {
-            "name": "Python: Current File",
-            "type": "python",
+            "name": "Launch Test Login (Docker)",
+            "type": "firefox",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/django_app",
-            "preLaunchTask": "activateVenv"
+            "reAttach": true,
+            "url": "http://localhost/accounts/dev-login/",
+            "webRoot": "${workspaceFolder}/django_app",
+            "runtimeExecutable": "C:\\\\Program Files\\\\Mozilla Firefox\\\\firefox.exe",
+            "runtimeArgs": [
+                "--start-debugger-server",
+                "127.0.0.1:9222",
+                "--no-remote"
+            ],
+            "firefoxExtendedDebugging": true,
+            "port": 9222,
+            "preLaunchTask": "dockerStart"
         }
     ]
 }

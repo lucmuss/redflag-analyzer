@@ -24,7 +24,7 @@ echo "Seeding questions..."
 if python manage.py seed_questions; then
     echo "Questions seeded successfully"
 
-    if [ -f "../seed_data/users.json" ]; then
+    if [ -f "seed_data/users.json" ]; then
         echo "Seeding test users..."
         python manage.py seed_test_users || echo "Warning: Test user seeding failed, continuing..."
     else

@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   # PostgreSQL Database
@@ -24,14 +24,13 @@ services:
   # Django Web App
   web:
     build:
-      context: ./django_app
+      context: .
       dockerfile: Dockerfile
     container_name: redflag-web
     volumes:
-      - ./django_app:/app
-      - ./seed_data:/app/seed_data
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
+      - .:/app
+      - static_volume:/app/django_app/staticfiles
+      - media_volume:/app/django_app/media
     env_file:
       - ./django_app/.env.docker
     environment:

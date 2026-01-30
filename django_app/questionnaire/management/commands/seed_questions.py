@@ -12,12 +12,22 @@ class Command(BaseCommand):
     help = 'Seed Questions from seed_data/questions.json'
 
     def handle(self, *args, **options):
-        # Pfad zur JSON-Datei (innerhalb des Docker-Containers gemountet)
-        # Seit Docker-Compose mount: ./seed_data:/app/seed_data
-        json_path = Path('/app/seed_data/questions.json')
-        
+        # Pfad zur JSON-Datei (lokal oder Docker)
+        possible_paths = [
+            Path('seed_data/questions.json'),  # Container: In /app/seed_data/
+            Path('../seed_data/questions.json'),  # Lokal: Relatativ zu django_app/
+            Path('questions.json'),  # Fallback: Im aktuellen Verzeichnis
+        ]
+
+        json_path = None
+        for path in possible_paths:
+            if path.exists():
+                json_path = path
+                self.stdout.write(self.style.SUCCESS(f'Found questions file at {json_path}'))
+                break
+
         if not json_path.exists():
-            self.stdout.write(self.style.ERROR(f'JSON file not found at {json_path}'))
+            self.stdout.write(self.style.ERROR(f'JSON file not found in any expected location'))
             return
         
         with open(json_path, 'r', encoding='utf-8') as f:
