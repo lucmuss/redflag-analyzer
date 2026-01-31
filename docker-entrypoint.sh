@@ -35,7 +35,8 @@ else
 fi
 
 echo "Collecting static files..."
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput 2>&1 || echo "Static collection failed, continuing..."
 
 echo "Starting server..."
-exec "$@"
+echo "Running: $@"
+exec "$@" 2>&1

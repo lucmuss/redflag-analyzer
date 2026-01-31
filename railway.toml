@@ -1,0 +1,56 @@
+# Railway.app Deployment Configuration für RedFlag Analyzer
+# Install Railway CLI: npm i -g @railway/cli
+# Deploy: railway up
+
+[build]
+builder = "dockerfile"
+dockerfilePath = "./django_app/Dockerfile"
+dockerContext = "./"
+
+[deploy]
+startCommand = "python manage.py migrate --noinput && python create_superuser.py && gunicorn --bind 0.0.0.0:8000 --workers 4 redflag_project.wsgi:application"
+healthcheckUrl = "HTTP_GET http://$HOST/health/"
+
+[env]
+# Django Settings
+DEBUG = "false"
+ENVIRONMENT = "production"
+ALLOWED_HOSTS = "$RAILWAY_STATIC_URL,$RAILWAY_DOMAIN"
+SECRET_KEY = "$SECRET_KEY"
+
+# Database (Railway managed PostgreSQL - wird automatisch verbunden)
+DATABASE_URL = "$DATABASE_URL"
+
+# Django Admin/Superuser
+DJANGO_SUPERUSER_EMAIL = "admin@redflag-analyzer.com"
+DJANGO_SUPERUSER_PASSWORD = "$DJANGO_SUPERUSER_PASSWORD"
+
+# Email Settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "$EMAIL_HOST"
+EMAIL_PORT = "587"
+EMAIL_USE_TLS = "true"
+EMAIL_HOST_USER = "$EMAIL_HOST_USER"
+EMAIL_HOST_PASSWORD = "$EMAIL_HOST_PASSWORD"
+DEFAULT_FROM_EMAIL = "noreply@redflag-analyzer.com"
+
+# App Settings
+SEED_TEST_USERS_LIMIT = "5"
+
+# Optional Features
+SENTRY_DSN = "$SENTRY_DSN"
+GOOGLE_ANALYTICS_ID = "$GOOGLE_ANALYTICS_ID"
+
+[services.postgres]
+image = "postgres:16-alpine"
+variables = {
+    POSTGRES_DB = "redflag_db",
+    POSTGRES_USER = "postgres",
+    POSTGRES_PASSWORD = "$DB_PASSWORD"
+}
+volumes = [
+    {
+        name = "postgres_data",
+        mountPath = "/var/lib/postgresql/data"
+    }
+]

@@ -20,18 +20,16 @@ class QuestionnaireConfig(AppConfig):
         # Registriere post_migrate für Seed-Import
         post_migrate.connect(self._post_migrate_handler, sender=self)
 
-        # Berechne globale Gewichte beim Serverstart
-        # Dies stellt sicher, dass calculated_weight immer aktuell ist
-        try:
-            # Verwende run_from_argv=False um nur einmal pro Prozess auszuführen
-            # (nicht bei jedem reload im Development Mode)
-            import sys
-            if 'runserver' in sys.argv or 'gunicorn' in sys.argv[0]:
-                logger.info('🔄 Berechne globale Gewichte beim Serverstart...')
-                call_command('update_global_weights', verbosity=0)
-                logger.info('✅ Globale Gewichte aktualisiert')
-        except Exception as e:
-            logger.warning(f'⚠️ Globale Gewichte konnten nicht beim Start berechnet werden: {e}')
+        # Berechne globale Gewichte beim Serverstart (auskommentiert - verursacht Startup-Hang)
+        # TODO: In post_migrate oder middleware verschieben
+        # try:
+        #     import sys
+        #     if 'runserver' in sys.argv or 'gunicorn' in sys.argv[0]:
+        #         logger.info('🔄 Berechne globale Gewichte beim Serverstart...')
+        #         call_command('update_global_weights', verbosity=0)
+        #         logger.info('✅ Globale Gewichte aktualisiert')
+        # except Exception as e:
+        #     logger.warning(f'⚠️ Globale Gewichte konnten nicht beim Start berechnet werden: {e}')
 
     def _post_migrate_handler(self, sender, **kwargs):
         """Importiere Fragen nach Migration, wenn leer."""

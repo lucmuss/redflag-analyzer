@@ -81,7 +81,8 @@ class Command(BaseCommand):
             try:
                 # Prüfe ob User bereits existiert
                 if User.objects.filter(email=email).exists():
-                    self.stdout.write(self.style.WARNING(f'⏭ Skipped existing user: {email}'))
+                    skipped_users += 1
+                    self.stdout.write(self.style.WARNING(f'⏭ User already exists (skipped): {email}'))
                     continue
 
                 # Erstelle neuen User
@@ -140,7 +141,7 @@ class Command(BaseCommand):
                 f'\n✅ Seeding complete!'
             ))
             self.stdout.write(self.style.SUCCESS(
-                f'Users: Created {created_users}'
+                f'Users: Created {created_users}, Skipped {skipped_users}'
             ))
             self.stdout.write(self.style.SUCCESS(
                 f'Weight Responses: Created {created_weight_responses}'

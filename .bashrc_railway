@@ -1,0 +1,10 @@
+# Railway.app PATH Setup
+# Add to your ~/.bashrc or ~/.zshrc:
+
+export PATH="$HOME/.npm-global/bin:$PATH"
+
+# Then run in terminal:
+# source ~/.bashrc
+# railway login
+# railway link
+# railway up

@@ -46,17 +46,19 @@ class Command(BaseCommand):
                 'is_active': True
             }
             
-            question, created = Question.objects.update_or_create(
-                key=q_data['key'],
-                defaults=defaults
-            )
+            # Prüfe ob Question mit diesem key bereits existiert
+            existing_question = Question.objects.filter(key=q_data['key']).first()
             
-            if created:
+            if existing_question:
+                updated_count += 1
+                self.stdout.write(self.style.WARNING(f'⏭ Question already exists (skipped): {q_data["key"]}'))
+            else:
+                question = Question.objects.create(
+                    key=q_data['key'],
+                    **defaults
+                )
                 created_count += 1
                 self.stdout.write(self.style.SUCCESS(f'✓ Created: {question.key}'))
-            else:
-                updated_count += 1
-                self.stdout.write(self.style.WARNING(f'↻ Updated: {question.key}'))
         
         self.stdout.write(self.style.SUCCESS(
             f'\n✅ Seeding complete! Created: {created_count}, Updated: {updated_count}, Total: {Question.objects.count()}'
